@@ -5771,7 +5771,7 @@ class Accounting_model extends App_Model
                 $this->recurring_journal_entry_by_id($insert_id);
             }
             
-            return true;
+            return $insert_id;
         }
 
         return false;
