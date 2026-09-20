@@ -22,4 +22,22 @@ function mcs_module_activation_hook()
     require_once __DIR__ . '/install.php';
 }
 
-// Hooks are added by later tasks, each one next to the function it calls.
+hooks()->add_action('staff_render_permissions', 'mcs_render_access_box');
+
+function mcs_render_access_box()
+{
+    if (!mcs_can_manage()) {
+        return;
+    }
+
+    $CI     = &get_instance();
+    $member = $CI->load->get_var('member');
+
+    $CI->load->view(MCS_MODULE_NAME . '/access_box', [
+        'mcs_names'   => mcs_sibling_names(),
+        'mcs_current' => mcs_current_slug(),
+        'mcs_ticked'  => $member ? mcs_access_slugs($member->email) : [],
+    ]);
+}
+
+// Later tasks add more hooks below, each one next to the function it calls.
