@@ -1,11 +1,6 @@
 <?php defined('BASEPATH') or exit('No direct script access allowed'); ?>
 <?php init_head(); ?>
-<style>
-  @media print {
-    .hide-on-print, .btn, #header, #setup-menu-wrapper, .sidebar { display: none !important; }
-    .visible-print-block { display: block !important; }
-  }
-</style>
+<link href="<?php echo module_dir_url(ACCOUNTING_MODULE_NAME, 'assets/css/journal_entry_print.css'); ?>?v=1" rel="stylesheet" type="text/css" />
 <div id="wrapper">
   <div class="content">
     <div class="row">
