@@ -739,3 +739,5 @@ if (row_timesheets_options_exist('"ts_delay_allowance_enabled"') == 0) {
 if (row_timesheets_options_exist('"ts_delay_allowance_hours"') == 0) {
 	$CI->db->query('INSERT INTO `' . db_prefix() . 'timesheets_option` (`option_name`, `option_val`, `auto`) VALUES ("ts_delay_allowance_hours", "4", "1");');
 }
+add_option('ts_leave_carry_enabled', 0);
+add_option('ts_leave_carry_years', 3);

@@ -91,6 +91,18 @@
     <div class="clearfix"></div>
     <br>
     <div class="clearfix"></div>
+    <div class="row mtop15">
+      <div class="col-md-4">
+        <div class="checkbox checkbox-primary">
+          <input type="checkbox" id="ts_leave_carry_enabled" name="ts_leave_carry_enabled" value="1" <?php echo (get_option('ts_leave_carry_enabled') == 1) ? 'checked' : ''; ?>>
+          <label for="ts_leave_carry_enabled"><?php echo _l('ts_leave_carry_enabled'); ?></label>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <label for="ts_leave_carry_years" class="control-label"><?php echo _l('ts_leave_carry_years'); ?></label>
+        <input type="number" min="1" step="1" id="ts_leave_carry_years" name="ts_leave_carry_years" class="form-control" value="<?php echo (int) get_option('ts_leave_carry_years'); ?>">
+      </div>
+    </div>
     <?php echo form_hidden('leave_of_the_year_data'); ?>
     <div class="hot handsontable htColumnHeaders" id="example">
     </div>

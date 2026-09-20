@@ -150,6 +150,10 @@ class timesheets_model extends app_model
 	public function set_leave($data)
 	{
 		$affectedrows = 0;
+		if (array_key_exists('ts_leave_carry_years', $data)) {
+			update_option('ts_leave_carry_enabled', isset($data['ts_leave_carry_enabled']) ? 1 : 0);
+			update_option('ts_leave_carry_years', max(1, (int) $data['ts_leave_carry_years']));
+		}
 		foreach (json_decode($data['leave_of_the_year_data']) as $key => $value) {
 			if ($value[0] != null) {
 				$this->db->where('staffid', $value[0]);
@@ -1030,6 +1034,67 @@ class timesheets_model extends app_model
 		}
 
 		return $val;
+	}
+
+	/**
+	 * Annual leave balances per year (leave carry-over).
+	 * Toggle off: only the current year row. Toggle on: the last ts_leave_carry_years years,
+	 * newest first, only rows with remain > 0.
+	 * @param  integer $staffid
+	 * @param  integer $year
+	 * @param  string  $type_of_leave
+	 * @return array
+	 */
+	public function get_leave_balances($staffid, $year, $type_of_leave = '8')
+	{
+		$carry_enabled = get_option('ts_leave_carry_enabled') == 1;
+		$carry_years = (int) get_option('ts_leave_carry_years');
+		if ($carry_years < 1) {
+			$carry_years = 1;
+		}
+		$from_year = $carry_enabled ? ((int) $year - ($carry_years - 1)) : (int) $year;
+
+		$this->db->where('staffid', (int) $staffid);
+		$this->db->where('type_of_leave', $type_of_leave);
+		$this->db->where('year >=', $from_year);
+		$this->db->where('year <=', (int) $year);
+		$this->db->where('remain >', 0);
+		$this->db->order_by('year', 'desc');
+		return $this->db->get(db_prefix() . 'timesheets_day_off')->result_array();
+	}
+
+	/**
+	 * Take annual leave days from the balances, current year first, then older years.
+	 * Any part that no balance can cover is taken from the current year row (old behaviour).
+	 * @param  integer $staffid
+	 * @param  integer $year
+	 * @param  float   $days
+	 */
+	public function deduct_leave_days_with_carry($staffid, $year, $days)
+	{
+		$left = (float) $days;
+		foreach ($this->get_leave_balances($staffid, $year) as $row) {
+			if ($left <= 0) {
+				break;
+			}
+			$take = min($left, (float) $row['remain']);
+			$this->db->where('id', $row['id']);
+			$this->db->update(db_prefix() . 'timesheets_day_off', [
+				'remain' => (float) $row['remain'] - $take,
+				'days_off' => (float) $row['days_off'] + $take,
+			]);
+			$left -= $take;
+		}
+		if ($left > 0) {
+			$current = $this->get_day_off($staffid, $year, 8);
+			if ($current) {
+				$this->db->where('id', $current->id);
+				$this->db->update(db_prefix() . 'timesheets_day_off', [
+					'remain' => (float) $current->remain - $left,
+					'days_off' => (float) $current->days_off + $left,
+				]);
+			}
+		}
 	}
 
 	/**
@@ -8486,6 +8551,13 @@ class timesheets_model extends app_model
 				$dd = $requisition_leave->number_of_leaving_day;
 				$year = $this->get_first_year_of_period($requisition_leave->start_time);
 				
+				// Carry-over on: take days from the current year first, then older years (annual leave only)
+				if (get_option('ts_leave_carry_enabled') == 1 && $type_of_leave_data->type_id == 8) {
+					$this->deduct_leave_days_with_carry($requisition_leave->staff_id, $year, (float) $dd);
+					$this->add_timesheet_leave($type_of_leave_data->timesheet_type, $id);
+					return true;
+				}
+
 				$update_days_off = abs($day_off->days_off + $dd);
 				$update_remain = abs($day_off->total) - $update_days_off;
 				$this->db->where('type_of_leave', $type_of_leave_data->type_id);

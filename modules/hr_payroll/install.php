@@ -1019,3 +1019,4 @@ if (hr_payroll_payroll_column_exist('"delay_deducted_hours"') == 0){
 if (hr_payroll_payroll_column_exist('"ot_final_hours"') == 0){
   $CI->db->query('INSERT INTO `' . db_prefix() . 'hrp_payroll_columns` (`column_key`, `taking_method`, `function_name`, `value_related_to`, `display_with_staff`, `description`, `date_created`, `staff_id_created`, `order_display`, `is_edit`) VALUES ("OT Final Hours", "system", "ot_final_hours", "", "true", "OT Final Hours", "'.date("Y-m-d H:i:s").'", "'.get_staff_user_id().'", "12", "no");');
 }
+add_option('hrp_post_to_accounting', 1);

@@ -199,6 +199,18 @@ $valid_cur_date = $this->timesheets_model->get_next_shift_date(get_staff_user_id
           <label class="control-label "><?php echo _l('number_of_days_off') . ': ' . $days_off; ?></label><br>
           <label class="control-label <?php if ($number_day_off == 0) {echo 'text-danger';}?>"><?php echo _l('number_of_leave_days_allowed') . ': ' . $number_day_off; ?></label>
           <input type="hidden" name="number_day_off" value="<?php echo html_entity_decode($number_day_off); ?>">
+          <?php
+          $ts_balances = $this->timesheets_model->get_leave_balances(get_staff_user_id(), $this->timesheets_model->get_first_year_of_period());
+          if (count($ts_balances) > 0) { ?>
+            <table class="table table-bordered mtop10">
+              <thead><tr><th><?php echo _l('ts_leave_balance_year'); ?></th><th><?php echo _l('ts_leave_balance_remaining'); ?></th></tr></thead>
+              <tbody>
+                <?php foreach ($ts_balances as $ts_balance) { ?>
+                  <tr><td><?php echo html_entity_decode($ts_balance['year']); ?></td><td><?php echo html_entity_decode($ts_balance['remain']); ?></td></tr>
+                <?php } ?>
+              </tbody>
+            </table>
+          <?php } ?>
         </div>
       </div>
       <br>

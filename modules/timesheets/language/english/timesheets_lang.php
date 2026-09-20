@@ -952,3 +952,8 @@ $lang['ts_ot_night_start'] = 'Night starts';
 $lang['ts_ot_night_end'] = 'Night ends';
 $lang['ts_delay_allowance_enabled'] = 'Late-arrival allowance';
 $lang['ts_delay_allowance_hours'] = 'Free monthly allowance (hours)';
+
+$lang['ts_leave_carry_enabled'] = 'Carry unused annual leave over to later years';
+$lang['ts_leave_carry_years'] = 'Number of years a leave balance stays usable';
+$lang['ts_leave_balance_year'] = 'Year';
+$lang['ts_leave_balance_remaining'] = 'Remaining days';

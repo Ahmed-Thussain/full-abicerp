@@ -16024,6 +16024,9 @@ class Accounting_model extends App_Model
      * @return boolean
      */
     public function automatic_payslip_conversion($payslips_id){
+        if (get_option('hrp_post_to_accounting') != 1) {
+            return false;
+        }
         $this->delete_convert($payslips_id, 'payslip');
 
         $this->db->where('id', $payslips_id);

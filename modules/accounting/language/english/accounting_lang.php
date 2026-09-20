@@ -1530,3 +1530,5 @@ $lang['acc_download'] = 'Download';
 $lang['acc_print'] = 'Print';
 $lang['acc_export_pdf'] = 'Export PDF';
 $lang['acc_rate'] = 'Rate';
+
+$lang['hrp_post_to_accounting_off_message'] = 'Payroll posting to accounting is switched off (HR Payroll > Settings > Data integration), so no account mapping is needed.';

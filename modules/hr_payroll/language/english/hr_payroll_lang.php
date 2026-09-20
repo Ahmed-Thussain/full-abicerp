@@ -354,3 +354,4 @@ $lang['ot_night_hours'] = 'OT night hours';
 $lang['ot_discarded_hours'] = 'OT discarded hours';
 $lang['delay_deducted_hours'] = 'Delay deducted hours';
 $lang['ot_final_hours'] = 'OT final hours';
+$lang['hrp_post_to_accounting'] = 'Post payslips to accounting (journal entries)';
