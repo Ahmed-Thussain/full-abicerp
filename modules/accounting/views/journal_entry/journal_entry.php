@@ -204,6 +204,24 @@
               </div>
             </div>
           </div>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="form-group">
+                <label for="journal_entry_files" class="control-label"><?php echo _l('acc_attachments'); ?></label>
+                <input type="file" name="files[]" id="journal_entry_files" class="form-control" multiple accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx">
+                <?php if (isset($attachments) && count($attachments) > 0) { ?>
+                  <ul class="list-unstyled mtop10">
+                    <?php foreach ($attachments as $attachment) { ?>
+                      <li>
+                        <a href="<?php echo admin_url('accounting/download_journal_entry_file/' . $attachment['id'] . '/1'); ?>" target="_blank"><?php echo html_escape($attachment['file_name']); ?></a>
+                        <a href="<?php echo admin_url('accounting/remove_journal_entry_file/' . $attachment['id']); ?>" class="text-danger _delete mleft5"><i class="fa fa-remove"></i></a>
+                      </li>
+                    <?php } ?>
+                  </ul>
+                <?php } ?>
+              </div>
+            </div>
+          </div>
           <?php echo form_close(); ?>
         </div>
       </div>
