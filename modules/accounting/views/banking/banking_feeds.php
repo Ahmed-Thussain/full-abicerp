@@ -180,6 +180,7 @@
     </div>
 </div>
 
+<script>var base_currency_name = <?php echo json_encode($currency->name); ?>;</script>
 <div class="modal fade" id="add-transaction-modal">
    <div class="modal-dialog modal-lg">
       <div class="modal-content">
@@ -191,6 +192,14 @@
             <?php echo form_hidden('transaction_bank_id'); ?>
             <?php echo form_hidden('add_transaction_withdrawal'); ?>
             <?php echo form_hidden('add_transaction_deposit'); ?>
+            <div class="row">
+              <div class="col-md-3">
+                <?php echo render_select('add_transaction_doc_currency', $currencies, array('name', 'name'), 'acc_currency', $currency->name, array(), array(), '', '', false); ?>
+              </div>
+              <div class="col-md-3">
+                <p class="mtop30 bold"><?php echo _l('acc_rate'); ?>: <span id="add_transaction_doc_rate"></span></p>
+              </div>
+            </div>
             <div class="div-add-transaction">
               <table class="table table-checks-to-print scroll-responsive dataTable">
                    <thead>

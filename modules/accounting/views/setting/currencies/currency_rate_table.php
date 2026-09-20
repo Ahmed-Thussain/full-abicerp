@@ -5,6 +5,7 @@ $aColumns = [
  'from_currency_rate',
  'to_currency_rate',
  'date_updated',
+ 'auto_rate',
 ];
 $sIndexColumn = 'id';
 $sTable       = db_prefix().'currency_rates';
@@ -30,6 +31,7 @@ foreach ($rResult as $aRow) {
     $_data = '';
     $_data .= '<div class="row-options">';
     $_data .= '<a href="javascript:void(0)" onclick="edit_currency_rate_modal('.$aRow['id'].'); return false;" class="text-primary">' . _l('edit') . '</a>';
+    $_data .= ' | <a href="'.admin_url('accounting/rate_periods/'.urlencode($aRow['from_currency_name']).'/'.urlencode($aRow['to_currency_name'])).'" class="text-info">' . _l('acc_manual_rates') . '</a>';
     $_data .= ' | <a href="'.admin_url('accounting/delete_currency_rate/'.$aRow['id'].'').'" class="text-danger _delete">' . _l('delete') . '</a>';
     $_data .= '</div>'; 
 
@@ -37,6 +39,7 @@ foreach ($rResult as $aRow) {
 
     $row[] = $aRow['to_currency_rate'];  
     $row[] = _dt($aRow['date_updated']);   
+    $row[] = '<input type="checkbox" class="js-auto-rate" data-id="'.$aRow['id'].'"'.($aRow['auto_rate'] == 1 ? ' checked' : '').'>';
  
    $output['aaData'][] = $row;
 }

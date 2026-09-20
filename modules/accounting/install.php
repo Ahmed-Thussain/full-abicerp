@@ -1911,3 +1911,49 @@ add_option('acc_omni_sales_order_return_fee_payment_account', 1);
 add_option('acc_omni_sales_order_return_fee_deposit_to', 66);
 add_option('acc_omni_sales_order_return_discount_payment_account', 66);
 add_option('acc_omni_sales_order_return_discount_deposit_to', 1);
+
+// Rate periods, auto-rate switch and document/secondary currency ledger columns (migration 148).
+if (!$CI->db->field_exists('auto_rate', db_prefix() . 'currency_rates')) {
+    $CI->db->query('ALTER TABLE `' . db_prefix() . 'currency_rates` ADD COLUMN `auto_rate` TINYINT(1) NOT NULL DEFAULT 1;');
+}
+
+if (!$CI->db->table_exists(db_prefix() . 'acc_currency_rate_periods')) {
+    $CI->db->query('CREATE TABLE `' . db_prefix() . 'acc_currency_rate_periods` (
+        `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+        `from_currency_name` VARCHAR(100) NULL,
+        `to_currency_name` VARCHAR(100) NULL,
+        `rate` DECIMAL(15,6) NOT NULL,
+        `effective_from` DATETIME NOT NULL,
+        `effective_to` DATETIME NULL,
+        `created_by` INT NULL,
+        `datecreated` DATETIME DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (`id`),
+        KEY `pair_from_idx` (`from_currency_name`, `to_currency_name`, `effective_from`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=' . $CI->db->char_set . ';');
+}
+
+foreach ([
+    'doc_currency' => 'VARCHAR(20) NULL',
+    'doc_rate'     => 'DECIMAL(15,6) NULL',
+    'doc_debit'    => 'DECIMAL(20,4) NULL',
+    'doc_credit'   => 'DECIMAL(20,4) NULL',
+    'sec_currency' => 'VARCHAR(20) NULL',
+    'sec_debit'    => 'DECIMAL(20,4) NULL',
+    'sec_credit'   => 'DECIMAL(20,4) NULL',
+] as $acc_col => $acc_def) {
+    if (!$CI->db->field_exists($acc_col, db_prefix() . 'acc_account_history')) {
+        $CI->db->query('ALTER TABLE `' . db_prefix() . 'acc_account_history` ADD COLUMN `' . $acc_col . '` ' . $acc_def . ';');
+    }
+}
+
+if (!$CI->db->table_exists(db_prefix() . 'acc_rate_backfill_report')) {
+    $CI->db->query('CREATE TABLE `' . db_prefix() . 'acc_rate_backfill_report` (
+        `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+        `history_id` INT NOT NULL,
+        `rule` VARCHAR(20) NULL,
+        `rate` DECIMAL(15,6) NULL,
+        `sec_currency` VARCHAR(20) NULL,
+        `datecreated` DATETIME DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=' . $CI->db->char_set . ';');
+}

@@ -90,10 +90,12 @@
 					<th><?php echo _l('pur_type'); ?></th>
 					<th><?php echo _l('pur_currency_rate'); ?></th>
 					<th><?php echo _l('pur_updated_at'); ?></th>
+					<th><?php echo _l('acc_auto_rate'); ?></th>
 				</tr>
 			</thead>
 			<tbody></tbody>
 			<tfoot>
+				<td></td>
 				<td></td>
 				<td></td>
 				<td></td>

@@ -302,6 +302,20 @@ function add_transaction(transaction_bank_id){
 }
 
 
+function refresh_add_transaction_rate(){
+    "use strict";
+    $.get(admin_url + 'accounting/get_rate_at', {
+        from: $('#add-transaction-modal [name=add_transaction_doc_currency]').val(),
+        to: base_currency_name,
+        date: $('#add-transaction-date').text()
+    }, function(response) {
+        $('#add_transaction_doc_rate').text(response && response.rate !== null ? response.rate : '-');
+    }, 'json');
+}
+
+$(document).on('change', '#add-transaction-modal [name=add_transaction_doc_currency]', refresh_add_transaction_rate);
+$(document).on('shown.bs.modal', '#add-transaction-modal', refresh_add_transaction_rate);
+
 function add_transaction_save(){
 
     $.post(admin_url + 'accounting/add_transaction_save', {
@@ -309,11 +323,14 @@ function add_transaction_save(){
         account: $('#add-transaction-modal [name=add_transaction_account]').val(),
         vendor: $('#add-transaction-modal [name=add_transaction_vendor]').val(),
         customer: $('#add-transaction-modal [name=add_transaction_customer]').val(),
+        doc_currency: $('#add-transaction-modal [name=add_transaction_doc_currency]').val(),
     }, function(response) {
         response = JSON.parse(response);
         if(response.success){
             alert_float('success', response.message);
             init_banking_table();
+        } else if(response.message){
+            alert_float('warning', response.message);
         }
 
         $('#add-transaction-modal').modal('hide');

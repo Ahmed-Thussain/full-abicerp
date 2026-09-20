@@ -36,6 +36,19 @@ var fnServerParams, _fnServerParams;
 	    init_currency_rate_logs_table();
 	  });
 
+	$('body').on('change', '.js-auto-rate', function() {
+		$.post(admin_url + 'accounting/set_auto_rate', {
+			id: $(this).data('id'),
+			on: $(this).is(':checked') ? 1 : 0
+		}, function(response) {
+			if (response && response.success) {
+				alert_float('success', 'OK');
+			} else {
+				alert_float('danger', 'Error');
+			}
+		}, 'json');
+	});
+
 	init_currency_rates_table();
 	init_currency_rate_logs_table();
 	});
