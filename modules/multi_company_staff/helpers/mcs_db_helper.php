@@ -2,6 +2,12 @@
 
 defined('BASEPATH') or exit('No direct script access allowed');
 
+/*
+ * Every query for master tables and for other companies goes through perfex_saas_raw_query() (PDO) with
+ * explicit table names. Inside a company, CodeIgniter's $db is bound to that company and prepends that
+ * company's table prefix to every table name, so it cannot be used for those.
+ */
+
 function mcs_table($name)
 {
     $prefix = function_exists('perfex_saas_master_db_prefix') ? perfex_saas_master_db_prefix() : 'tbl';
@@ -20,26 +26,65 @@ function mcs_current_slug()
 }
 
 /**
+ * Query on the main (master) database.
+ *
+ * @return mixed rows (array of objects/arrays) when $return is true
+ */
+function mcs_master_query($sql, array $params = [], $return = false)
+{
+    return perfex_saas_raw_query($sql, [], $return, true, null, false, true, $params);
+}
+
+/**
+ * Query on the database a given company lives in.
+ */
+function mcs_company_query($slug, $sql, array $params = [], $return = false)
+{
+    return perfex_saas_raw_query($sql, mcs_company_dsn($slug), $return, true, null, false, true, $params);
+}
+
+function mcs_company_dsn($slug)
+{
+    $rows  = mcs_sibling_rows();
+    $plain = '';
+    if (isset($rows[$slug]) && !empty($rows[$slug]->dsn)) {
+        $plain = get_instance()->encryption->decrypt($rows[$slug]->dsn);
+    }
+
+    if (empty($plain)) {
+        return perfex_saas_master_dsn();
+    }
+
+    return perfex_saas_get_company_dsn((object) ['dsn' => $plain, 'slug' => $slug]);
+}
+
+/**
  * Active companies owned by the same client as the current company, keyed by slug.
  */
 function mcs_sibling_rows()
 {
+    static $cache = null;
+
     if (!function_exists('perfex_saas_is_tenant') || !perfex_saas_is_tenant()) {
         return [];
     }
-
-    $CI   = &get_instance();
-    $rows = $CI->db->get_where(perfex_saas_table('companies'), [
-        'clientid' => perfex_saas_tenant()->clientid,
-        'status'   => 'active',
-    ])->result();
-
-    $out = [];
-    foreach ($rows as $row) {
-        $out[$row->slug] = $row;
+    if ($cache !== null) {
+        return $cache;
     }
 
-    return $out;
+    $rows = mcs_master_query(
+        'SELECT * FROM `' . perfex_saas_table('companies') . '` WHERE `clientid` = ? AND `status` = ?',
+        [perfex_saas_tenant()->clientid, 'active'],
+        true
+    );
+
+    $cache = [];
+    foreach ((array) $rows as $row) {
+        $row               = (object) $row;
+        $cache[$row->slug] = $row;
+    }
+
+    return $cache;
 }
 
 function mcs_sibling_names()
@@ -62,57 +107,62 @@ function mcs_can_manage()
 
 function mcs_access_slugs($email)
 {
-    $CI   = &get_instance();
-    $rows = $CI->db->get_where(mcs_table('staff_access'), ['email' => strtolower($email)])->result();
+    $rows = mcs_master_query(
+        'SELECT `company_slug` FROM `' . mcs_table('staff_access') . '` WHERE `email` = ?',
+        [strtolower($email)],
+        true
+    );
 
     return array_map(function ($row) {
-        return $row->company_slug;
-    }, $rows);
+        return ((object) $row)->company_slug;
+    }, (array) $rows);
 }
 
 function mcs_save_access_row($email, $slug, $staff_id, $origin_slug)
 {
-    $CI       = &get_instance();
-    $table    = mcs_table('staff_access');
-    $email    = strtolower($email);
-    $now      = date('Y-m-d H:i:s');
-    $existing = $CI->db->get_where($table, ['email' => $email, 'company_slug' => $slug])->row();
+    $now = date('Y-m-d H:i:s');
 
-    if ($existing) {
-        $CI->db->where('id', $existing->id)->update($table, ['staff_id' => $staff_id, 'updated_at' => $now]);
-
-        return;
-    }
-
-    $CI->db->insert($table, [
-        'clientid'     => (int) perfex_saas_tenant()->clientid,
-        'email'        => $email,
-        'company_slug' => $slug,
-        'staff_id'     => (int) $staff_id,
-        'origin_slug'  => $origin_slug,
-        'created_at'   => $now,
-        'updated_at'   => $now,
-    ]);
+    mcs_master_query(
+        'INSERT INTO `' . mcs_table('staff_access') . '` (`clientid`, `email`, `company_slug`, `staff_id`, `origin_slug`, `created_at`, `updated_at`)
+         VALUES (?, ?, ?, ?, ?, ?, ?)
+         ON DUPLICATE KEY UPDATE `staff_id` = VALUES(`staff_id`), `updated_at` = VALUES(`updated_at`)',
+        [(int) perfex_saas_tenant()->clientid, strtolower($email), $slug, (int) $staff_id, $origin_slug, $now, $now]
+    );
 }
 
 function mcs_delete_access_row($email, $slug)
 {
-    $CI = &get_instance();
-    $CI->db->delete(mcs_table('staff_access'), ['email' => strtolower($email), 'company_slug' => $slug]);
+    mcs_master_query(
+        'DELETE FROM `' . mcs_table('staff_access') . '` WHERE `email` = ? AND `company_slug` = ?',
+        [strtolower($email), $slug]
+    );
 }
 
 /**
- * Mark a token nonce as used. Returns true only the first time.
+ * Mark a token nonce as used. Returns true only for the request that claimed it first.
  */
 function mcs_use_nonce($nonce)
 {
-    $CI    = &get_instance();
     $table = mcs_table('used_nonce');
+    $claim = bin2hex(random_bytes(8));
 
-    $CI->db->query("DELETE FROM `$table` WHERE `used_at` < ?", [date('Y-m-d H:i:s', time() - 86400)]);
-    $CI->db->query("INSERT IGNORE INTO `$table` (`nonce`, `used_at`) VALUES (?, ?)", [$nonce, date('Y-m-d H:i:s')]);
+    mcs_master_query("DELETE FROM `$table` WHERE `used_at` < ?", [date('Y-m-d H:i:s', time() - 86400)]);
+    mcs_master_query("INSERT IGNORE INTO `$table` (`nonce`, `claim`, `used_at`) VALUES (?, ?, ?)", [$nonce, $claim, date('Y-m-d H:i:s')]);
+    $rows = mcs_master_query("SELECT `claim` FROM `$table` WHERE `nonce` = ?", [$nonce], true);
 
-    return $CI->db->affected_rows() === 1;
+    return !empty($rows) && ((object) $rows[0])->claim === $claim;
+}
+
+/**
+ * Roles of a company as a list of ['roleid' => .., 'name' => ..].
+ */
+function mcs_company_roles($slug)
+{
+    $rows = mcs_company_query($slug, 'SELECT `roleid`, `name` FROM `' . mcs_company_prefix($slug) . 'roles`', [], true);
+
+    return array_map(function ($row) {
+        return (array) $row;
+    }, (array) $rows);
 }
 
 /**
@@ -136,8 +186,7 @@ function mcs_role_error(array $target_slugs, $is_admin, $role_id)
 
     $names = mcs_sibling_names();
     foreach ($others as $slug) {
-        $roles = $CI->db->get(mcs_company_prefix($slug) . 'roles')->result_array();
-        if (mcs_find_role_id($roles, $role->name) === null) {
+        if (mcs_find_role_id(mcs_company_roles($slug), $role->name) === null) {
             $company = isset($names[$slug]) ? $names[$slug] : $slug;
 
             return 'The role "' . $role->name . '" does not exist in company "' . $company . '". Create it there first or pick another role.';
@@ -152,29 +201,36 @@ function mcs_role_error(array $target_slugs, $is_admin, $role_id)
  */
 function mcs_copy_role_permissions($slug, $staff_id, $role_id)
 {
-    $CI     = &get_instance();
     $prefix = mcs_company_prefix($slug);
 
-    $CI->db->delete($prefix . 'staff_permissions', ['staff_id' => (int) $staff_id]);
+    mcs_company_query($slug, 'DELETE FROM `' . $prefix . 'staff_permissions` WHERE `staff_id` = ?', [(int) $staff_id]);
     if (!$role_id) {
         return;
     }
 
-    $role        = $CI->db->get_where($prefix . 'roles', ['roleid' => (int) $role_id])->row();
-    $permissions = $role ? @unserialize($role->permissions) : [];
+    $rows        = mcs_company_query($slug, 'SELECT `permissions` FROM `' . $prefix . 'roles` WHERE `roleid` = ?', [(int) $role_id], true);
+    $permissions = !empty($rows) ? @unserialize(((object) $rows[0])->permissions) : [];
     if (!is_array($permissions)) {
         return;
     }
 
+    $values = [];
+    $params = [];
     foreach ($permissions as $feature => $capabilities) {
         foreach ((array) $capabilities as $capability) {
-            $CI->db->insert($prefix . 'staff_permissions', [
-                'staff_id'   => (int) $staff_id,
-                'feature'    => $feature,
-                'capability' => $capability,
-            ]);
+            $values[] = '(?, ?, ?)';
+            array_push($params, (int) $staff_id, $feature, $capability);
         }
     }
+    if (empty($values)) {
+        return;
+    }
+
+    mcs_company_query(
+        $slug,
+        'INSERT INTO `' . $prefix . 'staff_permissions` (`staff_id`, `feature`, `capability`) VALUES ' . implode(', ', $values),
+        $params
+    );
 }
 
 /**
@@ -186,13 +242,11 @@ function mcs_copy_role_permissions($slug, $staff_id, $role_id)
  */
 function mcs_upsert_company_staff($slug, array $src, $role_name)
 {
-    $CI    = &get_instance();
     $table = mcs_company_prefix($slug) . 'staff';
 
     $role_id = null;
     if (empty($src['admin'])) {
-        $roles   = $CI->db->get(mcs_company_prefix($slug) . 'roles')->result_array();
-        $role_id = mcs_find_role_id($roles, (string) $role_name);
+        $role_id = mcs_find_role_id(mcs_company_roles($slug), (string) $role_name);
     }
 
     $fields = [
@@ -209,14 +263,24 @@ function mcs_upsert_company_staff($slug, array $src, $role_name)
         'active'           => (int) $src['active'],
     ];
 
-    $row = $CI->db->get_where($table, ['email' => $src['email']])->row();
-    if ($row) {
-        $CI->db->where('staffid', $row->staffid)->update($table, $fields);
-        $staff_id = (int) $row->staffid;
+    $existing = mcs_company_query($slug, "SELECT `staffid` FROM `$table` WHERE `email` = ?", [$src['email']], true);
+
+    if (!empty($existing)) {
+        $staff_id = (int) ((object) $existing[0])->staffid;
+        $sets     = implode(', ', array_map(function ($column) {
+            return "`$column` = ?";
+        }, array_keys($fields)));
+        mcs_company_query($slug, "UPDATE `$table` SET $sets WHERE `staffid` = ?", array_merge(array_values($fields), [$staff_id]));
     } else {
         $fields['datecreated'] = date('Y-m-d H:i:s');
-        $CI->db->insert($table, $fields);
-        $staff_id = (int) $CI->db->insert_id();
+        $columns               = implode(', ', array_map(function ($column) {
+            return "`$column`";
+        }, array_keys($fields)));
+        $placeholders = implode(', ', array_fill(0, count($fields), '?'));
+        mcs_company_query($slug, "INSERT INTO `$table` ($columns) VALUES ($placeholders)", array_values($fields));
+
+        $rows     = mcs_company_query($slug, "SELECT `staffid` FROM `$table` WHERE `email` = ?", [$src['email']], true);
+        $staff_id = (int) ((object) $rows[0])->staffid;
     }
 
     mcs_copy_role_permissions($slug, $staff_id, $role_id);
@@ -249,8 +313,6 @@ function mcs_sync_staff_access($staff_id, array $ticked_slugs)
         $role_name = $role ? $role->name : null;
     }
 
-    $CI->db->trans_start();
-
     foreach (array_merge($plan['add'], $plan['keep']) as $slug) {
         if ($slug === $current) {
             mcs_save_access_row($email, $slug, $staff_id, $current);
@@ -261,11 +323,9 @@ function mcs_sync_staff_access($staff_id, array $ticked_slugs)
     }
 
     foreach ($plan['remove'] as $slug) {
-        $CI->db->where('email', $src['email'])->update(mcs_company_prefix($slug) . 'staff', ['active' => 0]);
+        mcs_company_query($slug, 'UPDATE `' . mcs_company_prefix($slug) . 'staff` SET `active` = 0 WHERE `email` = ?', [$src['email']]);
         mcs_delete_access_row($email, $slug);
     }
-
-    $CI->db->trans_complete();
 }
 
 /**
@@ -285,10 +345,11 @@ function mcs_sync_password($staff_id)
     }
 
     foreach (mcs_other_company_slugs($src['email']) as $slug) {
-        $CI->db->where('email', $src['email'])->update(mcs_company_prefix($slug) . 'staff', [
-            'password'             => $src['password'],
-            'last_password_change' => date('Y-m-d H:i:s'),
-        ]);
+        mcs_company_query(
+            $slug,
+            'UPDATE `' . mcs_company_prefix($slug) . 'staff` SET `password` = ?, `last_password_change` = ? WHERE `email` = ?',
+            [$src['password'], date('Y-m-d H:i:s'), $src['email']]
+        );
     }
 }
 
@@ -301,18 +362,19 @@ function mcs_sync_status($staff_id)
     }
 
     foreach (mcs_other_company_slugs($src['email']) as $slug) {
-        $CI->db->where('email', $src['email'])->update(mcs_company_prefix($slug) . 'staff', ['active' => (int) $src['active']]);
+        mcs_company_query(
+            $slug,
+            'UPDATE `' . mcs_company_prefix($slug) . 'staff` SET `active` = ? WHERE `email` = ?',
+            [(int) $src['active'], $src['email']]
+        );
     }
 }
 
 function mcs_forget_deleted_staff($email)
 {
-    $CI = &get_instance();
-
     foreach (mcs_other_company_slugs($email) as $slug) {
-        $CI->db->where('email', $email)->update(mcs_company_prefix($slug) . 'staff', ['active' => 0]);
+        mcs_company_query($slug, 'UPDATE `' . mcs_company_prefix($slug) . 'staff` SET `active` = 0 WHERE `email` = ?', [$email]);
     }
 
-    $CI->db->delete(mcs_table('staff_access'), ['email' => strtolower($email)]);
+    mcs_master_query('DELETE FROM `' . mcs_table('staff_access') . '` WHERE `email` = ?', [strtolower($email)]);
 }
-

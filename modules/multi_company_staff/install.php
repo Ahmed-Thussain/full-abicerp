@@ -22,6 +22,7 @@ $CI->db->query("CREATE TABLE IF NOT EXISTS `$access_table` (
 
 $CI->db->query("CREATE TABLE IF NOT EXISTS `$nonce_table` (
     `nonce` VARCHAR(64) NOT NULL,
+    `claim` VARCHAR(32) NOT NULL DEFAULT '',
     `used_at` DATETIME NOT NULL,
     PRIMARY KEY (`nonce`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
