@@ -142,6 +142,7 @@ function mcs_render_switcher()
         return;
     }
 
+    mcs_ensure_access($staff->email);
     $slugs    = mcs_access_slugs($staff->email);
     $siblings = mcs_sibling_rows();
     $current  = mcs_current_slug();
@@ -165,6 +166,93 @@ function mcs_render_switcher()
     }
 
     echo '</ul></li>';
+}
+
+hooks()->add_action('admin_init', 'mcs_intercept_company_switch');
+hooks()->add_action('app_admin_footer', 'mcs_filter_switch_list');
+
+/**
+ * The SaaS dropdown (shown to administrators) links to billing/my_account?redirect=<company url>&target=tenant,
+ * which would log the person in as the target company's first admin. Take that request over and log the
+ * same person in through our one-time token instead.
+ */
+function mcs_intercept_company_switch()
+{
+    if (!function_exists('perfex_saas_is_tenant') || !perfex_saas_is_tenant()) {
+        return;
+    }
+
+    $CI = &get_instance();
+    if (strpos($CI->uri->uri_string(), 'billing/my_account') === false) {
+        return;
+    }
+    if ($CI->input->get('target') !== 'tenant') {
+        return;
+    }
+
+    $redirect = rtrim((string) $CI->input->get('redirect'), '/');
+    if ($redirect === '') {
+        return;
+    }
+
+    foreach (mcs_sibling_rows() as $slug => $row) {
+        $row->package_invoice = perfex_saas_tenant()->package_invoice;
+        if (rtrim(perfex_saas_tenant_base_url($row), '/') !== $redirect) {
+            continue;
+        }
+
+        $url = mcs_switch_target_url($slug);
+        if ($url === null) {
+            set_alert('danger', 'You do not have an account in that company, so you cannot switch to it.');
+            redirect(admin_url());
+        }
+        redirect($url);
+    }
+}
+
+/**
+ * Remove the companies this person has no account in from the SaaS dropdown.
+ */
+function mcs_filter_switch_list()
+{
+    if (!function_exists('perfex_saas_is_tenant') || !perfex_saas_is_tenant() || !is_admin()) {
+        return;
+    }
+
+    $staff = get_staff(get_staff_user_id());
+    if (!$staff) {
+        return;
+    }
+
+    mcs_ensure_access($staff->email);
+    $allowed_slugs = mcs_access_slugs($staff->email);
+
+    $allowed = [];
+    $all     = [];
+    foreach (mcs_sibling_rows() as $slug => $row) {
+        $row->package_invoice = perfex_saas_tenant()->package_invoice;
+        $url                  = rtrim(perfex_saas_tenant_base_url($row), '/');
+        $all[]                = $url;
+        if (in_array($slug, $allowed_slugs, true)) {
+            $allowed[] = $url;
+        }
+    }
+
+    echo '<script>(function () {
+        var allowed = ' . json_encode($allowed) . ', companies = ' . json_encode($all) . ';
+        var list = document.getElementById("tenant-switch-list");
+        if (!list) { return; }
+        Array.prototype.slice.call(list.querySelectorAll("li")).forEach(function (li) {
+            var a = li.querySelector("a");
+            if (!a) { return; }
+            var m = (a.getAttribute("href") || "").match(/[?&]redirect=([^&]+)/);
+            if (!m) { return; }
+            var url = decodeURIComponent(m[1]).replace(/\/+$/, "");
+            if (companies.indexOf(url) !== -1 && allowed.indexOf(url) === -1) {
+                li.parentNode.removeChild(li);
+            }
+        });
+    })();</script>';
 }
 
 

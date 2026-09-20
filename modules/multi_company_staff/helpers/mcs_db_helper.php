@@ -408,3 +408,60 @@ function mcs_forget_deleted_staff($email)
 
     mcs_master_query('DELETE FROM `' . mcs_table('staff_access') . '` WHERE `email` = ?', [strtolower($email)]);
 }
+
+/**
+ * Make sure this email has access rows. A person who already has an active account with the same
+ * email in sibling companies (for example the owner administrator) gets a row for each of them,
+ * once. After that the rows are the source of truth.
+ */
+function mcs_ensure_access($email)
+{
+    static $done = [];
+
+    $email = strtolower($email);
+    if (isset($done[$email])) {
+        return;
+    }
+    $done[$email] = true;
+
+    if (!empty(mcs_access_slugs($email))) {
+        return;
+    }
+
+    foreach (mcs_sibling_rows() as $slug => $row) {
+        $found = mcs_company_query(
+            $slug,
+            'SELECT `staffid` FROM `' . mcs_company_prefix($slug) . 'staff` WHERE `email` = ? AND `active` = 1',
+            [$email],
+            true
+        );
+        if (!empty($found)) {
+            mcs_save_access_row($email, $slug, (int) ((object) $found[0])->staffid, mcs_current_slug());
+        }
+    }
+}
+
+/**
+ * URL that logs the current staff member into another company as themselves.
+ *
+ * @return string|null null when the person has no account in that company
+ */
+function mcs_switch_target_url($slug)
+{
+    $staff    = get_staff(get_staff_user_id());
+    $siblings = mcs_sibling_rows();
+    if (!$staff || !isset($siblings[$slug])) {
+        return null;
+    }
+
+    mcs_ensure_access($staff->email);
+    if (!in_array($slug, mcs_access_slugs($staff->email), true)) {
+        return null;
+    }
+
+    $company                  = $siblings[$slug];
+    $company->package_invoice = perfex_saas_tenant()->package_invoice;
+    $token                    = mcs_token_make(APP_ENC_KEY, $staff->email, $slug, time());
+
+    return perfex_saas_tenant_base_url($company, 'multi_company_staff/mcs_enter/index?token=' . urlencode($token));
+}
