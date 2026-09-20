@@ -208,6 +208,10 @@ function mcs_intercept_company_switch()
         }
         redirect($url);
     }
+    if (preg_match('#^https?://#i', (string) $CI->input->get('redirect'))) {
+        set_alert('danger', 'You do not have an account in that company, so you cannot switch to it.');
+        redirect(admin_url());
+    }
 }
 
 /**
