@@ -1272,7 +1272,7 @@ class Accounting extends AdminController
                 $row[] = '';
 
                 if ($acc_enable_secondary_currency == 1) {
-                    $row[] = acc_secondary_currency_cell_html($balance);
+                    $row[] = acc_secondary_currency_cell_from_stored($this->accounting_model->get_account_sec_balance($aRow['id']));
                 }
 
                 $checked = '';
@@ -1381,7 +1381,7 @@ class Accounting extends AdminController
                     'detail_type_name'  => isset($detail_type_name[$value['account_detail_type_id']]) ? $detail_type_name[$value['account_detail_type_id']] : '',
                     'balance_raw'       => $balance,
                     'balance'           => app_format_money($balance, $currency->name),
-                    'secondary_amount'  => $acc_enable_secondary_currency == 1 ? acc_secondary_currency_cell_html($balance) : '',
+                    'secondary_amount'  => $acc_enable_secondary_currency == 1 ? acc_secondary_currency_cell_from_stored($this->accounting_model->get_account_sec_balance($value['id'])) : '',
                     'active'            => (int) $value['active'],
                     'default_account'   => (int) $value['default_account'],
                     'can_edit'          => $can_edit,
@@ -3741,6 +3741,7 @@ class Accounting extends AdminController
                 $entries . '.description',
                 $entries . '.recurring',
                 db_prefix() . 'acc_class.name_ar as class_name_ar',
+                '(SELECT SUM(ah.sec_debit) FROM ' . db_prefix() . 'acc_account_history ah WHERE ah.rel_id = ' . $entries . '.id AND ah.rel_type = "journal_entry") as sec_total',
             ]);
 
             $output  = $result['output'];
@@ -3787,7 +3788,7 @@ class Accounting extends AdminController
                 $row[] = app_format_money($aRow['amount'], $currency->name);
 
                 if ($acc_enable_secondary_currency == 1) {
-                    $row[] = acc_secondary_currency_cell_html($aRow['amount']);
+                    $row[] = acc_secondary_currency_cell_from_stored($aRow['sec_total']);
                 }
 
                 $output['aaData'][] = $row;
@@ -3811,6 +3812,10 @@ class Accounting extends AdminController
                     access_denied('accounting_journal_entry');
                 }
                 $success = $this->accounting_model->add_journal_entry($data);
+                if ($success === 'no_rate') {
+                    set_alert('warning', _l('acc_rate_missing_block'));
+                    redirect(admin_url('accounting/new_journal_entry'));
+                }
                 if ($success === 'close_the_book') {
                     $message = _l('has_closed_the_book');
                     set_alert('warning', _l('has_closed_the_book'));
@@ -3822,6 +3827,10 @@ class Accounting extends AdminController
                     access_denied('accounting_journal_entry');
                 }
                 $success = $this->accounting_model->update_journal_entry($data, $id);
+                if ($success === 'no_rate') {
+                    set_alert('warning', _l('acc_rate_missing_block'));
+                    redirect(admin_url('accounting/new_journal_entry/' . $id));
+                }
                 if ($success === 'close_the_book') {
                     $message = _l('has_closed_the_book');
                     set_alert('warning', _l('has_closed_the_book'));
@@ -3837,6 +3846,7 @@ class Accounting extends AdminController
         }
         $this->load->model('currencies_model');
         $data['currency'] = $this->currencies_model->get_base_currency();
+        $data['currencies'] = $this->currencies_model->get();
         $data['next_number'] = $this->accounting_model->get_journal_entry_next_number();
         $data['title'] = _l('journal_entry');
         $data['accounts'] = $this->accounting_model->get_accounts();
@@ -9384,6 +9394,7 @@ class Accounting extends AdminController
             $data['account_types'] = $this->accounting_model->get_account_types();
             $data['accounts'] = $this->accounting_model->get_accounts('', ['active' => 1, 'account_detail_type_id' => 14]);
         }elseif($data['group'] == 'banking_feeds'){
+            $data['currencies'] = $this->currencies_model->get();
             $data['last_updated'] = '';
             if(isset($_GET['id'])){
                 $transactions = $this->accounting_model->get_plaid_transaction($_GET['id']);
@@ -16500,6 +16511,103 @@ class Accounting extends AdminController
         $this->app->get_table_data(module_views_path('accounting', 'setting/currencies/currency_rate_logs_table'));
     }
 
+    /**
+     * Turn the automatic rate on or off for one currency rate row.
+     */
+    public function set_auto_rate()
+    {
+        if (!has_permission('accounting_setting', '', 'edit')) {
+            access_denied('accounting_setting');
+        }
+        $success = $this->accounting_model->set_auto_rate($this->input->post('id'), $this->input->post('on'));
+        echo json_encode(['success' => true]);
+        die;
+    }
+
+    /**
+     * Manual rate periods for one currency pair.
+     * @param  string $from
+     * @param  string $to
+     */
+    public function rate_periods($from, $to)
+    {
+        if (!has_permission('accounting_setting', '', 'view')) {
+            access_denied('accounting_setting');
+        }
+        $data['from']    = strtoupper(urldecode($from));
+        $data['to']      = strtoupper(urldecode($to));
+        $data['periods'] = $this->accounting_model->get_rate_periods($data['from'], $data['to']);
+        $data['title']   = _l('acc_manual_rates');
+        $this->load->view('setting/currencies/rate_periods', $data);
+    }
+
+    /**
+     * Add a manual rate period (POST from_currency_name, to_currency_name, rate, effective_from, effective_to).
+     */
+    public function add_rate_period()
+    {
+        if (!has_permission('accounting_setting', '', 'edit')) {
+            access_denied('accounting_setting');
+        }
+        $data   = $this->input->post();
+        $data['effective_from'] = to_sql_date($data['effective_from'], true);
+        if (!empty($data['effective_to'])) {
+            $data['effective_to'] = to_sql_date($data['effective_to'], true);
+        }
+        $result = $this->accounting_model->add_rate_period($data);
+        if (!empty($result['overlap'])) {
+            set_alert('warning', _l('acc_rate_overlap_warning'));
+        } else {
+            set_alert('success', _l('added_successfully', _l('acc_manual_rates')));
+        }
+        redirect(admin_url('accounting/rate_periods/' . urlencode($data['from_currency_name']) . '/' . urlencode($data['to_currency_name'])));
+    }
+
+    /**
+     * Delete a manual rate period.
+     * @param  integer $id
+     */
+    public function delete_rate_period($id)
+    {
+        if (!has_permission('accounting_setting', '', 'edit')) {
+            access_denied('accounting_setting');
+        }
+        $this->accounting_model->delete_rate_period($id);
+        redirect($this->input->server('HTTP_REFERER') ?: admin_url('accounting/setting?group=currency_rates'));
+    }
+
+    /**
+     * Rate for a currency pair at a date (GET from, to, date).
+     */
+    public function get_rate_at()
+    {
+        $from = $this->input->get('from');
+        $to   = $this->input->get('to');
+        $date = $this->input->get('date');
+        if (!$date) {
+            $date = date('Y-m-d');
+        } elseif (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
+            $date = to_sql_date($date);
+        }
+        echo json_encode(['rate' => acc_get_rate_at($from, $to, $date . ' 23:59:59')]);
+        die;
+    }
+
+    /**
+     * Read-only report of the rates the backfill used for old ledger lines.
+     */
+    public function rate_backfill_report()
+    {
+        if (!has_permission('accounting_setting', '', 'view')) {
+            access_denied('accounting_setting');
+        }
+        $data['title'] = _l('acc_rate_backfill_report');
+        $this->db->select(db_prefix() . 'acc_rate_backfill_report.*, ' . db_prefix() . 'acc_account_history.date as history_date');
+        $this->db->join(db_prefix() . 'acc_account_history', db_prefix() . 'acc_account_history.id = ' . db_prefix() . 'acc_rate_backfill_report.history_id', 'left');
+        $data['rows']  = $this->db->get(db_prefix() . 'acc_rate_backfill_report')->result_array();
+        $this->load->view('setting/rate_backfill_report', $data);
+    }
+
     public function reset_accounts(){
         update_option('acc_add_default_account', 0);
         update_option('acc_add_default_account_new', 0);
@@ -16564,6 +16672,14 @@ class Accounting extends AdminController
         $data = $this->input->post();
         
         $success = $this->accounting_model->add_transaction_save($data);
+
+        if ($success === 'no_rate') {
+            echo json_encode([
+                'success' => false,
+                'message' => _l('acc_rate_missing_block')
+            ]);
+            die;
+        }
 
         echo json_encode([
             'success' => $success,

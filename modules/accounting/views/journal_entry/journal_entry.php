@@ -108,6 +108,19 @@
               </div>
             </div>
           </div>
+          <div class="row">
+            <div class="col-md-3">
+              <?php
+                $selected_currency = (isset($journal_entry) && !empty($journal_entry->doc_currency)) ? $journal_entry->doc_currency : $currency->name;
+                echo render_select('doc_currency', $currencies, array('name', 'name'), 'acc_currency', $selected_currency, array(), array(), '', '', false);
+              ?>
+            </div>
+            <div class="col-md-3">
+              <p class="mtop30 bold">
+                <?php echo _l('acc_rate'); ?>: <span id="doc_rate_display"><?php echo isset($journal_entry) && $journal_entry->doc_rate !== null ? html_escape($journal_entry->doc_rate) : ''; ?></span>
+              </p>
+            </div>
+          </div>
           <table id="journal-entry-rows" class="table invoice-mapping-table items">
             <thead>
               
@@ -122,8 +135,8 @@
           <?php if(isset($journal_entry)){
             $i               = 0;
             foreach($journal_entry->details as $detail){ 
-              $debit_amount = $detail['debit'] != 0 ? acc_format_number($detail['debit']) : '';
-              $credit_amount = $detail['credit'] != 0 ? acc_format_number($detail['credit']) : '';
+              $debit_amount = $detail['doc_debit'] != 0 ? acc_format_number($detail['doc_debit']) : '';
+              $credit_amount = $detail['doc_credit'] != 0 ? acc_format_number($detail['doc_credit']) : '';
               ?>
               <tr class="bill-debit-account-<?php echo new_html_entity_decode($i); ?> template_children">
                <td>
@@ -214,3 +227,21 @@
 </body>
 </html>
 <?php require 'modules/accounting/assets/js/journal_entry/journal_entry_js.php';?>
+<script>
+  (function() {
+    "use strict";
+    var base_currency = <?php echo json_encode($currency->name); ?>;
+    function refresh_doc_rate() {
+      var from = $('select[name="doc_currency"]').val();
+      var date = $('input[name="journal_date"]').val();
+      $.get(admin_url + 'accounting/get_rate_at', {from: from, to: base_currency, date: date}, function(response) {
+        $('#doc_rate_display').text(response && response.rate !== null ? response.rate : '-');
+      }, 'json');
+    }
+    $('select[name="doc_currency"]').on('change', refresh_doc_rate);
+    $('input[name="journal_date"]').on('change', refresh_doc_rate);
+    if ($('#doc_rate_display').text() === '') {
+      refresh_doc_rate();
+    }
+  })();
+</script>

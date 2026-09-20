@@ -2430,9 +2430,15 @@ class Accounting_model extends App_Model
                 if(isset($data['exchange_rate'])){
                     $currency_rate = $data['exchange_rate'];
                 }else{
-                    $currency_rate = acc_get_currency_rate($invoice->currency_name, $currency->name);
+                    $currency_rate = acc_get_rate_at($invoice->currency_name, $currency->name, $invoice->date . ' 23:59:59');
+                    if ($currency_rate === null) {
+                        $currency_rate = acc_get_currency_rate($invoice->currency_name, $currency->name);
+                    }
                 }
             }
+
+            $doc_currency_name = $invoice->currency_name;
+            $doc_rate_value = $currency_converter == 1 ? $currency_rate : 1;
 
             $payment_account = $data['payment_account'];
             $deposit_to = $data['deposit_to'];
@@ -2481,6 +2487,8 @@ class Accounting_model extends App_Model
                     $node['datecreated'] = date('Y-m-d H:i:s');
                     $node['addedfrom'] = get_staff_user_id();
                     $node['currency_rate'] = $currency_rate;
+                    $node['doc_currency'] = $doc_currency_name;
+                    $node['doc_rate'] = $doc_rate_value;
                     $data_insert[] = $node;
 
                     $node = [];
@@ -2500,6 +2508,8 @@ class Accounting_model extends App_Model
                     $node['datecreated'] = date('Y-m-d H:i:s');
                     $node['addedfrom'] = get_staff_user_id();
                     $node['currency_rate'] = $currency_rate;
+                    $node['doc_currency'] = $doc_currency_name;
+                    $node['doc_rate'] = $doc_rate_value;
                     $data_insert[] = $node;
                 }else{
                     $node = [];
@@ -2519,6 +2529,8 @@ class Accounting_model extends App_Model
                     $node['datecreated'] = date('Y-m-d H:i:s');
                     $node['addedfrom'] = get_staff_user_id();
                     $node['currency_rate'] = $currency_rate;
+                    $node['doc_currency'] = $doc_currency_name;
+                    $node['doc_rate'] = $doc_rate_value;
                     $data_insert[] = $node;
 
                     $node = [];
@@ -2538,6 +2550,8 @@ class Accounting_model extends App_Model
                     $node['datecreated'] = date('Y-m-d H:i:s');
                     $node['addedfrom'] = get_staff_user_id();
                     $node['currency_rate'] = $currency_rate;
+                    $node['doc_currency'] = $doc_currency_name;
+                    $node['doc_rate'] = $doc_rate_value;
                     $data_insert[] = $node;
                 }
 
@@ -2576,6 +2590,8 @@ class Accounting_model extends App_Model
                         $node['datecreated'] = date('Y-m-d H:i:s');
                         $node['addedfrom'] = get_staff_user_id();
                         $node['currency_rate'] = $currency_rate;
+                        $node['doc_currency'] = $doc_currency_name;
+                        $node['doc_rate'] = $doc_rate_value;
                         $data_insert[] = $node;
 
                         $node = [];
@@ -2595,6 +2611,8 @@ class Accounting_model extends App_Model
                         $node['datecreated'] = date('Y-m-d H:i:s');
                         $node['addedfrom'] = get_staff_user_id();
                         $node['currency_rate'] = $currency_rate;
+                        $node['doc_currency'] = $doc_currency_name;
+                        $node['doc_rate'] = $doc_rate_value;
                         $data_insert[] = $node;
                     }
                 }
@@ -2623,6 +2641,8 @@ class Accounting_model extends App_Model
                 $node['datecreated'] = date('Y-m-d H:i:s');
                 $node['addedfrom'] = get_staff_user_id();
                 $node['currency_rate'] = $currency_rate;
+                $node['doc_currency'] = $doc_currency_name;
+                $node['doc_rate'] = $doc_rate_value;
                 $data_insert[] = $node;
 
                 $node = [];
@@ -2642,6 +2662,8 @@ class Accounting_model extends App_Model
                 $node['datecreated'] = date('Y-m-d H:i:s');
                 $node['addedfrom'] = get_staff_user_id();
                 $node['currency_rate'] = $currency_rate;
+                $node['doc_currency'] = $doc_currency_name;
+                $node['doc_rate'] = $doc_rate_value;
                 $data_insert[] = $node;
             }
         }elseif($data['type'] == 'loss_adjustment'){
@@ -5706,6 +5728,21 @@ class Accounting_model extends App_Model
         $data['datecreated'] = date('Y-m-d H:i:s');
         $data['addedfrom'] = get_staff_user_id();
         
+        $doc_currency = isset($data['doc_currency']) ? $data['doc_currency'] : '';
+        unset($data['doc_currency']);
+
+        $currency_context = $this->get_journal_currency_context($doc_currency, $data['journal_date']);
+        if ($currency_context === null) {
+            return 'no_rate';
+        }
+
+        // Entry total is stored in base currency.
+        $doc_total = 0;
+        foreach ($debit_amount as $doc_debit_value) {
+            $doc_total += (float) acc_unformat_number($doc_debit_value);
+        }
+        $data['amount'] = round($doc_total * $currency_context['doc_rate'], 4);
+
         $this->db->insert(db_prefix().'acc_journal_entries', $data);
         $insert_id = $this->db->insert_id();
         
@@ -5717,8 +5754,7 @@ class Accounting_model extends App_Model
                 $node['account'] = $value;
                 $node['number'] = $data['number'];
                 $node['date'] = $data['journal_date'];
-                $node['debit'] = acc_unformat_number($debit_amount[$key]);
-                $node['credit'] = acc_unformat_number($credit_amount[$key]);
+                $this->apply_journal_line_currency($node, $currency_context, (float) acc_unformat_number($debit_amount[$key]), (float) acc_unformat_number($credit_amount[$key]));
                 $node['description'] = $description_detail[$key];
                 $node['class'] = $class;
                 $node['rel_id'] = $insert_id;
@@ -8903,6 +8939,10 @@ class Accounting_model extends App_Model
                     "account" => $value['account'],
                     "debit" => floatval($value['debit']),
                     "credit" => floatval($value['credit']),
+                    "doc_currency" => $value['doc_currency'],
+                    "doc_rate" => $value['doc_rate'],
+                    "doc_debit" => $value['doc_debit'] !== null ? floatval($value['doc_debit']) : floatval($value['debit']),
+                    "doc_credit" => $value['doc_credit'] !== null ? floatval($value['doc_credit']) : floatval($value['credit']),
                     "addedfrom" => floatval($value['addedfrom']),
                     "class" => $value['class'],
                     "description" => $value['description']];
@@ -8911,6 +8951,8 @@ class Accounting_model extends App_Model
 
             }
             $journal_entrie->details = $data_details;
+            $journal_entrie->doc_currency = isset($data_details[0]) ? $data_details[0]['doc_currency'] : null;
+            $journal_entrie->doc_rate = isset($data_details[0]) ? $data_details[0]['doc_rate'] : null;
 
             // Entries saved before the class moved onto the entry itself keep
             // it only on their lines; fall back to the first one.
@@ -8920,6 +8962,71 @@ class Accounting_model extends App_Model
         }
 
         return $journal_entrie;
+    }
+
+    /**
+     * Work out document / secondary currency settings for a journal entry.
+     * @param  string      $doc_currency  document currency name ('' = base)
+     * @param  string      $journal_date  Y-m-d
+     * @param  float|null  $keep_rate     rate to keep (editing an entry whose date and currency did not change)
+     * @return array|null  null when no rate is available for the document currency
+     */
+    public function get_journal_currency_context($doc_currency, $journal_date, $keep_rate = null) {
+        $this->load->model('currencies_model');
+        $base      = $this->currencies_model->get_base_currency();
+        $base_name = $base ? strtoupper($base->name) : '';
+        $doc_currency = $doc_currency == '' ? $base_name : strtoupper($doc_currency);
+
+        $doc_rate = $keep_rate !== null ? (float) $keep_rate : acc_get_rate_at($doc_currency, $base_name, $journal_date . ' 23:59:59');
+        if ($doc_rate === null) {
+            return null;
+        }
+
+        $context = [
+            'doc_currency' => $doc_currency,
+            'doc_rate'     => $doc_rate,
+            'sec_currency' => null,
+            'sec_rate'     => null,
+        ];
+
+        if (get_option('acc_enable_secondary_currency') == 1 && get_option('acc_secondary_currency_id') != '') {
+            $secondary = $this->currencies_model->get(get_option('acc_secondary_currency_id'));
+            if ($secondary) {
+                $context['sec_currency'] = strtoupper($secondary->name);
+                if ($context['sec_currency'] != $doc_currency) {
+                    $context['sec_rate'] = acc_get_rate_at($base_name, $context['sec_currency'], $journal_date . ' 23:59:59');
+                }
+            }
+        }
+
+        return $context;
+    }
+
+    /**
+     * Fill debit, credit and doc_* / sec_* fields on a ledger line from document currency amounts.
+     * @param  array $node     ledger line (by reference)
+     * @param  array $context  from get_journal_currency_context
+     * @param  float $doc_debit
+     * @param  float $doc_credit
+     */
+    public function apply_journal_line_currency(&$node, $context, $doc_debit, $doc_credit) {
+        $node['doc_currency'] = $context['doc_currency'];
+        $node['doc_rate']     = $context['doc_rate'];
+        $node['doc_debit']    = $doc_debit;
+        $node['doc_credit']   = $doc_credit;
+        $node['debit']        = round($doc_debit * $context['doc_rate'], 4);
+        $node['credit']       = round($doc_credit * $context['doc_rate'], 4);
+
+        if ($context['sec_currency'] !== null) {
+            $node['sec_currency'] = $context['sec_currency'];
+            if ($context['sec_currency'] == $context['doc_currency']) {
+                $node['sec_debit']  = $doc_debit;
+                $node['sec_credit'] = $doc_credit;
+            } elseif ($context['sec_rate'] !== null) {
+                $node['sec_debit']  = round($node['debit'] * $context['sec_rate'], 4);
+                $node['sec_credit'] = round($node['credit'] * $context['sec_rate'], 4);
+            }
+        }
     }
 
     /**
@@ -9000,6 +9107,33 @@ class Accounting_model extends App_Model
             }
         }
 
+        $doc_currency = isset($data['doc_currency']) ? $data['doc_currency'] : '';
+        unset($data['doc_currency']);
+
+        // Keep the ORIGINAL rate when neither the journal date nor the currency changed.
+        $this->db->where('rel_id', $id);
+        $this->db->where('rel_type', 'journal_entry');
+        $this->db->order_by('id', 'ASC');
+        $this->db->limit(1);
+        $old_line  = $this->db->get(db_prefix() . 'acc_account_history')->row();
+        $keep_rate = null;
+        if ($old_line && $old_line->doc_rate !== null && $old_line->date == $data['journal_date']
+            && ($doc_currency == '' || strtoupper($old_line->doc_currency) == strtoupper($doc_currency))) {
+            $keep_rate = $old_line->doc_rate;
+        }
+
+        $currency_context = $this->get_journal_currency_context($doc_currency, $data['journal_date'], $keep_rate);
+        if ($currency_context === null) {
+            return 'no_rate';
+        }
+
+        // Entry total is stored in base currency.
+        $doc_total = 0;
+        foreach ($debit_amount as $doc_debit_value) {
+            $doc_total += (float) acc_unformat_number($doc_debit_value);
+        }
+        $data['amount'] = round($doc_total * $currency_context['doc_rate'], 4);
+
         $this->db->where('id', $id);
         $this->db->update(db_prefix().'acc_journal_entries', $data);
 
@@ -9013,8 +9147,7 @@ class Accounting_model extends App_Model
             $node['account'] = $value;
             $node['number'] = $data['number'];
             $node['date'] = $data['journal_date'];
-            $node['debit'] = acc_unformat_number($debit_amount[$key]);
-            $node['credit'] = acc_unformat_number($credit_amount[$key]);
+            $this->apply_journal_line_currency($node, $currency_context, (float) acc_unformat_number($debit_amount[$key]), (float) acc_unformat_number($credit_amount[$key]));
             $node['class'] = $class;
             $node['description'] = $description_detail[$key];
             $node['rel_id'] = $id;
@@ -33811,6 +33944,118 @@ class Accounting_model extends App_Model
     }
 
     /**
+     * Get manual rate periods for a currency pair, newest first.
+     * @param  string $from
+     * @param  string $to
+     * @return array
+     */
+    public function get_rate_periods($from, $to) {
+        $this->db->where('from_currency_name', strtoupper($from));
+        $this->db->where('to_currency_name', strtoupper($to));
+        $this->db->order_by('effective_from', 'DESC');
+        return $this->db->get(db_prefix() . 'acc_currency_rate_periods')->result_array();
+    }
+
+    /**
+     * Add a manual rate period. Overlapping periods are allowed but flagged.
+     * @param  array $data from_currency_name, to_currency_name, rate, effective_from, effective_to (optional)
+     * @return array ['id' => int, 'overlap' => true] (overlap only when another row overlaps)
+     */
+    public function add_rate_period($data) {
+        $from = strtoupper($data['from_currency_name']);
+        $to   = strtoupper($data['to_currency_name']);
+        $effective_from = $data['effective_from'];
+        $effective_to   = (isset($data['effective_to']) && $data['effective_to'] !== '') ? $data['effective_to'] : null;
+
+        // Two windows overlap when each starts before the other ends (null end = open).
+        $this->db->where('from_currency_name', $from);
+        $this->db->where('to_currency_name', $to);
+        if ($effective_to !== null) {
+            $this->db->where('effective_from <=', $effective_to);
+        }
+        $this->db->group_start();
+        $this->db->where('effective_to IS NULL', null, false);
+        $this->db->or_where('effective_to >=', $effective_from);
+        $this->db->group_end();
+        $overlap = $this->db->count_all_results(db_prefix() . 'acc_currency_rate_periods') > 0;
+
+        $this->db->insert(db_prefix() . 'acc_currency_rate_periods', [
+            'from_currency_name' => $from,
+            'to_currency_name'   => $to,
+            'rate'               => $data['rate'],
+            'effective_from'     => $effective_from,
+            'effective_to'       => $effective_to,
+            'created_by'         => get_staff_user_id(),
+            'datecreated'        => date('Y-m-d H:i:s'),
+        ]);
+
+        $result = ['id' => $this->db->insert_id()];
+        if ($overlap) {
+            $result['overlap'] = true;
+        }
+        return $result;
+    }
+
+    /**
+     * Delete a manual rate period.
+     * @param  int $id
+     * @return bool
+     */
+    public function delete_rate_period($id) {
+        $this->db->where('id', $id);
+        $this->db->delete(db_prefix() . 'acc_currency_rate_periods');
+        return $this->db->affected_rows() > 0;
+    }
+
+    /**
+     * Stored secondary-currency balance of an account, including its sub-accounts.
+     * Mirrors acc_get_account_balance (sign by account type, cash-method invoice filter)
+     * but sums the stored sec_debit / sec_credit instead of using a live rate.
+     * @param  integer $account_id
+     * @return float
+     */
+    public function get_account_sec_balance($account_id) {
+        $account = $this->db->where('id', $account_id)->get(db_prefix() . 'acc_accounts')->row();
+        if (!$account) {
+            return 0;
+        }
+
+        $this->db->select('SUM(sec_debit) as sec_debit, SUM(sec_credit) as sec_credit');
+        $this->db->where('account', $account_id);
+        if (get_option('acc_accounting_method') == 'cash') {
+            $this->db->where('((rel_type = "invoice" and paid = 1) or rel_type != "invoice")');
+        }
+        $sums = $this->db->get(db_prefix() . 'acc_account_history')->row();
+        $debits  = $sums->sec_debit != '' ? $sums->sec_debit : 0;
+        $credits = $sums->sec_credit != '' ? $sums->sec_credit : 0;
+
+        if (in_array($account->account_type_id, [6, 7, 8, 9, 10, 11, 12])) {
+            $balance = $credits - $debits;
+        } else {
+            $balance = $debits - $credits;
+        }
+
+        $children = $this->db->where('parent_account', $account_id)->get(db_prefix() . 'acc_accounts')->result_array();
+        foreach ($children as $child) {
+            $balance += $this->get_account_sec_balance($child['id']);
+        }
+
+        return $balance;
+    }
+
+    /**
+     * Turn the automatic rate on or off for a currency_rates row.
+     * @param  int  $currency_rate_id
+     * @param  mixed $on
+     * @return bool
+     */
+    public function set_auto_rate($currency_rate_id, $on) {
+        $this->db->where('id', $currency_rate_id);
+        $this->db->update(db_prefix() . 'currency_rates', ['auto_rate' => $on ? 1 : 0]);
+        return $this->db->affected_rows() > 0;
+    }
+
+    /**
      * { cronjob currency rates }
      *
      * @param        $manually  The manually
@@ -34037,14 +34282,19 @@ class Accounting_model extends App_Model
     public function add_transaction_save($data){
         $transaction_banking = $this->get_transaction_banking($data['transaction_bank_id']);
 
+        // Bank feed amounts are document currency amounts; convert to base at the transaction date.
+        $currency_context = $this->get_journal_currency_context(isset($data['doc_currency']) ? $data['doc_currency'] : '', $transaction_banking->date);
+        if ($currency_context === null) {
+            return 'no_rate';
+        }
+
         $node = [];
         $node['split'] = $transaction_banking->bank_id;
         $node['account'] = $data['account'];
         $node['vendor'] = $data['vendor'] != '' ? $data['vendor'] : 0;
         $node['customer'] = $data['customer'] != '' ? $data['customer'] : 0;
-        $node['debit'] = $transaction_banking->withdrawals;
+        $this->apply_journal_line_currency($node, $currency_context, (float) $transaction_banking->withdrawals, (float) $transaction_banking->deposits);
         $node['date'] = $transaction_banking->date;
-        $node['credit'] = $transaction_banking->deposits;
         $node['bank_reconcile'] = $data['transaction_bank_id'];
         $node['tax'] = 0;
         $node['cleared'] = 1;
@@ -34062,9 +34312,8 @@ class Accounting_model extends App_Model
         $node['account'] = $transaction_banking->bank_id;
         $node['vendor'] = $data['vendor'] != '' ? $data['vendor'] : 0;
         $node['customer'] = $data['customer'] != '' ? $data['customer'] : 0;
-        $node['debit'] = $transaction_banking->deposits;
+        $this->apply_journal_line_currency($node, $currency_context, (float) $transaction_banking->deposits, (float) $transaction_banking->withdrawals);
         $node['date'] = $transaction_banking->date;
-        $node['credit'] = $transaction_banking->withdrawals;
         $node['bank_reconcile'] = $data['transaction_bank_id'];
         $node['tax'] = 0;
         $node['cleared'] = 1;

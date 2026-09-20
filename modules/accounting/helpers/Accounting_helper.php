@@ -1050,6 +1050,61 @@ function acc_get_currency_rate($from, $to)
 }
 
 /**
+ * The single place that picks an exchange rate for a date.
+ * Order: same currency = 1; manual period covering the date; live rate when
+ * auto_rate is on; latest manual period before the date; otherwise null.
+ *
+ * @param  string $from
+ * @param  string $to
+ * @param  string $datetime
+ * @return float|null
+ */
+function acc_get_rate_at($from, $to, $datetime)
+{
+    if ($from == $to) {
+        return 1;
+    }
+
+    $CI   = & get_instance();
+    $from = strtoupper($from);
+    $to   = strtoupper($to);
+
+    $CI->db->where('from_currency_name', $from);
+    $CI->db->where('to_currency_name', $to);
+    $CI->db->where('effective_from <=', $datetime);
+    $CI->db->group_start();
+    $CI->db->where('effective_to IS NULL', null, false);
+    $CI->db->or_where('effective_to >=', $datetime);
+    $CI->db->group_end();
+    $CI->db->order_by('id', 'DESC');
+    $CI->db->limit(1);
+    $period = $CI->db->get(db_prefix() . 'acc_currency_rate_periods')->row();
+    if ($period) {
+        return (float) $period->rate;
+    }
+
+    $CI->db->where('from_currency_name', $from);
+    $CI->db->where('to_currency_name', $to);
+    $live = $CI->db->get(db_prefix() . 'currency_rates')->row();
+    if ($live && $live->auto_rate == 1) {
+        return (float) $live->to_currency_rate;
+    }
+
+    $CI->db->where('from_currency_name', $from);
+    $CI->db->where('to_currency_name', $to);
+    $CI->db->where('effective_from <=', $datetime);
+    $CI->db->order_by('effective_from', 'DESC');
+    $CI->db->order_by('id', 'DESC');
+    $CI->db->limit(1);
+    $latest = $CI->db->get(db_prefix() . 'acc_currency_rate_periods')->row();
+    if ($latest) {
+        return (float) $latest->rate;
+    }
+
+    return null;
+}
+
+/**
  * Convert a base-currency amount to the configured secondary currency for
  * display, if the feature is enabled and fully configured.
  *
@@ -1129,6 +1184,38 @@ function acc_secondary_currency_cell_html($base_amount)
     }
 
     return $secondary_amount['formatted'];
+}
+
+/**
+ * Same cell as acc_secondary_currency_cell_html, but for an amount that is
+ * already stored in the secondary currency (no rate lookup).
+ *
+ * @param  float|null $sec_amount
+ * @return string
+ */
+function acc_secondary_currency_cell_from_stored($sec_amount)
+{
+    if (get_option('acc_enable_secondary_currency') != 1) {
+        return '';
+    }
+
+    $secondary_id = get_option('acc_secondary_currency_id');
+    if ($secondary_id == '') {
+        return '';
+    }
+
+    $CI = & get_instance();
+    $CI->load->model('currencies_model');
+    $secondary = $CI->currencies_model->get($secondary_id);
+    if (!$secondary) {
+        return '';
+    }
+
+    if ($sec_amount === null) {
+        return '—';
+    }
+
+    return app_format_money($sec_amount, $secondary->name);
 }
 
 if (!function_exists('acc_get_vendor_company_name')) {
