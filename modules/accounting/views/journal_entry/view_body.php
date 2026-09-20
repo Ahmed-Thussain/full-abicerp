@@ -13,7 +13,7 @@ $total_credit = 0;
   <tr>
     <td style="border:none;">
       <?php if ($logo_file != '' && file_exists($logo_file)) { ?>
-        <img src="<?php echo $for_pdf ? $logo_file : base_url('uploads/company/' . $company_logo); ?>" style="max-height:70px;max-width:200px;">
+        <img src="<?php echo $for_pdf ? $logo_file : base_url('uploads/company/' . html_escape($company_logo)); ?>" style="max-height:70px;max-width:200px;">
       <?php } ?>
     </td>
     <td style="border:none;text-align:right;"><h3><?php echo html_escape(get_option('companyname')); ?></h3></td>
@@ -29,7 +29,7 @@ $total_credit = 0;
       <td style="border:none;" colspan="2"><?php if (isset($je->doc_rate)) { ?><b><?php echo _l('acc_rate'); ?>:</b> <?php echo html_escape($je->doc_rate); ?><?php } ?></td></tr>
   <?php } ?>
 </table>
-<p><b><?php echo _l('description'); ?>:</b><br><?php echo $je->description; ?></p>
+<p><b><?php echo _l('description'); ?>:</b><br><?php echo nl2br(html_escape(strip_tags(new_html_entity_decode($je->description ?? '')))); ?></p>
 
 <table class="table table-bordered" style="width:100%;border-collapse:collapse;">
   <thead>
@@ -71,7 +71,7 @@ $total_credit = 0;
         <?php if ($for_pdf) { ?>
           <?php if ($is_img && file_exists($att_dir . $file['file_name'])) { ?>
             <div><?php echo html_escape($file['file_name']); ?></div>
-            <img src="<?php echo $att_dir . $file['file_name']; ?>" style="max-width:100%;">
+            <img src="<?php echo html_escape($att_dir . $file['file_name']); ?>" style="max-width:100%;">
           <?php } else { ?>
             <?php echo html_escape($file['file_name']); ?>
           <?php } ?>

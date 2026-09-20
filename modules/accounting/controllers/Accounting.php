@@ -6945,7 +6945,7 @@ class Accounting extends AdminController
             if (move_uploaded_file($_FILES['files']['tmp_name'][$i], $path . $filename)) {
                 $this->misc_model->add_attachment_to_database($id, 'acc_journal_entry', [[
                     'file_name' => $filename,
-                    'filetype'  => $_FILES['files']['type'][$i],
+                    'filetype'  => $this->journal_entry_file_mime($filename),
                 ]]);
             }
         }
@@ -6983,6 +6983,27 @@ class Accounting extends AdminController
     }
 
     /**
+     * MIME type for a journal entry attachment, from its (whitelisted) extension only
+     * @param  string $file_name
+     * @return string
+     */
+    private function journal_entry_file_mime($file_name)
+    {
+        $map = [
+            'pdf'  => 'application/pdf',
+            'jpg'  => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'png'  => 'image/png',
+            'doc'  => 'application/msword',
+            'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'xls'  => 'application/vnd.ms-excel',
+            'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ];
+        $ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+        return isset($map[$ext]) ? $map[$ext] : 'application/octet-stream';
+    }
+
+    /**
      * Stream an attachment of a journal entry
      * @param  integer $file_id
      * @param  integer $inline  1 to open in the browser, 0 to download
@@ -6994,10 +7015,13 @@ class Accounting extends AdminController
         if (!file_exists($path)) {
             show_404();
         }
-        $mime = $file->filetype ?: 'application/octet-stream';
+        // Never trust the stored (client supplied) type: derive it from the whitelisted extension
+        $mime = $this->journal_entry_file_mime($file->file_name);
+        $safe_inline = $mime === 'application/pdf' || strpos($mime, 'image/') === 0;
         ob_end_clean();
         header('Content-Type: ' . $mime);
-        header('Content-Disposition: ' . ($inline ? 'inline' : 'attachment') . '; filename="' . basename($file->file_name) . '"');
+        header('X-Content-Type-Options: nosniff');
+        header('Content-Disposition: ' . ($inline && $safe_inline ? 'inline' : 'attachment') . '; filename="' . basename($file->file_name) . '"');
         header('Content-Length: ' . filesize($path));
         readfile($path);
         exit();
