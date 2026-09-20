@@ -6938,7 +6938,7 @@ class Accounting extends AdminController
                 continue;
             }
             $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
-            if (!in_array($ext, $allowed) || $_FILES['files']['size'][$i] > 10 * 1024 * 1024) {
+            if (!in_array($ext, $allowed) || $_FILES['files']['size'][$i] > 25 * 1024 * 1024) {
                 $rejected[] = $name;
                 continue;
             }
@@ -16843,9 +16843,18 @@ class Accounting extends AdminController
             access_denied('accounting_setting');
         }
         $data   = $this->input->post();
+        $back   = admin_url('accounting/rate_periods/' . urlencode($data['from_currency_name']) . '/' . urlencode($data['to_currency_name']));
+        if (empty($data['effective_from']) || !isset($data['rate']) || !is_numeric($data['rate']) || (float) $data['rate'] <= 0) {
+            set_alert('warning', _l('acc_rate_period_invalid'));
+            redirect($back);
+        }
         $data['effective_from'] = to_sql_date($data['effective_from'], true);
         if (!empty($data['effective_to'])) {
             $data['effective_to'] = to_sql_date($data['effective_to'], true);
+            if (strtotime($data['effective_to']) <= strtotime($data['effective_from'])) {
+                set_alert('warning', _l('acc_rate_period_invalid'));
+                redirect($back);
+            }
         }
         $result = $this->accounting_model->add_rate_period($data);
         if (!empty($result['overlap'])) {

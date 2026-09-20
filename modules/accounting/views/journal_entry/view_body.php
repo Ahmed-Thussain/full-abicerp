@@ -9,6 +9,7 @@ $att_dir   = ACCOUTING_MODULE_UPLOAD_FOLDER . '/journal_entry/' . $je->id . '/';
 $total_debit = 0;
 $total_credit = 0;
 ?>
+<div class="je-print-doc">
 <table class="noborder" style="width:100%;border:none;">
   <tr>
     <td style="border:none;">
@@ -31,7 +32,7 @@ $total_credit = 0;
 </table>
 <p><b><?php echo _l('description'); ?>:</b><br><?php echo nl2br(html_escape(strip_tags(new_html_entity_decode($je->description ?? '')))); ?></p>
 
-<table class="table table-bordered" style="width:100%;border-collapse:collapse;">
+<table class="table table-bordered je-lines" style="width:100%;border-collapse:collapse;">
   <thead>
     <tr>
       <th><?php echo _l('acc_account'); ?></th>
@@ -59,6 +60,7 @@ $total_credit = 0;
   </tbody>
 </table>
 
+<div class="je-attachments">
 <h5><?php echo _l('acc_attachments'); ?></h5>
 <?php if (count($attachments) == 0) { ?>
   <p>-</p>
@@ -67,7 +69,7 @@ $total_credit = 0;
     <?php foreach ($attachments as $file) {
         $ext = strtolower(pathinfo($file['file_name'], PATHINFO_EXTENSION));
         $is_img = in_array($ext, $img_ext); ?>
-      <li style="margin-bottom:8px;">
+      <li class="je-att-item" style="margin-bottom:8px;">
         <?php if ($for_pdf) { ?>
           <?php if ($is_img && file_exists($att_dir . $file['file_name'])) { ?>
             <div><?php echo html_escape($file['file_name']); ?></div>
@@ -89,3 +91,5 @@ $total_credit = 0;
     <?php } ?>
   </ul>
 <?php } ?>
+</div>
+</div>

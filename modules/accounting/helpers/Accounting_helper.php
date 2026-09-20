@@ -1052,7 +1052,8 @@ function acc_get_currency_rate($from, $to)
 /**
  * The single place that picks an exchange rate for a date.
  * Order: same currency = 1; manual period covering the date; live rate when
- * auto_rate is on; latest manual period before the date; otherwise null.
+ * auto_rate is on; latest manual period before the date; earliest manual period; initial
+ * currency_rates row; otherwise null.
  *
  * @param  string $from
  * @param  string $to
@@ -1099,6 +1100,22 @@ function acc_get_rate_at($from, $to, $datetime)
     $latest = $CI->db->get(db_prefix() . 'acc_currency_rate_periods')->row();
     if ($latest) {
         return (float) $latest->rate;
+    }
+
+    // No period covers the date: fall back to the FIRST manual rate for the pair.
+    $CI->db->where('from_currency_name', $from);
+    $CI->db->where('to_currency_name', $to);
+    $CI->db->order_by('effective_from', 'ASC');
+    $CI->db->order_by('id', 'ASC');
+    $CI->db->limit(1);
+    $earliest = $CI->db->get(db_prefix() . 'acc_currency_rate_periods')->row();
+    if ($earliest) {
+        return (float) $earliest->rate;
+    }
+
+    // Otherwise the initial/auto rate, regardless of the auto flag.
+    if ($live && (float) $live->to_currency_rate > 0) {
+        return (float) $live->to_currency_rate;
     }
 
     return null;

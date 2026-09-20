@@ -1,0 +1,21 @@
+/* Journal entry view: on-screen page look and A4 print layout */
+.je-print-doc { color: #000; background: #fff; }
+.je-print-doc table.je-lines { width: 100%; border-collapse: collapse; }
+.je-print-doc table.je-lines th, .je-print-doc table.je-lines td { border: 1px solid #999; padding: 4px 6px; }
+.je-print-doc .num { text-align: right; }
+.je-print-doc .je-attachments img { max-width: 100%; height: auto; }
+@page { size: A4; margin: 15mm; }
+@media print {
+  html, body { background: #fff !important; color: #000 !important; }
+  #header, #setup-menu-wrapper, .sidebar, #sidebar, .navbar, footer, #footer,
+  .hide-on-print, .btn, .dt-buttons, #mobile-menu, .page-loader, #alerts { display: none !important; }
+  #wrapper { margin: 0 !important; padding: 0 !important; min-height: 0 !important; }
+  .content { padding: 0 !important; margin: 0 !important; }
+  .panel_s, .panel-body { border: 0 !important; box-shadow: none !important; padding: 0 !important; background: #fff !important; }
+  .je-print-doc, .je-print-doc * { color: #000 !important; background: transparent !important; }
+  .je-print-doc table.je-lines th, .je-print-doc table.je-lines td { border: 1px solid #000 !important; }
+  .je-print-doc table.je-lines thead { display: table-header-group; }
+  .je-print-doc tr, .je-print-doc img, .je-print-doc .je-att-item { page-break-inside: avoid; break-inside: avoid; }
+  .visible-print-block { display: block !important; }
+  a[href]:after { content: none !important; }
+}

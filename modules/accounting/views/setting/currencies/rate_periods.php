@@ -38,7 +38,7 @@
           <input type="hidden" name="to_currency_name" value="<?php echo html_escape($to); ?>">
           <div class="row">
             <div class="col-md-3">
-              <?php echo render_datetime_input('effective_from', 'acc_effective_from'); ?>
+              <?php echo render_datetime_input('effective_from', 'acc_effective_from', '', ['required' => true]); ?>
             </div>
             <div class="col-md-3">
               <div class="checkbox checkbox-primary">
@@ -50,7 +50,7 @@
               </div>
             </div>
             <div class="col-md-3">
-              <?php echo render_input('rate', 'pur_currency_rate', '', 'number', ['step' => 'any', 'required' => true]); ?>
+              <?php echo render_input('rate', 'pur_currency_rate', '', 'number', ['step' => 'any', 'min' => '0.00000001', 'required' => true]); ?>
             </div>
             <div class="col-md-3">
               <button type="submit" class="btn btn-info mtop25"><?php echo _l('submit'); ?></button>
