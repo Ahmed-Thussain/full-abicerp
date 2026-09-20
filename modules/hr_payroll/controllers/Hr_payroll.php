@@ -1301,7 +1301,7 @@ class hr_payroll extends AdminController {
 		$current_month = date('Y-m-d', strtotime(date('Y-m') . '-01'));
 
 		//get day header in month
-		$days_header_in_month = $this->hr_payroll_model->get_day_header_in_month($current_month, $rel_type);
+		$days_header_in_month = $this->hr_payroll_model->get_day_header_in_month($current_month, $rel_type, true, true);
 
 		$attendances = $this->hr_payroll_model->get_hrp_attendance($current_month);
 		$attendances_value = [];
@@ -1386,6 +1386,9 @@ class hr_payroll extends AdminController {
 			}
 			$data_object_kpi[$staff_key]['rel_type'] = $rel_type;
 			$data_object_kpi[$staff_key]['month'] = $current_month;
+			if (get_hr_payroll_option('hrp_ot_separate_columns') == 1) {
+				$data_object_kpi[$staff_key] = array_merge($data_object_kpi[$staff_key], $this->hr_payroll_model->get_ot_split_hours($staff_value['staffid'], $current_month, date('Y-m-t', strtotime($current_month))));
+			}
 			$data_object_kpi[$staff_key]['staff_id'] = $staff_value['staffid'];
 
 		}
@@ -1905,7 +1908,7 @@ class hr_payroll extends AdminController {
 
 		$month_filter = date('Y-m-d', strtotime($data['month'] . '-01'));
 		//get day header in month
-		$days_header_in_month = $this->hr_payroll_model->get_day_header_in_month($month_filter, $rel_type);
+		$days_header_in_month = $this->hr_payroll_model->get_day_header_in_month($month_filter, $rel_type, true, true);
 
 		$attendances = $this->hr_payroll_model->get_hrp_attendance($month_filter);
 		$attendances_value = [];
@@ -1991,6 +1994,9 @@ class hr_payroll extends AdminController {
 
 				$data_object_kpi[$staff_key]['rel_type'] = $rel_type;
 				$data_object_kpi[$staff_key]['month'] = $month_filter;
+				if (get_hr_payroll_option('hrp_ot_separate_columns') == 1) {
+					$data_object_kpi[$staff_key] = array_merge($data_object_kpi[$staff_key], $this->hr_payroll_model->get_ot_split_hours($staff_value['staffid'], $month_filter, date('Y-m-t', strtotime($month_filter))));
+				}
 
 			}
 
