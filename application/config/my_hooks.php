@@ -16,3 +16,8 @@ hooks()->add_action('app_admin_footer', function () {
     echo '<script>window.permissionsSelectAllLabel = ' . json_encode($label) . ';'
         . file_get_contents(FCPATH . 'assets/js/permissions-select-all.js') . '</script>';
 });
+
+// Point at the tab holding an invalid field when saving a staff member
+hooks()->add_action('app_admin_footer', function () {
+    echo '<script>' . file_get_contents(FCPATH . 'assets/js/staff-form-tab-alert.js') . '</script>';
+});

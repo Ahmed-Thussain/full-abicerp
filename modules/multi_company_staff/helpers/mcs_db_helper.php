@@ -215,7 +215,11 @@ function mcs_role_error(array $target_slugs, $is_admin, $role_id)
         if (mcs_find_role_id(mcs_company_roles($slug), $role->name) === null) {
             $company = isset($names[$slug]) ? $names[$slug] : $slug;
 
-            return 'The role "' . $role->name . '" does not exist in company "' . $company . '". Create it there first or pick another role.';
+            $clean = function ($text) {
+                return str_replace(['"', '\\', "\r", "\n"], ["'", '/', ' ', ' '], (string) $text);
+            };
+
+            return 'The role \'' . $clean($role->name) . '\' does not exist in company \'' . $clean($company) . '\'. Create it there first or pick another role.';
         }
     }
 
