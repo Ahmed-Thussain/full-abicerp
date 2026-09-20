@@ -921,7 +921,8 @@ class timesheets extends AdminController {
 		$day_off = $this->timesheets_model->get_day_off($data['request_leave']->staff_id);
 		$data['number_day_off'] = 0;
 		if ($day_off != null) {
-			$data['number_day_off'] = $day_off->remain;
+			$carry_remain = $this->timesheets_model->get_leave_remain_with_carry($data['request_leave']->staff_id, date('Y'), '');
+			$data['number_day_off'] = $carry_remain !== null ? $carry_remain : $day_off->remain;
 		}
 
 		$leave_isset = $this->db->query('select * from ' . db_prefix() . 'timesheets_requisition_leave')->result_array();

@@ -1993,7 +1993,7 @@ order by staff_id, header_oder
 	 * @param  [type] $month 
 	 * @return [type]        
 	 */
-	public function get_day_header_in_month($month, $rel_type='', $timesheet = true)
+	public function get_day_header_in_month($month, $rel_type='', $timesheet = true, $with_ot_split = false)
 	{
 		$_month = (int)date('m',strtotime($month));
 		$_year = (int)date('Y',strtotime($month));
@@ -2147,6 +2147,21 @@ order by staff_id, header_oder
 		    ]);
 		}
 
+		// Read-only OT morning/night columns for the attendance grid (not part of attendance_key, never saved)
+		if ($with_ot_split && $timesheet && get_hr_payroll_option('hrp_ot_separate_columns') == 1) {
+			foreach (['ot_morning_hours', 'ot_night_hours'] as $ot_key) {
+				$headers[] = _l($ot_key);
+				array_push($columns_type, [
+					'data' => $ot_key,
+					'type' => 'numeric',
+					'readOnly' => true,
+					'numericFormat' => [
+						'pattern' => '0,00',
+					]
+				]);
+			}
+		}
+
 		$results=[];
 		$results['headers'] = $headers;
 		$results['staff_key'] = $staff_key;
@@ -2187,7 +2202,7 @@ order by staff_id, header_oder
 			$row = [];
 
 			foreach ($hrp_attendance_detail as $key => $value) {				
-					$es_detail[] = array_combine($header_key, $value);
+					$es_detail[] = array_combine($header_key, array_slice($value, 0, count($header_key))); // drop trailing read-only OT grid columns
 			}
 		}
 
@@ -7478,6 +7493,11 @@ order by staff_id, header_oder
 			$employees_timesheets[$em_key]['paid_leave'] = $paid_leave;
 			$employees_timesheets[$em_key]['unpaid_leave'] = $unpaid_leave;
 			$employees_timesheets[$em_key]['overtime_hours'] = $overtime_hours;
+			if (get_hr_payroll_option('hrp_ot_separate_columns') == 1) {
+				$ot_split = $this->get_ot_split_hours($timesheet['staff_id'], date('Y-m-d', strtotime($arr_payslip_range[0])), date('Y-m-d', strtotime($arr_payslip_range[1])));
+				$employees_timesheets[$em_key]['ot_morning_hours'] = $ot_split['ot_morning_hours'];
+				$employees_timesheets[$em_key]['ot_night_hours'] = $ot_split['ot_night_hours'];
+			}
 
 			if(isset($employees_data[$timesheet['staff_id']])){
 
@@ -8867,6 +8887,17 @@ order by staff_id, header_oder
 	public function is_ot_eligible($staff_id, $start_date, $end_date)
 	{
 		return count($this->get_ot_records($staff_id, $start_date, $end_date)) > 0;
+	}
+
+	/**
+	 * OT morning/night paid hours for a staff member over a date range (read-only grid columns).
+	 * @return array
+	 */
+	public function get_ot_split_hours($staff_id, $start_date, $end_date)
+	{
+		$ot_eligible = $this->is_ot_eligible($staff_id, $start_date, $end_date);
+		$ot_result = $this->calculate_ot_result($staff_id, $start_date, $end_date, $ot_eligible);
+		return ['ot_morning_hours' => $ot_result['morning_paid'], 'ot_night_hours' => $ot_result['night_paid']];
 	}
 
 	/**
