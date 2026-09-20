@@ -716,3 +716,5 @@ if (!$CI->db->table_exists(db_prefix() . 'timesheets_kteco_employees')) {
         PRIMARY KEY (`id`)
        ) ENGINE=InnoDB DEFAULT CHARSET=" . $CI->db->char_set . ';');
 }
+add_option('ts_leave_carry_enabled', 0);
+add_option('ts_leave_carry_years', 3);

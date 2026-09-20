@@ -195,6 +195,18 @@ $unpaid_leave     = new_explode(',', get_hr_payroll_option('integration_unpaid_l
 
 <div class="row">
 	<div class="col-md-12">
+		<div class="form-group">
+			<input type="hidden" name="hrp_post_to_accounting" value="0">
+			<div class="checkbox checkbox-primary">
+				<input type="checkbox" id="hrp_post_to_accounting" name="hrp_post_to_accounting" value="1" <?php if(get_option('hrp_post_to_accounting') == 1){ echo 'checked';} ?>>
+				<label for="hrp_post_to_accounting"><?php echo _l('hrp_post_to_accounting'); ?></label>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-md-12">
 		<h4 class="no-margin font-bold h4-color" ><i class="fa-solid fa-envelope" aria-hidden="true"></i> <?php echo _l('hrp_send_email_to_staff_when_payslip_closing')?></h4>
 		<hr class="hr-color" >
 	</div>

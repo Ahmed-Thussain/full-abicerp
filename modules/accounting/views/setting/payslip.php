@@ -15,6 +15,9 @@
   $acc_pl_net_pay_deposit_to = get_option('acc_pl_net_pay_deposit_to');
  ?>
 
+<?php if (get_option('hrp_post_to_accounting') != 1) { ?>
+<div class="alert alert-info"><?php echo _l('hrp_post_to_accounting_off_message'); ?></div>
+<?php return; } ?>
 <?php echo form_open(admin_url('accounting/update_payslip_automatic_conversion'),array('id'=>'payslip-mapping-setup-form')); ?>
 <div class="row">
   <div class="col-md-12">

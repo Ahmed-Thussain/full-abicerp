@@ -1511,3 +1511,5 @@ $lang['acc_class_name_ar'] = 'Name (Arabic)';
 $lang['list_view'] = 'List View';
 $lang['tree_view'] = 'Tree View';
 $lang['acc_no_accounts_found'] = 'No accounts found';
+
+$lang['hrp_post_to_accounting_off_message'] = 'Payroll posting to accounting is switched off (HR Payroll > Settings > Data integration), so no account mapping is needed.';

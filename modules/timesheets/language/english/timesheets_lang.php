@@ -945,3 +945,8 @@ $lang['ts_day_thursday_short']  = 'Thu';
 $lang['ts_day_friday_short']  = 'Fri';
 $lang['ts_day_saturday_short']  = 'Sat';
 $lang['ts_day_sunday_short']  = 'Sun';
+
+$lang['ts_leave_carry_enabled'] = 'Carry unused annual leave over to later years';
+$lang['ts_leave_carry_years'] = 'Number of years a leave balance stays usable';
+$lang['ts_leave_balance_year'] = 'Year';
+$lang['ts_leave_balance_remaining'] = 'Remaining days';

@@ -979,3 +979,4 @@ if (hr_payroll_payroll_column_exist('"basic_salary"') == 0){
   $CI->db->query('INSERT INTO `' . db_prefix() . 'hrp_payroll_columns` (`column_key`, `taking_method`, `function_name`, `value_related_to`, `display_with_staff`, `description`, `date_created`, `staff_id_created`, `order_display`, `is_edit`) VALUES ("Total Hourly Pay", "system", "basic_salary", "", "true", "Total Hourly Pay", "'.date("Y-m-d H:i:s").'", "'.get_staff_user_id().'", "17", "no");
 ');
 }
+add_option('hrp_post_to_accounting', 1);

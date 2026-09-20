@@ -340,3 +340,4 @@ $lang['hrp_Export_PDF_is_running_please_load_in_a_few_minutes']	 								 = 'Exp
 $lang['hrp_export_pdf']	 								 = 'Export PDF';
 $lang['hrp_export_is_running']	 								 = 'Export is Running';
 $lang['hrp_check_exported_pdf']	 								 = 'Check Exported PDF';
+$lang['hrp_post_to_accounting'] = 'Post payslips to accounting (journal entries)';

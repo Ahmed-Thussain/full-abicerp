@@ -660,6 +660,12 @@ class Hr_payroll_model extends App_Model {
 	 */
 	public function update_data_integration($data)
 	{
+		// Stored as a core option (not in hr_payroll_option): hidden 0 + checkbox 1 are posted under the same name
+		if(isset($data['hrp_post_to_accounting'])){
+			update_option('hrp_post_to_accounting', $data['hrp_post_to_accounting'] == 1 ? 1 : 0);
+			unset($data['hrp_post_to_accounting']);
+		}
+
 		if(isset($data['column_name'])){
 			$column_name = $data['column_name'];
 			unset($data['column_name']);
