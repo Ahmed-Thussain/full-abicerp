@@ -23,6 +23,10 @@
 			<label for="hrp_ot_cap_enabled"><?php echo _l('hrp_ot_cap_enabled'); ?></label>
 		</div>
 		<div class="checkbox checkbox-primary">
+			<input type="checkbox" id="hrp_ot_eligibility_enabled" name="hrp_ot_eligibility_enabled" value="1" <?php if (get_hr_payroll_option('hrp_ot_eligibility_enabled') == 1) { echo 'checked'; } ?>>
+			<label for="hrp_ot_eligibility_enabled"><?php echo _l('hrp_ot_eligibility_enabled'); ?></label>
+		</div>
+		<div class="checkbox checkbox-primary">
 			<input type="checkbox" id="hrp_ot_separate_columns" name="hrp_ot_separate_columns" value="1" <?php if (get_hr_payroll_option('hrp_ot_separate_columns') == 1) { echo 'checked'; } ?>>
 			<label for="hrp_ot_separate_columns"><?php echo _l('hrp_ot_separate_columns'); ?></label>
 		</div>
@@ -56,7 +60,7 @@ foreach ($staffs as $staff_row) {
 		<input type="hidden" name="rel_type" value="department">
 		<div class="row">
 			<div class="col-md-6">
-				<?php echo render_select('rel_id', $departments, ['departmentid', 'name'], 'department', '', [], [], '', '', false); ?>
+				<?php echo render_select('rel_ids[]', $departments, ['departmentid', 'name'], 'department', '', ['multiple' => true, 'data-actions-box' => true], [], '', '', false); ?>
 			</div>
 			<div class="col-md-4">
 				<?php echo render_input('max_hours', 'hrp_ot_max_hours', '', 'number', ['step' => '0.25', 'min' => '0', 'required' => true]); ?>
@@ -93,7 +97,7 @@ foreach ($staffs as $staff_row) {
 				foreach ($staff_names as $staff_id => $staff_name) {
 					$staff_options[] = ['id' => $staff_id, 'name' => $staff_name];
 				}
-				echo render_select('rel_id', $staff_options, ['id', 'name'], 'staff', '', [], [], '', '', false);
+				echo render_select('rel_ids[]', $staff_options, ['id', 'name'], 'staff', '', ['multiple' => true, 'data-actions-box' => true, 'data-live-search' => true], [], '', '', false);
 				?>
 			</div>
 			<div class="col-md-4">
@@ -114,6 +118,57 @@ foreach ($staffs as $staff_row) {
 						<td><?php echo html_escape(isset($staff_names[$cap['rel_id']]) ? $staff_names[$cap['rel_id']] : $cap['rel_id']); ?></td>
 						<td><?php echo html_escape($cap['max_hours']); ?></td>
 						<td><a href="<?php echo admin_url('hr_payroll/delete_ot_cap_limit/' . $cap['id']); ?>" class="text-danger _delete"><i class="fa fa-remove"></i></a></td>
+					</tr>
+				<?php } ?>
+			</tbody>
+		</table>
+	</div>
+</div>
+
+<hr>
+
+<h5 class="font-bold"><?php echo _l('hrp_ot_eligibility'); ?></h5>
+<?php echo form_open(admin_url('hr_payroll/save_ot_eligibility')); ?>
+<div class="row">
+	<div class="col-md-5">
+		<?php echo render_select('department_ids[]', $departments, ['departmentid', 'name'], 'hrp_ot_eligibility_departments', '', ['multiple' => true, 'data-actions-box' => true], [], '', '', false); ?>
+	</div>
+	<div class="col-md-5">
+		<?php
+		$eligibility_staff_options = [];
+		foreach ($staff_names as $staff_id => $staff_name) {
+			$eligibility_staff_options[] = ['id' => $staff_id, 'name' => $staff_name];
+		}
+		echo render_select('staff_ids[]', $eligibility_staff_options, ['id', 'name'], 'hrp_ot_eligibility_staff', '', ['multiple' => true, 'data-actions-box' => true, 'data-live-search' => true], [], '', '', false);
+		?>
+	</div>
+	<div class="col-md-2">
+		<button type="submit" class="btn btn-info mtop25"><?php echo _l('hrp_ot_eligibility_add'); ?></button>
+	</div>
+</div>
+<?php echo form_close(); ?>
+<div class="row">
+	<div class="col-md-6">
+		<table class="table table-striped">
+			<thead><tr><th><?php echo _l('department'); ?></th><th></th></tr></thead>
+			<tbody>
+				<?php foreach ($department_eligibility as $row) { ?>
+					<tr>
+						<td><?php echo html_escape(isset($department_names[$row['rel_id']]) ? $department_names[$row['rel_id']] : $row['rel_id']); ?></td>
+						<td><a href="<?php echo admin_url('hr_payroll/delete_ot_eligibility/' . $row['id']); ?>" class="text-danger _delete"><i class="fa fa-remove"></i></a></td>
+					</tr>
+				<?php } ?>
+			</tbody>
+		</table>
+	</div>
+	<div class="col-md-6">
+		<table class="table table-striped">
+			<thead><tr><th><?php echo _l('staff'); ?></th><th></th></tr></thead>
+			<tbody>
+				<?php foreach ($staff_eligibility as $row) { ?>
+					<tr>
+						<td><?php echo html_escape(isset($staff_names[$row['rel_id']]) ? $staff_names[$row['rel_id']] : $row['rel_id']); ?></td>
+						<td><a href="<?php echo admin_url('hr_payroll/delete_ot_eligibility/' . $row['id']); ?>" class="text-danger _delete"><i class="fa fa-remove"></i></a></td>
 					</tr>
 				<?php } ?>
 			</tbody>
