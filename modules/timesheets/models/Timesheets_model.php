@@ -4652,10 +4652,43 @@ class timesheets_model extends app_model
 			}
 		}
 
+		// Overtime split and late-arrival allowance settings (per company option table)
+		$ot_time_options = ['ts_ot_morning_start', 'ts_ot_morning_end', 'ts_ot_night_start', 'ts_ot_night_end'];
+		foreach (['ts_ot_split_enabled', 'ts_delay_allowance_enabled'] as $toggle) {
+			$affectedrows += $this->save_timesheets_option($toggle, isset($data[$toggle]) ? 1 : 0);
+		}
+		foreach ($ot_time_options as $name) {
+			if (isset($data[$name]) && preg_match('/^\d{2}:\d{2}$/', $data[$name])) {
+				$affectedrows += $this->save_timesheets_option($name, $data[$name]);
+			}
+		}
+		if (isset($data['ts_delay_allowance_hours']) && is_numeric($data['ts_delay_allowance_hours'])) {
+			$affectedrows += $this->save_timesheets_option('ts_delay_allowance_hours', $data['ts_delay_allowance_hours']);
+		}
+
 		if ($affectedrows > 0) {
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * insert or update one row of the timesheets option table
+	 * @param  string $name
+	 * @param  string $value
+	 * @return integer 1 when a value changed, otherwise 0
+	 */
+	public function save_timesheets_option($name, $value)
+	{
+		$this->db->where('option_name', $name);
+		$exists = $this->db->get(db_prefix() . 'timesheets_option')->row();
+		if ($exists) {
+			$this->db->where('option_name', $name);
+			$this->db->update(db_prefix() . 'timesheets_option', ['option_val' => $value]);
+			return $this->db->affected_rows() > 0 ? 1 : 0;
+		}
+		$this->db->insert(db_prefix() . 'timesheets_option', ['option_name' => $name, 'option_val' => $value, 'auto' => 1]);
+		return 1;
 	}
 
 	public function edit_timesheets($data, $staffid = '')

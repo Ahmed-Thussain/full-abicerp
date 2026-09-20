@@ -1316,3 +1316,52 @@ function hrp_get_commission_status()
 			redirect(admin_url());
 		}	
 	}	
+
+
+/**
+ * Pure overtime arithmetic (no database): delay deduction, then cap.
+ * Order: (1) delay deduction from the uncapped total, taking morning hours first;
+ * (2) cap on the remainder, keeping night hours first; hours above the cap are discarded.
+ * @param  float $morning     morning OT hours
+ * @param  float $night       night OT hours
+ * @param  float $late_excess late hours above the allowance
+ * @param  boolean $ot_eligible true: deduct from OT hours, false: deduct from working-time pay
+ * @param  float|null $cap    monthly cap on morning plus night, null for no cap
+ * @return array
+ */
+function hrp_ot_apply_rules($morning, $night, $late_excess, $ot_eligible, $cap)
+{
+	$morning = max(0, (float) $morning);
+	$night = max(0, (float) $night);
+	$late_excess = max(0, (float) $late_excess);
+
+	$delay_deducted = 0;
+	$pay_hours_deducted = 0;
+	if ($ot_eligible) {
+		$delay_deducted = min($late_excess, $morning + $night);
+		$from_morning = min($morning, $delay_deducted);
+		$morning -= $from_morning;
+		$night -= ($delay_deducted - $from_morning);
+	} else {
+		$pay_hours_deducted = $late_excess;
+	}
+
+	$remaining = $morning + $night;
+	$morning_paid = $morning;
+	$night_paid = $night;
+	$discarded = 0;
+	if ($cap !== null && $remaining > (float) $cap) {
+		$night_paid = min($night, (float) $cap);
+		$morning_paid = min($morning, (float) $cap - $night_paid);
+		$discarded = $remaining - $night_paid - $morning_paid;
+	}
+
+	return [
+		'morning_paid' => round($morning_paid, 2),
+		'night_paid' => round($night_paid, 2),
+		'discarded' => round($discarded, 2),
+		'delay_deducted' => round($delay_deducted, 2),
+		'pay_hours_deducted' => round($pay_hours_deducted, 2),
+		'final_total' => round($morning_paid + $night_paid, 2),
+	];
+}

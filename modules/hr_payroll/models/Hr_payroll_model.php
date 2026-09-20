@@ -5349,14 +5349,38 @@ order by staff_id, header_oder
 			$hrp_attendance = $attendance_calculation_v2;
 		}
 
+		// Overtime split, late-arrival allowance and cap (all off by default)
+		$ot_rules_on = ($this->get_ot_ts_option('ts_ot_split_enabled', 0) == 1 || $this->get_ot_ts_option('ts_delay_allowance_enabled', 0) == 1 || get_hr_payroll_option('hrp_ot_cap_enabled') == 1);
+		$ot_range_start = date('Y-m-01', strtotime($payslip_month));
+		$ot_range_end = date('Y-m-t', strtotime($payslip_month));
+		if (isset($arr_payslip_range[0]) && isset($arr_payslip_range[1]) && strtotime($arr_payslip_range[0]) && strtotime($arr_payslip_range[1])) {
+			$ot_range_start = date('Y-m-d', strtotime($arr_payslip_range[0]));
+			$ot_range_end = date('Y-m-d', strtotime($arr_payslip_range[1]));
+		}
+
 		foreach ($hrp_attendance as $attendance_key => $attendance_value) {
+
+		    $ot_pay_hours_deducted = 0;
+		    if ($ot_rules_on) {
+		    	$ot_eligible = $this->is_ot_eligible($attendance_value['staff_id'], $ot_range_start, $ot_range_end);
+		    	$ot_result = $this->calculate_ot_result($attendance_value['staff_id'], $ot_range_start, $ot_range_end, $ot_eligible);
+		    	$attendance_value['overtime_hours'] = $ot_result['final_total'];
+		    	$ot_pay_hours_deducted = $ot_result['pay_hours_deducted'];
+		    	if (get_hr_payroll_option('hrp_ot_separate_columns') == 1) {
+		    		$attendance_value['ot_morning_hours'] = $ot_result['morning_paid'];
+		    		$attendance_value['ot_night_hours'] = $ot_result['night_paid'];
+		    		$attendance_value['ot_discarded_hours'] = $ot_result['discarded'];
+		    		$attendance_value['delay_deducted_hours'] = $ot_result['delay_deducted'];
+		    		$attendance_value['ot_final_hours'] = $ot_result['final_total'];
+		    	}
+		    }
 
 		    $attendances[$attendance_value['staff_id']] = $attendance_value;
 
 		    if(isset($staffs_id[$attendance_value['staff_id']])){
 		    	$hourly_rate = (float)$staffs_id[$attendance_value['staff_id']]['hourly_rate'];
 		    	$total_workday = (float)$attendance_value['actual_workday_probation'] + (float)$attendance_value['actual_workday'] + (float)$attendance_value['paid_leave'];
-		    	$basic_salary = $hourly_rate * $total_workday;
+		    	$basic_salary = max(0, $hourly_rate * ($total_workday - $ot_pay_hours_deducted));
 		    	$attendance_value['basic_salary'] = $basic_salary;
 
 		    	$staffs_id[$attendance_value['staff_id']] = array_merge($staffs_id[$attendance_value['staff_id']], $attendance_value);
@@ -8592,6 +8616,267 @@ order by staff_id, header_oder
 		$dir .= $file_name;
 
 		$pdf->Output($dir, 'F');
+	}
+
+	/**
+	 * read an option of the Timesheet module without failing when it is not installed
+	 * @param  string $name
+	 * @param  mixed $default
+	 * @return mixed
+	 */
+	public function get_ot_ts_option($name, $default = '')
+	{
+		if (!$this->db->table_exists(db_prefix() . 'timesheets_option')) {
+			return $default;
+		}
+		$this->db->where('option_name', $name);
+		$row = $this->db->get(db_prefix() . 'timesheets_option')->row();
+		return $row ? $row->option_val : $default;
+	}
+
+	/**
+	 * save the Overtime section of the Payroll settings
+	 * @param  array $data
+	 * @return boolean
+	 */
+	public function save_overtime_settings($data)
+	{
+		$options = [
+			'hrp_ot_morning_rate' => isset($data['hrp_ot_morning_rate']) && is_numeric($data['hrp_ot_morning_rate']) ? $data['hrp_ot_morning_rate'] : '1.35',
+			'hrp_ot_night_rate' => isset($data['hrp_ot_night_rate']) && is_numeric($data['hrp_ot_night_rate']) ? $data['hrp_ot_night_rate'] : '1.7',
+			'hrp_ot_cap_enabled' => isset($data['hrp_ot_cap_enabled']) ? 1 : 0,
+			'hrp_ot_separate_columns' => isset($data['hrp_ot_separate_columns']) ? 1 : 0,
+		];
+		$affected = 0;
+		foreach ($options as $name => $value) {
+			$this->db->where('option_name', $name);
+			if ($this->db->get(db_prefix() . 'hr_payroll_option')->row()) {
+				$this->db->where('option_name', $name);
+				$this->db->update(db_prefix() . 'hr_payroll_option', ['option_val' => $value]);
+				if ($this->db->affected_rows() > 0) {
+					$affected++;
+				}
+			} else {
+				$this->db->insert(db_prefix() . 'hr_payroll_option', ['option_name' => $name, 'option_val' => $value, 'auto' => 1]);
+				$affected++;
+			}
+		}
+		return $affected > 0;
+	}
+
+	/**
+	 * get overtime cap rows
+	 * @param  string $rel_type department or staff
+	 * @return array
+	 */
+	public function get_ot_cap_limits($rel_type)
+	{
+		$this->db->where('rel_type', $rel_type);
+		return $this->db->get(db_prefix() . 'hrp_ot_cap_limits')->result_array();
+	}
+
+	/**
+	 * add or update the cap of one department or one employee
+	 * @param  array $data rel_type, rel_id, max_hours
+	 * @return boolean
+	 */
+	public function save_ot_cap_limit($data)
+	{
+		if (!in_array($data['rel_type'], ['department', 'staff']) || !is_numeric($data['rel_id']) || !is_numeric($data['max_hours']) || $data['max_hours'] < 0) {
+			return false;
+		}
+		$this->db->where('rel_type', $data['rel_type']);
+		$this->db->where('rel_id', $data['rel_id']);
+		$row = $this->db->get(db_prefix() . 'hrp_ot_cap_limits')->row();
+		if ($row) {
+			$this->db->where('id', $row->id);
+			$this->db->update(db_prefix() . 'hrp_ot_cap_limits', ['max_hours' => $data['max_hours']]);
+			return true;
+		}
+		$this->db->insert(db_prefix() . 'hrp_ot_cap_limits', [
+			'rel_type' => $data['rel_type'],
+			'rel_id' => $data['rel_id'],
+			'max_hours' => $data['max_hours'],
+		]);
+		return $this->db->insert_id() > 0;
+	}
+
+	/**
+	 * delete one overtime cap row
+	 * @param  integer $id
+	 * @return boolean
+	 */
+	public function delete_ot_cap_limit($id)
+	{
+		$this->db->where('id', $id);
+		$this->db->delete(db_prefix() . 'hrp_ot_cap_limits');
+		return $this->db->affected_rows() > 0;
+	}
+
+	/**
+	 * Split the approved overtime of a staff member into morning and night hours.
+	 * Source: timesheets_additional_timesheet (timekeeping_type OT, status 1); the hours of one
+	 * record are spread over the morning and night windows by its time_in and time_out.
+	 * @param  integer $staff_id
+	 * @param  string $start_date Y-m-d
+	 * @param  string $end_date Y-m-d
+	 * @return array ['morning' => float, 'night' => float]
+	 */
+	public function split_overtime_hours($staff_id, $start_date, $end_date)
+	{
+		$records = $this->get_ot_records($staff_id, $start_date, $end_date);
+		$split_enabled = $this->get_ot_ts_option('ts_ot_split_enabled', 0) == 1;
+		$morning = 0;
+		$night = 0;
+
+		foreach ($records as $record) {
+			$hours = (float) $record['timekeeping_value'];
+			if (!$split_enabled || empty($record['time_in']) || empty($record['time_out'])) {
+				$morning += $hours;
+				continue;
+			}
+
+			$day = strtotime($record['additional_day']);
+			$in = strtotime(date('Y-m-d', $day) . ' ' . $record['time_in']);
+			$out = strtotime(date('Y-m-d', $day) . ' ' . $record['time_out']);
+			if ($out <= $in) {
+				$out += 86400;
+			}
+			$total_seconds = $out - $in;
+
+			$morning_seconds = $this->ot_window_overlap($in, $out, $day, $this->get_ot_ts_option('ts_ot_morning_start', '06:00'), $this->get_ot_ts_option('ts_ot_morning_end', '22:00'));
+			$night_seconds = $this->ot_window_overlap($in, $out, $day, $this->get_ot_ts_option('ts_ot_night_start', '22:00'), $this->get_ot_ts_option('ts_ot_night_end', '06:00'));
+			// time outside both windows counts as morning
+			$morning_seconds += max(0, $total_seconds - $morning_seconds - $night_seconds);
+
+			// keep the approved hours of the record, spread in the proportion of the windows
+			$morning += $hours * ($morning_seconds / $total_seconds);
+			$night += $hours * ($night_seconds / $total_seconds);
+		}
+
+		return ['morning' => round($morning, 2), 'night' => round($night, 2)];
+	}
+
+	/**
+	 * approved overtime records of a staff member in a date range
+	 * @return array
+	 */
+	public function get_ot_records($staff_id, $start_date, $end_date)
+	{
+		$this->db->where('creator', $staff_id);
+		$this->db->where('timekeeping_type', 'OT');
+		$this->db->where('status', 1);
+		$this->db->where('additional_day >=', $start_date);
+		$this->db->where('additional_day <=', $end_date);
+		return $this->db->get(db_prefix() . 'timesheets_additional_timesheet')->result_array();
+	}
+
+	/**
+	 * seconds of [$in, $out] that fall inside a daily window (window may cross midnight)
+	 */
+	private function ot_window_overlap($in, $out, $day, $window_start, $window_end)
+	{
+		$seconds = 0;
+		for ($offset = -1; $offset <= 1; $offset++) {
+			$base = date('Y-m-d', strtotime(($offset >= 0 ? '+' : '') . $offset . ' day', $day));
+			$ws = strtotime($base . ' ' . $window_start);
+			$we = strtotime($base . ' ' . $window_end);
+			if ($we <= $ws) {
+				$we += 86400;
+			}
+			$seconds += max(0, min($out, $we) - max($in, $ws));
+		}
+		return $seconds;
+	}
+
+	/**
+	 * total late-arrival hours in a date range (timesheets_timesheet rows of type L)
+	 * @return float
+	 */
+	public function get_late_hours($staff_id, $start_date, $end_date)
+	{
+		if (!$this->db->table_exists(db_prefix() . 'timesheets_timesheet')) {
+			return 0;
+		}
+		$this->db->select_sum('value');
+		$this->db->where('staff_id', $staff_id);
+		$this->db->where('type', 'L');
+		$this->db->where('date_work >=', $start_date);
+		$this->db->where('date_work <=', $end_date);
+		$row = $this->db->get(db_prefix() . 'timesheets_timesheet')->row();
+		return $row ? round((float) $row->value, 2) : 0;
+	}
+
+	/**
+	 * How much of the late hours above the monthly allowance is deducted, and from what.
+	 * @return array ['ot_hours_deducted' => float, 'pay_hours_deducted' => float]
+	 */
+	public function get_ot_deduction_from_delay($staff_id, $start_date, $end_date, $ot_eligible)
+	{
+		if ($this->get_ot_ts_option('ts_delay_allowance_enabled', 0) != 1) {
+			return ['ot_hours_deducted' => 0, 'pay_hours_deducted' => 0];
+		}
+		$late_hours = $this->get_late_hours($staff_id, $start_date, $end_date);
+		$excess = max(0, $late_hours - (float) $this->get_ot_ts_option('ts_delay_allowance_hours', 4));
+		if ($ot_eligible) {
+			return ['ot_hours_deducted' => $excess, 'pay_hours_deducted' => 0];
+		}
+		return ['ot_hours_deducted' => 0, 'pay_hours_deducted' => $excess];
+	}
+
+	/**
+	 * Monthly overtime cap of a staff member: employee value first, then department, else null.
+	 * When a staff member is in several departments the highest department cap is used.
+	 * @return float|null
+	 */
+	public function get_ot_cap($staff_id)
+	{
+		if (get_hr_payroll_option('hrp_ot_cap_enabled') != 1) {
+			return null;
+		}
+		$this->db->where('rel_type', 'staff');
+		$this->db->where('rel_id', $staff_id);
+		$row = $this->db->get(db_prefix() . 'hrp_ot_cap_limits')->row();
+		if ($row) {
+			return (float) $row->max_hours;
+		}
+
+		$department_ids = $this->get_staff_departments($staff_id, true);
+		if (count($department_ids) > 0) {
+			$this->db->select_max('max_hours');
+			$this->db->where('rel_type', 'department');
+			$this->db->where_in('rel_id', $department_ids);
+			$row = $this->db->get(db_prefix() . 'hrp_ot_cap_limits')->row();
+			if ($row && $row->max_hours !== null) {
+				return (float) $row->max_hours;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * A staff member is OT-eligible when at least one approved OT record exists in the range.
+	 * (No explicit eligibility flag exists in the codebase.)
+	 */
+	public function is_ot_eligible($staff_id, $start_date, $end_date)
+	{
+		return count($this->get_ot_records($staff_id, $start_date, $end_date)) > 0;
+	}
+
+	/**
+	 * Full overtime result: split, delay deduction, then cap.
+	 * @return array
+	 */
+	public function calculate_ot_result($staff_id, $start_date, $end_date, $ot_eligible)
+	{
+		$split = $this->split_overtime_hours($staff_id, $start_date, $end_date);
+		$deduction = $this->get_ot_deduction_from_delay($staff_id, $start_date, $end_date, $ot_eligible);
+		$late_excess = $deduction['ot_hours_deducted'] + $deduction['pay_hours_deducted'];
+		$result = hrp_ot_apply_rules($split['morning'], $split['night'], $late_excess, $ot_eligible, $this->get_ot_cap($staff_id));
+
+		$result['morning_amount_factor'] = (float) get_hr_payroll_option('hrp_ot_morning_rate');
+		$result['night_amount_factor'] = (float) get_hr_payroll_option('hrp_ot_night_rate');
+		return $result;
 	}
 
 //End file
