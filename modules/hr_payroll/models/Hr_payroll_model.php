@@ -8671,6 +8671,7 @@ order by staff_id, header_oder
 			'hrp_ot_morning_rate' => isset($data['hrp_ot_morning_rate']) && is_numeric($data['hrp_ot_morning_rate']) ? $data['hrp_ot_morning_rate'] : '1.35',
 			'hrp_ot_night_rate' => isset($data['hrp_ot_night_rate']) && is_numeric($data['hrp_ot_night_rate']) ? $data['hrp_ot_night_rate'] : '1.7',
 			'hrp_ot_cap_enabled' => isset($data['hrp_ot_cap_enabled']) ? 1 : 0,
+			'hrp_ot_eligibility_enabled' => isset($data['hrp_ot_eligibility_enabled']) ? 1 : 0,
 			'hrp_ot_separate_columns' => isset($data['hrp_ot_separate_columns']) ? 1 : 0,
 		];
 		$affected = 0;
@@ -8708,23 +8709,35 @@ order by staff_id, header_oder
 	 */
 	public function save_ot_cap_limit($data)
 	{
-		if (!in_array($data['rel_type'], ['department', 'staff']) || !is_numeric($data['rel_id']) || !is_numeric($data['max_hours']) || $data['max_hours'] < 0) {
+		if (!isset($data['rel_type']) || !in_array($data['rel_type'], ['department', 'staff']) || !isset($data['max_hours']) || !is_numeric($data['max_hours']) || $data['max_hours'] < 0) {
 			return false;
 		}
-		$this->db->where('rel_type', $data['rel_type']);
-		$this->db->where('rel_id', $data['rel_id']);
-		$row = $this->db->get(db_prefix() . 'hrp_ot_cap_limits')->row();
-		if ($row) {
-			$this->db->where('id', $row->id);
-			$this->db->update(db_prefix() . 'hrp_ot_cap_limits', ['max_hours' => $data['max_hours']]);
-			return true;
+		// rel_ids[] is the multi-select; a single rel_id is still accepted
+		$rel_ids = isset($data['rel_ids']) && is_array($data['rel_ids']) ? $data['rel_ids'] : (isset($data['rel_id']) ? [$data['rel_id']] : []);
+		$saved = 0;
+		foreach (array_unique($rel_ids) as $rel_id) {
+			if (!is_numeric($rel_id)) {
+				continue;
+			}
+			$this->db->where('rel_type', $data['rel_type']);
+			$this->db->where('rel_id', $rel_id);
+			$row = $this->db->get(db_prefix() . 'hrp_ot_cap_limits')->row();
+			if ($row) {
+				$this->db->where('id', $row->id);
+				$this->db->update(db_prefix() . 'hrp_ot_cap_limits', ['max_hours' => $data['max_hours']]);
+				$saved++;
+			} else {
+				$this->db->insert(db_prefix() . 'hrp_ot_cap_limits', [
+					'rel_type' => $data['rel_type'],
+					'rel_id' => $rel_id,
+					'max_hours' => $data['max_hours'],
+				]);
+				if ($this->db->insert_id() > 0) {
+					$saved++;
+				}
+			}
 		}
-		$this->db->insert(db_prefix() . 'hrp_ot_cap_limits', [
-			'rel_type' => $data['rel_type'],
-			'rel_id' => $data['rel_id'],
-			'max_hours' => $data['max_hours'],
-		]);
-		return $this->db->insert_id() > 0;
+		return $saved > 0;
 	}
 
 	/**
@@ -8845,6 +8858,7 @@ order by staff_id, header_oder
 		$late_hours = $this->get_late_hours($staff_id, $start_date, $end_date);
 		$excess = max(0, $late_hours - (float) $this->get_ot_ts_option('ts_delay_allowance_hours', 4));
 		if ($ot_eligible) {
+			// all excess is first taken from OT; hrp_ot_apply_rules moves the part OT cannot cover to pay hours
 			return ['ot_hours_deducted' => $excess, 'pay_hours_deducted' => 0];
 		}
 		return ['ot_hours_deducted' => 0, 'pay_hours_deducted' => $excess];
@@ -8884,9 +8898,72 @@ order by staff_id, header_oder
 	 * A staff member is OT-eligible when at least one approved OT record exists in the range.
 	 * (No explicit eligibility flag exists in the codebase.)
 	 */
-	public function is_ot_eligible($staff_id, $start_date, $end_date)
+	public function is_ot_eligible($staff_id, $start_date = null, $end_date = null)
 	{
-		return count($this->get_ot_records($staff_id, $start_date, $end_date)) > 0;
+		if (get_hr_payroll_option('hrp_ot_eligibility_enabled') != 1) {
+			return true;
+		}
+		$this->db->where('rel_type', 'staff');
+		$this->db->where('rel_id', $staff_id);
+		if ($this->db->count_all_results(db_prefix() . 'hrp_ot_eligibility') > 0) {
+			return true;
+		}
+		$department_ids = $this->get_staff_departments($staff_id, true);
+		if (count($department_ids) > 0) {
+			$this->db->where('rel_type', 'department');
+			$this->db->where_in('rel_id', $department_ids);
+			return $this->db->count_all_results(db_prefix() . 'hrp_ot_eligibility') > 0;
+		}
+		return false;
+	}
+
+	/**
+	 * get overtime eligibility rows
+	 * @param  string $rel_type department or staff
+	 * @return array
+	 */
+	public function get_ot_eligibility($rel_type)
+	{
+		$this->db->where('rel_type', $rel_type);
+		return $this->db->get(db_prefix() . 'hrp_ot_eligibility')->result_array();
+	}
+
+	/**
+	 * add one eligibility row per selected department or employee (duplicates skipped)
+	 * @param  array $data rel_type, rel_ids[]
+	 * @return boolean
+	 */
+	public function add_ot_eligibility($data)
+	{
+		if (!isset($data['rel_type']) || !in_array($data['rel_type'], ['department', 'staff']) || empty($data['rel_ids']) || !is_array($data['rel_ids'])) {
+			return false;
+		}
+		$added = 0;
+		foreach (array_unique($data['rel_ids']) as $rel_id) {
+			if (!is_numeric($rel_id)) {
+				continue;
+			}
+			$this->db->where('rel_type', $data['rel_type']);
+			$this->db->where('rel_id', $rel_id);
+			if ($this->db->count_all_results(db_prefix() . 'hrp_ot_eligibility') > 0) {
+				continue;
+			}
+			$this->db->insert(db_prefix() . 'hrp_ot_eligibility', ['rel_type' => $data['rel_type'], 'rel_id' => $rel_id]);
+			$added++;
+		}
+		return $added > 0;
+	}
+
+	/**
+	 * delete one eligibility row
+	 * @param  integer $id
+	 * @return boolean
+	 */
+	public function delete_ot_eligibility($id)
+	{
+		$this->db->where('id', $id);
+		$this->db->delete(db_prefix() . 'hrp_ot_eligibility');
+		return $this->db->affected_rows() > 0;
 	}
 
 	/**

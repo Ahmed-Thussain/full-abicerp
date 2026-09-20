@@ -1339,6 +1339,7 @@ function hrp_ot_apply_rules($morning, $night, $late_excess, $ot_eligible, $cap)
 	$pay_hours_deducted = 0;
 	if ($ot_eligible) {
 		$delay_deducted = min($late_excess, $morning + $night);
+		$pay_hours_deducted = $late_excess - $delay_deducted; // OT cannot cover it: taken 1:1 from working hours
 		$from_morning = min($morning, $delay_deducted);
 		$morning -= $from_morning;
 		$night -= ($delay_deducted - $from_morning);

@@ -239,6 +239,8 @@ class hr_payroll extends AdminController {
 			$data['staffs'] = $this->staff_model->get('', ['active' => 1]);
 			$data['department_caps'] = $this->hr_payroll_model->get_ot_cap_limits('department');
 			$data['staff_caps'] = $this->hr_payroll_model->get_ot_cap_limits('staff');
+			$data['department_eligibility'] = $this->hr_payroll_model->get_ot_eligibility('department');
+			$data['staff_eligibility'] = $this->hr_payroll_model->get_ot_eligibility('staff');
 		} elseif($data['group'] == 'currency_rates'){
             $this->load->model('currencies_model');
             $this->hr_payroll_model->check_auto_create_currency_rate();
@@ -455,6 +457,38 @@ class hr_payroll extends AdminController {
 				set_alert('warning', _l('hrp_updated_failed'));
 			}
 		}
+		redirect(admin_url('hr_payroll/setting?group=overtime_settings'));
+	}
+
+	/**
+	 * add overtime eligibility rows (one per selected department / employee)
+	 */
+	public function save_ot_eligibility() {
+		if (!has_permission('hrp_setting', '', 'edit') && !is_admin()) {
+			access_denied('hrp_setting');
+		}
+		if ($this->input->post()) {
+			$post = $this->input->post();
+			$ok = false;
+			foreach (['department' => 'department_ids', 'staff' => 'staff_ids'] as $type => $field) {
+				if (!empty($post[$field]) && is_array($post[$field])) {
+					$ok = $this->hr_payroll_model->add_ot_eligibility(['rel_type' => $type, 'rel_ids' => $post[$field]]) || $ok;
+				}
+			}
+			set_alert($ok ? 'success' : 'warning', $ok ? _l('hrp_ot_eligibility_saved') : _l('hrp_updated_failed'));
+		}
+		redirect(admin_url('hr_payroll/setting?group=overtime_settings'));
+	}
+
+	/**
+	 * delete an overtime eligibility row
+	 * @param  integer $id
+	 */
+	public function delete_ot_eligibility($id) {
+		if (!has_permission('hrp_setting', '', 'edit') && !is_admin()) {
+			access_denied('hrp_setting');
+		}
+		$this->hr_payroll_model->delete_ot_eligibility($id);
 		redirect(admin_url('hr_payroll/setting?group=overtime_settings'));
 	}
 

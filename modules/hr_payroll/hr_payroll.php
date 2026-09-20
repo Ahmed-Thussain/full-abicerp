@@ -5,7 +5,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 /*
 Module Name: HR Payroll
 Description: This module encompasses everything that goes into onboarding and paying your employees.
-Version: 1.2.0
+Version: 1.2.1
 Requires at least: 2.3.*
 Author: GreenTech Solutions
 Author URI: https://codecanyon.net/user/greentech_solutions

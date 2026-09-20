@@ -64,6 +64,11 @@ check('Delay spills into night', hrp_ot_apply_rules(2, 10, 5, true, null), [
 	'morning_paid' => 0, 'night_paid' => 7, 'delay_deducted' => 5,
 ]);
 
+// Delay: OT cannot cover it, the remainder comes off working-hours pay 1:1
+check('Late excess 5, OT 3', hrp_ot_apply_rules(1, 2, 5, true, null), [
+	'delay_deducted' => 3, 'pay_hours_deducted' => 2, 'final_total' => 0,
+]);
+
 // Under the cap nothing is discarded
 check('Under cap', hrp_ot_apply_rules(3, 4, 0, true, 12), [
 	'morning_paid' => 3, 'night_paid' => 4, 'discarded' => 0, 'final_total' => 7,
