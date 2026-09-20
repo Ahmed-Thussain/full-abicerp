@@ -17,7 +17,7 @@ class Migration_Version_121 extends App_module_migration
 			`rel_type` VARCHAR(20) NOT NULL,
 			`rel_id` INT(11) NOT NULL,
 			PRIMARY KEY (`id`)
-		) ENGINE=InnoDB DEFAULT CHARSET=" . $CI->db->char_set . ';');
+		) ENGINE=InnoDB DEFAULT CHARSET=" . $CI->db->char_set . ($CI->db->char_set == 'utf8mb4' ? ' COLLATE utf8mb4_general_ci' : '') . ';');
 		}
 	}
 }

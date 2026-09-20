@@ -27,7 +27,7 @@ class Migration_Version_148 extends App_module_migration
                 `datecreated` DATETIME DEFAULT CURRENT_TIMESTAMP,
                 PRIMARY KEY (`id`),
                 KEY `pair_from_idx` (`from_currency_name`, `to_currency_name`, `effective_from`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=' . $CI->db->char_set . ';');
+            ) ENGINE=InnoDB DEFAULT CHARSET=' . $CI->db->char_set . ($CI->db->char_set == 'utf8mb4' ? ' COLLATE utf8mb4_general_ci' : '') . ';');
         }
 
         // Document / secondary currency amounts stored on each ledger line.
@@ -57,7 +57,7 @@ class Migration_Version_148 extends App_module_migration
                 `sec_currency` VARCHAR(20) NULL,
                 `datecreated` DATETIME DEFAULT CURRENT_TIMESTAMP,
                 PRIMARY KEY (`id`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=' . $CI->db->char_set . ';');
+            ) ENGINE=InnoDB DEFAULT CHARSET=' . $CI->db->char_set . ($CI->db->char_set == 'utf8mb4' ? ' COLLATE utf8mb4_general_ci' : '') . ';');
         }
     }
 }

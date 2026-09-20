@@ -1929,7 +1929,7 @@ if (!$CI->db->table_exists(db_prefix() . 'acc_currency_rate_periods')) {
         `datecreated` DATETIME DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (`id`),
         KEY `pair_from_idx` (`from_currency_name`, `to_currency_name`, `effective_from`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=' . $CI->db->char_set . ';');
+    ) ENGINE=InnoDB DEFAULT CHARSET=' . $CI->db->char_set . ($CI->db->char_set == 'utf8mb4' ? ' COLLATE utf8mb4_general_ci' : '') . ';');
 }
 
 foreach ([
@@ -1955,5 +1955,5 @@ if (!$CI->db->table_exists(db_prefix() . 'acc_rate_backfill_report')) {
         `sec_currency` VARCHAR(20) NULL,
         `datecreated` DATETIME DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (`id`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=' . $CI->db->char_set . ';');
+    ) ENGINE=InnoDB DEFAULT CHARSET=' . $CI->db->char_set . ($CI->db->char_set == 'utf8mb4' ? ' COLLATE utf8mb4_general_ci' : '') . ';');
 }

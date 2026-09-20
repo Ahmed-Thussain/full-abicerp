@@ -25,7 +25,7 @@ class Migration_Version_119 extends App_module_migration
 			`rel_id` INT(11) NOT NULL,
 			`max_hours` DECIMAL(10,2) NOT NULL DEFAULT '0.00',
 			PRIMARY KEY (`id`)
-		) ENGINE=InnoDB DEFAULT CHARSET=" . $CI->db->char_set . ';');
+		) ENGINE=InnoDB DEFAULT CHARSET=" . $CI->db->char_set . ($CI->db->char_set == 'utf8mb4' ? ' COLLATE utf8mb4_general_ci' : '') . ';');
 		}
 
 		$columns = [

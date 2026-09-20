@@ -1004,7 +1004,7 @@ if (!$CI->db->table_exists(db_prefix() . 'hrp_ot_eligibility')) {
 			`rel_type` VARCHAR(20) NOT NULL,
 			`rel_id` INT(11) NOT NULL,
 			PRIMARY KEY (`id`)
-		) ENGINE=InnoDB DEFAULT CHARSET=" . $CI->db->char_set . ';');
+		) ENGINE=InnoDB DEFAULT CHARSET=" . $CI->db->char_set . ($CI->db->char_set == 'utf8mb4' ? ' COLLATE utf8mb4_general_ci' : '') . ';');
 }
 
 if (!$CI->db->table_exists(db_prefix() . 'hrp_ot_cap_limits')) {
@@ -1014,7 +1014,7 @@ if (!$CI->db->table_exists(db_prefix() . 'hrp_ot_cap_limits')) {
 			`rel_id` INT(11) NOT NULL,
 			`max_hours` DECIMAL(10,2) NOT NULL DEFAULT '0.00',
 			PRIMARY KEY (`id`)
-		) ENGINE=InnoDB DEFAULT CHARSET=" . $CI->db->char_set . ';');
+		) ENGINE=InnoDB DEFAULT CHARSET=" . $CI->db->char_set . ($CI->db->char_set == 'utf8mb4' ? ' COLLATE utf8mb4_general_ci' : '') . ';');
 }
 
 if (hr_payroll_payroll_column_exist('"ot_morning_hours"') == 0){
