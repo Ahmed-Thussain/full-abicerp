@@ -26,12 +26,36 @@ function mcs_current_slug()
 }
 
 /**
+ * perfex_saas_raw_query() binds parameters by array key, and PDO positional (?) placeholders start at 1,
+ * so a plain list never binds. Turn "?" into named placeholders (:p0, :p1, ...) first.
+ * The SQL passed in must not contain a literal "?" inside a string.
+ *
+ * @return array [sql, params]
+ */
+function mcs_named($sql, array $params)
+{
+    $i   = 0;
+    $sql = preg_replace_callback('/\?/', function () use (&$i) {
+        return ':p' . $i++;
+    }, $sql);
+
+    $named = [];
+    foreach (array_values($params) as $index => $value) {
+        $named[':p' . $index] = $value;
+    }
+
+    return [$sql, $named];
+}
+
+/**
  * Query on the main (master) database.
  *
  * @return mixed rows (array of objects/arrays) when $return is true
  */
 function mcs_master_query($sql, array $params = [], $return = false)
 {
+    list($sql, $params) = mcs_named($sql, $params);
+
     return perfex_saas_raw_query($sql, [], $return, true, null, false, true, $params);
 }
 
@@ -40,6 +64,8 @@ function mcs_master_query($sql, array $params = [], $return = false)
  */
 function mcs_company_query($slug, $sql, array $params = [], $return = false)
 {
+    list($sql, $params) = mcs_named($sql, $params);
+
     return perfex_saas_raw_query($sql, mcs_company_dsn($slug), $return, true, null, false, true, $params);
 }
 

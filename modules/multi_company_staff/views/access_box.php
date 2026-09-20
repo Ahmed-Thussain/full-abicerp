@@ -21,3 +21,16 @@
         <?php } ?>
     </div>
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var box = document.getElementById('mcs-access-box');
+    var role = document.querySelector('#staff_permissions select[name="role"]');
+    if (!box || !role) {
+        return;
+    }
+    var group = role.closest('.form-group');
+    if (group && group.parentNode) {
+        group.parentNode.insertBefore(box, group.nextSibling);
+    }
+});
+</script>
