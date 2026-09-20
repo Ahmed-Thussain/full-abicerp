@@ -7561,6 +7561,109 @@ class Accounting_model extends App_Model
     }
     
     /**
+     * get data cashflow monthly
+     * Cash movement (debit - credit on Bank/Cash accounts) per month, attributed to the
+     * counterpart accounts of the same document. Base-currency debit/credit only.
+     * @param  integer $year
+     * @return array ['data' => rows, 'month_totals' => [1..12], 'total' => float, 'year' => int]
+     */
+    public function get_data_cashflow_monthly($year){
+        $year = (int) $year;
+        $from_date = $year.'-01-01';
+        $to_date = $year.'-12-31';
+        $acc_enable_account_numbers = get_option('acc_enable_account_numbers');
+        $acc_show_account_numbers = get_option('acc_show_account_numbers');
+        $empty_months = array_fill(1, 12, 0);
+
+        $this->db->where_in('account_type_id', [3, 16]);
+        $cash_accounts = $this->db->get(db_prefix().'acc_accounts')->result_array();
+        $cash_ids = array_column($cash_accounts, 'id');
+
+        $result = ['data' => [], 'month_totals' => $empty_months, 'total' => 0, 'year' => $year];
+        if (count($cash_ids) == 0) {
+            return $result;
+        }
+
+        $this->db->select('id, account, debit, credit, rel_id, rel_type, MONTH(date) as m');
+        $this->db->where('(date >= "' . $from_date . '" and date <= "' . $to_date . '")');
+        $this->db->where_in('account', $cash_ids);
+        $cash_lines = $this->db->get(db_prefix().'acc_account_history')->result_array();
+
+        $groups = [];
+        $rel_ids = [];
+        foreach ($cash_lines as $line) {
+            $key = (!empty($line['rel_id'])) ? $line['rel_type'].'|'.$line['rel_id'].'|'.$line['m'] : 'line|'.$line['id'];
+            if (!isset($groups[$key])) {
+                $groups[$key] = ['month' => (int) $line['m'], 'cash' => 0, 'counter' => []];
+            }
+            $groups[$key]['cash'] += $line['debit'] - $line['credit'];
+            if (!empty($line['rel_id'])) {
+                $rel_ids[$line['rel_id']] = $line['rel_id'];
+            }
+        }
+
+        // counterpart lines of the same documents
+        foreach (array_chunk(array_values($rel_ids), 500) as $chunk) {
+            $this->db->select('account, debit, credit, rel_id, rel_type, MONTH(date) as m');
+            $this->db->where('(date >= "' . $from_date . '" and date <= "' . $to_date . '")');
+            $this->db->where_in('rel_id', $chunk);
+            $this->db->where_not_in('account', $cash_ids);
+            $lines = $this->db->get(db_prefix().'acc_account_history')->result_array();
+            foreach ($lines as $line) {
+                $key = $line['rel_type'].'|'.$line['rel_id'].'|'.$line['m'];
+                if (!isset($groups[$key])) {
+                    continue;
+                }
+                if (!isset($groups[$key]['counter'][$line['account']])) {
+                    $groups[$key]['counter'][$line['account']] = 0;
+                }
+                $groups[$key]['counter'][$line['account']] += $line['credit'] - $line['debit'];
+            }
+        }
+
+        $rows = [];
+        foreach ($groups as $group) {
+            if (count($group['counter']) == 0) {
+                // no counterpart found: keep the movement visible
+                $group['counter'][0] = $group['cash'];
+            }
+            foreach ($group['counter'] as $account_id => $amount) {
+                if (!isset($rows[$account_id])) {
+                    $rows[$account_id] = $empty_months;
+                }
+                $rows[$account_id][$group['month']] += $amount;
+            }
+        }
+
+        $account_names = [];
+        if (count($rows) > 0) {
+            $this->db->where_in('id', array_keys($rows));
+            foreach ($this->db->get(db_prefix().'acc_accounts')->result_array() as $acc) {
+                $name = $acc['name'] != '' ? $acc['name'] : _l($acc['key_name']);
+                if ($acc_enable_account_numbers == 1 && $acc_show_account_numbers == 1 && $acc['number'] != '') {
+                    $name = $acc['number'].' - '.$name;
+                }
+                $account_names[$acc['id']] = $name;
+            }
+        }
+
+        foreach ($rows as $account_id => $months) {
+            $row = ['account_id' => $account_id, 'account_name' => isset($account_names[$account_id]) ? $account_names[$account_id] : _l('acc_unallocated')];
+            $row_total = 0;
+            for ($m = 1; $m <= 12; $m++) {
+                $row['m'.$m] = $months[$m];
+                $row_total += $months[$m];
+                $result['month_totals'][$m] += $months[$m];
+            }
+            $row['total'] = $row_total;
+            $result['total'] += $row_total;
+            $result['data'][] = $row;
+        }
+
+        return $result;
+    }
+
+    /**
      * get data statement of changes in equity
      * @param  array $data_filter 
      * @return array              
