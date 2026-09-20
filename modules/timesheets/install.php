@@ -716,3 +716,26 @@ if (!$CI->db->table_exists(db_prefix() . 'timesheets_kteco_employees')) {
         PRIMARY KEY (`id`)
        ) ENGINE=InnoDB DEFAULT CHARSET=" . $CI->db->char_set . ';');
 }
+
+// Overtime split and late-arrival allowance (migration 125)
+if (row_timesheets_options_exist('"ts_ot_split_enabled"') == 0) {
+	$CI->db->query('INSERT INTO `' . db_prefix() . 'timesheets_option` (`option_name`, `option_val`, `auto`) VALUES ("ts_ot_split_enabled", "0", "1");');
+}
+if (row_timesheets_options_exist('"ts_ot_morning_start"') == 0) {
+	$CI->db->query('INSERT INTO `' . db_prefix() . 'timesheets_option` (`option_name`, `option_val`, `auto`) VALUES ("ts_ot_morning_start", "06:00", "1");');
+}
+if (row_timesheets_options_exist('"ts_ot_morning_end"') == 0) {
+	$CI->db->query('INSERT INTO `' . db_prefix() . 'timesheets_option` (`option_name`, `option_val`, `auto`) VALUES ("ts_ot_morning_end", "22:00", "1");');
+}
+if (row_timesheets_options_exist('"ts_ot_night_start"') == 0) {
+	$CI->db->query('INSERT INTO `' . db_prefix() . 'timesheets_option` (`option_name`, `option_val`, `auto`) VALUES ("ts_ot_night_start", "22:00", "1");');
+}
+if (row_timesheets_options_exist('"ts_ot_night_end"') == 0) {
+	$CI->db->query('INSERT INTO `' . db_prefix() . 'timesheets_option` (`option_name`, `option_val`, `auto`) VALUES ("ts_ot_night_end", "06:00", "1");');
+}
+if (row_timesheets_options_exist('"ts_delay_allowance_enabled"') == 0) {
+	$CI->db->query('INSERT INTO `' . db_prefix() . 'timesheets_option` (`option_name`, `option_val`, `auto`) VALUES ("ts_delay_allowance_enabled", "0", "1");');
+}
+if (row_timesheets_options_exist('"ts_delay_allowance_hours"') == 0) {
+	$CI->db->query('INSERT INTO `' . db_prefix() . 'timesheets_option` (`option_name`, `option_val`, `auto`) VALUES ("ts_delay_allowance_hours", "4", "1");');
+}

@@ -58,6 +58,26 @@
 		    <?php echo render_select('csv_clsx_role[]',$role,array('roleid', 'name'),'timekeeping_applicable_object',$csv_clsx_role,array('multiple'=>true,'data-actions-box'=>true),array(),'','',false); ?>   	
 		  </div>
 	  </div>
+	  <div class="col-md-12"><hr></div>
+	  <div class="col-md-12">
+	  	<div class="checkbox checkbox-primary">
+	  		<input type="checkbox" name="ts_ot_split_enabled" id="ts_ot_split_enabled" value="1" <?php if(get_timesheets_option('ts_ot_split_enabled') == 1){ echo 'checked'; } ?>>
+	  		<label for="ts_ot_split_enabled"><?php echo _l('ts_ot_split_enabled'); ?></label>
+	  	</div>
+	  </div>
+	  <div class="col-md-3"><?php echo render_input('ts_ot_morning_start', 'ts_ot_morning_start', get_timesheets_option('ts_ot_morning_start'), 'time'); ?></div>
+	  <div class="col-md-3"><?php echo render_input('ts_ot_morning_end', 'ts_ot_morning_end', get_timesheets_option('ts_ot_morning_end'), 'time'); ?></div>
+	  <div class="col-md-3"><?php echo render_input('ts_ot_night_start', 'ts_ot_night_start', get_timesheets_option('ts_ot_night_start'), 'time'); ?></div>
+	  <div class="col-md-3"><?php echo render_input('ts_ot_night_end', 'ts_ot_night_end', get_timesheets_option('ts_ot_night_end'), 'time'); ?></div>
+
+	  <div class="col-md-12"><hr></div>
+	  <div class="col-md-12">
+	  	<div class="checkbox checkbox-primary">
+	  		<input type="checkbox" name="ts_delay_allowance_enabled" id="ts_delay_allowance_enabled" value="1" <?php if(get_timesheets_option('ts_delay_allowance_enabled') == 1){ echo 'checked'; } ?>>
+	  		<label for="ts_delay_allowance_enabled"><?php echo _l('ts_delay_allowance_enabled'); ?></label>
+	  	</div>
+	  </div>
+	  <div class="col-md-3"><?php echo render_input('ts_delay_allowance_hours', 'ts_delay_allowance_hours', get_timesheets_option('ts_delay_allowance_hours'), 'number', ['min' => 0, 'step' => '0.25']); ?></div>
 	  <div class="row">
 	</div>
 </div>

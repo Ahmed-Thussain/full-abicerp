@@ -979,3 +979,43 @@ if (hr_payroll_payroll_column_exist('"basic_salary"') == 0){
   $CI->db->query('INSERT INTO `' . db_prefix() . 'hrp_payroll_columns` (`column_key`, `taking_method`, `function_name`, `value_related_to`, `display_with_staff`, `description`, `date_created`, `staff_id_created`, `order_display`, `is_edit`) VALUES ("Total Hourly Pay", "system", "basic_salary", "", "true", "Total Hourly Pay", "'.date("Y-m-d H:i:s").'", "'.get_staff_user_id().'", "17", "no");
 ');
 }
+
+// Overtime rates, cap and split columns (migration 119)
+if (row_hr_payroll_options_exist('"hrp_ot_morning_rate"') == 0){
+  $CI->db->query('INSERT INTO `' . db_prefix() . 'hr_payroll_option` (`option_name`,`option_val`, `auto`) VALUES ("hrp_ot_morning_rate", "1.35", "1");');
+}
+if (row_hr_payroll_options_exist('"hrp_ot_night_rate"') == 0){
+  $CI->db->query('INSERT INTO `' . db_prefix() . 'hr_payroll_option` (`option_name`,`option_val`, `auto`) VALUES ("hrp_ot_night_rate", "1.7", "1");');
+}
+if (row_hr_payroll_options_exist('"hrp_ot_cap_enabled"') == 0){
+  $CI->db->query('INSERT INTO `' . db_prefix() . 'hr_payroll_option` (`option_name`,`option_val`, `auto`) VALUES ("hrp_ot_cap_enabled", "0", "1");');
+}
+if (row_hr_payroll_options_exist('"hrp_ot_separate_columns"') == 0){
+  $CI->db->query('INSERT INTO `' . db_prefix() . 'hr_payroll_option` (`option_name`,`option_val`, `auto`) VALUES ("hrp_ot_separate_columns", "0", "1");');
+}
+
+if (!$CI->db->table_exists(db_prefix() . 'hrp_ot_cap_limits')) {
+    $CI->db->query('CREATE TABLE `' . db_prefix() . "hrp_ot_cap_limits` (
+			`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+			`rel_type` VARCHAR(20) NOT NULL,
+			`rel_id` INT(11) NOT NULL,
+			`max_hours` DECIMAL(10,2) NOT NULL DEFAULT '0.00',
+			PRIMARY KEY (`id`)
+		) ENGINE=InnoDB DEFAULT CHARSET=" . $CI->db->char_set . ';');
+}
+
+if (hr_payroll_payroll_column_exist('"ot_morning_hours"') == 0){
+  $CI->db->query('INSERT INTO `' . db_prefix() . 'hrp_payroll_columns` (`column_key`, `taking_method`, `function_name`, `value_related_to`, `display_with_staff`, `description`, `date_created`, `staff_id_created`, `order_display`, `is_edit`) VALUES ("OT Morning Hours", "system", "ot_morning_hours", "", "true", "OT Morning Hours", "'.date("Y-m-d H:i:s").'", "'.get_staff_user_id().'", "12", "no");');
+}
+if (hr_payroll_payroll_column_exist('"ot_night_hours"') == 0){
+  $CI->db->query('INSERT INTO `' . db_prefix() . 'hrp_payroll_columns` (`column_key`, `taking_method`, `function_name`, `value_related_to`, `display_with_staff`, `description`, `date_created`, `staff_id_created`, `order_display`, `is_edit`) VALUES ("OT Night Hours", "system", "ot_night_hours", "", "true", "OT Night Hours", "'.date("Y-m-d H:i:s").'", "'.get_staff_user_id().'", "12", "no");');
+}
+if (hr_payroll_payroll_column_exist('"ot_discarded_hours"') == 0){
+  $CI->db->query('INSERT INTO `' . db_prefix() . 'hrp_payroll_columns` (`column_key`, `taking_method`, `function_name`, `value_related_to`, `display_with_staff`, `description`, `date_created`, `staff_id_created`, `order_display`, `is_edit`) VALUES ("OT Discarded Hours", "system", "ot_discarded_hours", "", "true", "OT Discarded Hours", "'.date("Y-m-d H:i:s").'", "'.get_staff_user_id().'", "12", "no");');
+}
+if (hr_payroll_payroll_column_exist('"delay_deducted_hours"') == 0){
+  $CI->db->query('INSERT INTO `' . db_prefix() . 'hrp_payroll_columns` (`column_key`, `taking_method`, `function_name`, `value_related_to`, `display_with_staff`, `description`, `date_created`, `staff_id_created`, `order_display`, `is_edit`) VALUES ("Delay Deducted Hours", "system", "delay_deducted_hours", "", "true", "Delay Deducted Hours", "'.date("Y-m-d H:i:s").'", "'.get_staff_user_id().'", "12", "no");');
+}
+if (hr_payroll_payroll_column_exist('"ot_final_hours"') == 0){
+  $CI->db->query('INSERT INTO `' . db_prefix() . 'hrp_payroll_columns` (`column_key`, `taking_method`, `function_name`, `value_related_to`, `display_with_staff`, `description`, `date_created`, `staff_id_created`, `order_display`, `is_edit`) VALUES ("OT Final Hours", "system", "ot_final_hours", "", "true", "OT Final Hours", "'.date("Y-m-d H:i:s").'", "'.get_staff_user_id().'", "12", "no");');
+}

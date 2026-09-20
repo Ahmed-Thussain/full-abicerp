@@ -41,6 +41,7 @@ class hr_payroll extends AdminController {
 		$data['tab'][] = 'pdf_payslip_template';
 		$data['tab'][] = 'data_integration';
         $data['tab'][] = 'currency_rates';
+		$data['tab'][] = 'overtime_settings';
 
 		if (is_admin()) {
 			$data['tab'][] = 'permissions';
@@ -230,6 +231,14 @@ class hr_payroll extends AdminController {
 		} elseif($data['group'] == 'pdf_payslip_template'){
 			$data['pdf_payslip_templates'] = $this->hr_payroll_model->get_pdf_payslip_template();
 
+		} elseif ($data['group'] == 'overtime_settings') {
+			$this->load->model('departments_model');
+			$this->load->model('staff_model');
+			$data['title'] = _l('hrp_overtime_settings');
+			$data['departments'] = $this->departments_model->get();
+			$data['staffs'] = $this->staff_model->get('', ['active' => 1]);
+			$data['department_caps'] = $this->hr_payroll_model->get_ot_cap_limits('department');
+			$data['staff_caps'] = $this->hr_payroll_model->get_ot_cap_limits('staff');
 		} elseif($data['group'] == 'currency_rates'){
             $this->load->model('currencies_model');
             $this->hr_payroll_model->check_auto_create_currency_rate();
@@ -416,6 +425,49 @@ class hr_payroll extends AdminController {
 
 		redirect(admin_url('hr_payroll/setting?group=data_integration'));
 
+	}
+
+	/**
+	 * save the Overtime section of the Payroll settings
+	 */
+	public function save_overtime_settings() {
+		if (!has_permission('hrp_setting', '', 'edit') && !is_admin()) {
+			access_denied('hrp_setting');
+		}
+		if ($this->input->post()) {
+			$this->hr_payroll_model->save_overtime_settings($this->input->post());
+			set_alert('success', _l('hrp_updated_successfully'));
+		}
+		redirect(admin_url('hr_payroll/setting?group=overtime_settings'));
+	}
+
+	/**
+	 * add or update an overtime cap for a department or an employee
+	 */
+	public function save_ot_cap_limit() {
+		if (!has_permission('hrp_setting', '', 'edit') && !is_admin()) {
+			access_denied('hrp_setting');
+		}
+		if ($this->input->post()) {
+			if ($this->hr_payroll_model->save_ot_cap_limit($this->input->post())) {
+				set_alert('success', _l('hrp_ot_cap_saved'));
+			} else {
+				set_alert('warning', _l('hrp_updated_failed'));
+			}
+		}
+		redirect(admin_url('hr_payroll/setting?group=overtime_settings'));
+	}
+
+	/**
+	 * delete an overtime cap row
+	 * @param  integer $id
+	 */
+	public function delete_ot_cap_limit($id) {
+		if (!has_permission('hrp_setting', '', 'edit') && !is_admin()) {
+			access_denied('hrp_setting');
+		}
+		$this->hr_payroll_model->delete_ot_cap_limit($id);
+		redirect(admin_url('hr_payroll/setting?group=overtime_settings'));
 	}
 
 	/**

@@ -28,6 +28,7 @@
 								$icon['insurance_list'] = '<span class="fa-brands fa-get-pocket"></span>';
 								$icon['reset_data'] = '<span class="fa fa-window-close-o"></span>';
 								$icon['currency_rates'] = '<span class="fa-solid fa-scale-unbalanced"></span>';
+								$icon['overtime_settings'] = '<span class="fa fa-clock-o"></span>';
 
 
 
@@ -71,6 +72,9 @@
 								echo new_html_entity_decode($icon[$gr] .' '. _l($gr)); 
 
 							}elseif($gr == 'currency_rates'){
+								echo new_html_entity_decode($icon[$gr] .' '. _l('hrp_'.$gr)); 
+
+							}elseif($gr == 'overtime_settings'){
 								echo new_html_entity_decode($icon[$gr] .' '. _l('hrp_'.$gr)); 
 
 							}
