@@ -2,10 +2,9 @@
 <html>
 <head>
 <meta charset="utf-8">
+<?php $this->load->view('report/convert_style'); ?>
 <style>
-  body { font-family: DejaVu Sans, sans-serif; font-size: 12px; }
-  table { width: 100%; border-collapse: collapse; }
-  th, td { border: 1px solid #999; padding: 4px; text-align: left; }
+  body { font-family: DejaVu Serif, sans-serif; font-size: 12px; }
   .num { text-align: right; }
   img { max-width: 100%; }
 </style>

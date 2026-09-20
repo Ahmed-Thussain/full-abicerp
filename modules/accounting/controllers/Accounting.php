@@ -6932,19 +6932,29 @@ class Accounting extends AdminController
         $path     = ACCOUTING_MODULE_UPLOAD_FOLDER . '/journal_entry/' . (int) $id . '/';
         $rejected = [];
 
+        // Total size of everything attached to this entry must stay within 100 MB
+        $total_size = 0;
+        foreach (glob($path . '*') ?: [] as $existing_file) {
+            if (is_file($existing_file)) {
+                $total_size += filesize($existing_file);
+            }
+        }
+
         for ($i = 0; $i < count($_FILES['files']['name']); $i++) {
             $name = $_FILES['files']['name'][$i];
             if ($name == '' || _perfex_upload_error($_FILES['files']['error'][$i])) {
                 continue;
             }
             $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
-            if (!in_array($ext, $allowed) || $_FILES['files']['size'][$i] > 25 * 1024 * 1024) {
+            if (!in_array($ext, $allowed) || $_FILES['files']['size'][$i] > 25 * 1024 * 1024
+                || $total_size + $_FILES['files']['size'][$i] > 100 * 1024 * 1024) {
                 $rejected[] = $name;
                 continue;
             }
             accounting_maybe_create_upload_path($path);
             $filename = unique_filename($path, $name);
             if (move_uploaded_file($_FILES['files']['tmp_name'][$i], $path . $filename)) {
+                $total_size += $_FILES['files']['size'][$i];
                 $this->misc_model->add_attachment_to_database($id, 'acc_journal_entry', [[
                     'file_name' => $filename,
                     'filetype'  => $this->journal_entry_file_mime($filename),
