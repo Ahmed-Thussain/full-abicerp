@@ -1,0 +1,18 @@
+# Secrets / environment
+application/config/app-config.php
+
+# Database dumps (contain tenant data)
+*.sql
+
+# Logs, debug and cache
+error_log
+debug_*.txt
+temp/
+application/cache/*
+!application/cache/index.html
+application/logs/*
+!application/logs/index.html
+
+# Uploads and dependencies
+uploads/
+node_modules/

@@ -1,0 +1,10 @@
+02_04_2025
+Propery: get address by latitude and longitude
+CLient
+- Property public page
+
+03_06_2025
+Properties: fix multiple file attachments
+
+13_11_2025
+fix minor bug
