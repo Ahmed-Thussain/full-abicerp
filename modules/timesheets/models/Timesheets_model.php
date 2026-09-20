@@ -12,6 +12,29 @@ class timesheets_model extends app_model
 	public function __construct()
 	{
 		parent::__construct();
+		$this->ensure_shift_type_day_off_columns();
+	}
+
+	/**
+	 * make sure the day-off columns of the shift type table exist (added in module 1.2.7)
+	 */
+	private function ensure_shift_type_day_off_columns()
+	{
+		static $checked = false;
+		if ($checked) {
+			return;
+		}
+		$checked = true;
+		$table = db_prefix() . 'shift_type';
+		if (!$this->db->table_exists($table)) {
+			return;
+		}
+		if (!$this->db->field_exists('is_day_off', $table)) {
+			$this->db->query('ALTER TABLE `' . $table . '` ADD `is_day_off` TINYINT(1) NOT NULL DEFAULT 0');
+		}
+		if (!$this->db->field_exists('day_off_symbol', $table)) {
+			$this->db->query('ALTER TABLE `' . $table . '` ADD `day_off_symbol` VARCHAR(10) NULL');
+		}
 	}
 
 	/**
@@ -1061,6 +1084,27 @@ class timesheets_model extends app_model
 		$this->db->where('remain >', 0);
 		$this->db->order_by('year', 'desc');
 		return $this->db->get(db_prefix() . 'timesheets_day_off')->result_array();
+	}
+
+	/**
+	 * Annual leave days still available from years before $year (carry-over window).
+	 * 0 when the carry toggle is off.
+	 * @param  integer $staffid
+	 * @param  integer $year
+	 * @return float
+	 */
+	public function get_leave_remain_from_carry($staffid, $year)
+	{
+		if (get_option('ts_leave_carry_enabled') != 1) {
+			return 0.0;
+		}
+		$sum = 0.0;
+		foreach ($this->get_leave_balances($staffid, $year) as $row) {
+			if ((int) $row['year'] < (int) $year) {
+				$sum += (float) $row['remain'];
+			}
+		}
+		return $sum;
 	}
 
 	/**
@@ -2639,6 +2683,61 @@ class timesheets_model extends app_model
 		return $this->db->query('select * from ' . db_prefix() . 'staff' . $query . ' order by firstname desc')->result_array();
 	}
 	/**
+	 * normalize the day-off flag and initial of a shift type
+	 * @param  array $data
+	 * @return array
+	 */
+	private function normalize_shift_type_day_off($data)
+	{
+		$data['is_day_off'] = !empty($data['is_day_off']) ? 1 : 0;
+		if ($data['is_day_off'] == 1) {
+			$symbol = strtoupper(trim(isset($data['day_off_symbol']) ? $data['day_off_symbol'] : ''));
+			$data['day_off_symbol'] = $symbol != '' ? $symbol : 'OFF';
+			$data['time_start_work'] = '';
+			$data['time_end_work'] = '';
+			$data['start_lunch_break_time'] = '';
+			$data['end_lunch_break_time'] = '';
+		} else {
+			$data['day_off_symbol'] = null;
+		}
+		return $data;
+	}
+
+	/**
+	 * get the day-off shift types with their attendance initials
+	 * @return array [symbol => shift type name]
+	 */
+	public function get_day_off_symbols()
+	{
+		$this->db->where('is_day_off', 1);
+		$symbols = [];
+		foreach ($this->db->get(db_prefix() . 'shift_type')->result_array() as $row) {
+			$symbol = $row['day_off_symbol'] != '' ? $row['day_off_symbol'] : 'OFF';
+			if (!isset($symbols[$symbol])) {
+				$symbols[$symbol] = $row['shift_type_name'];
+			}
+		}
+		return $symbols;
+	}
+
+	/**
+	 * get the day-off initial of a staff member on a date, '' when the day is not an assigned day off
+	 * @param  integer $staff_id
+	 * @param  string $date Y-m-d
+	 * @return string
+	 */
+	public function get_day_off_symbol($staff_id, $date)
+	{
+		foreach ($this->get_shift_work_staff_by_date($staff_id, $date) as $shift_type_id) {
+			$shift_type = $this->get_shift_type($shift_type_id);
+			if ($shift_type && !empty($shift_type->is_day_off)) {
+				return $shift_type->day_off_symbol != '' ? $shift_type->day_off_symbol : 'OFF';
+			}
+		}
+		return '';
+	}
+
+	/**
 	 * add shift type
 	 * @param integer
 	 */
@@ -2656,6 +2755,8 @@ class timesheets_model extends app_model
 				$data['time_end'] = to_sql_date($data['time_end']);
 			}
 		}
+
+		$data = $this->normalize_shift_type_day_off($data);
 
 		if($data['time_end_work'] == '00:00'){
 			$data['time_end_work'] = '24:00';
@@ -2686,6 +2787,8 @@ class timesheets_model extends app_model
 				$data['time_end'] = to_sql_date($data['time_end']);
 			}
 		}
+
+		$data = $this->normalize_shift_type_day_off($data);
 
 		if($data['time_end_work'] == '00:00'){
 			$data['time_end_work'] = '24:00';
@@ -5208,6 +5311,7 @@ class timesheets_model extends app_model
 	public function add_update_timesheet($data, $is_timesheets = false)
 	{
 		$type_valid = ['AL', 'W', 'U', 'HO', 'E', 'L', 'B', 'SI', 'M', 'ME', 'NS', 'P', 'OT'];
+		$type_valid = array_merge($type_valid, array_keys($this->get_day_off_symbols()));
 		$data_type_of_leave = $this->get_type_of_leave();
 		foreach ($data_type_of_leave as $key => $value) {
 			$type_valid[] = $value['symbol'];
@@ -5293,7 +5397,7 @@ class timesheets_model extends app_model
 
 			if ($insert_id) {
 				$m = date('m', strtotime('01-' . $month));
-				$y = date('y', strtotime('01-' . $month));
+				$y = date('Y', strtotime('01-' . $month));
 				$this->db->where('month(date_work) = ' . $m . ' and year(date_work) = ' . $y);
 				$this->db->update(db_prefix() . 'timesheets_timesheet', ['latch' => 1]);
 
@@ -5392,6 +5496,7 @@ class timesheets_model extends app_model
 
 	public function import_timesheets($data)
 	{
+		$timesheet_rows = 0;
 		foreach ($data as $key => $value) {
 			$test = $this->check_ts($value['staffid'], date('Y-m-d', strtotime($value['time_in'])));
 			if ($test->check_in != 0) {
@@ -5421,10 +5526,13 @@ class timesheets_model extends app_model
 					]
 				);
 			}
-			$this->automatic_insert_timesheets($value['staffid'], $value['time_in'], $value['time_out']);
+			if ($this->automatic_insert_timesheets($value['staffid'], $value['time_in'], $value['time_out'])) {
+				$timesheet_rows++;
+			}
 		}
 
-		return true;
+		// number of rows that produced timesheet entries (needs a shift assigned to the staff/date)
+		return $timesheet_rows;
 	}
 
 	/**
@@ -7094,6 +7202,7 @@ class timesheets_model extends app_model
 	public function get_attendance_manual($staffs_list, $month = '', $year = '', $from_date = '', $to_date = '')
 	{
 		$type_valid = ['AL', 'W', 'U', 'HO', 'E', 'L', 'B', 'SI', 'M', 'ME', 'NS', 'P', 'OT'];
+		$type_valid = array_merge($type_valid, array_keys($this->get_day_off_symbols()));
 		$data_type_of_leave = $this->get_type_of_leave();
 		foreach ($data_type_of_leave as $key => $value) {
 			$type_valid[] = $value['symbol'];
@@ -7202,7 +7311,10 @@ class timesheets_model extends app_model
 						}
 					}
 				} else {
-					$result_lack = 'NS';
+					$result_lack = $this->get_day_off_symbol($s['staffid'], $value);
+						if ($result_lack == '') {
+							$result_lack = 'NS';
+						}
 				}
 				$dt_ts[$date_s] = $result_lack;
 				$dt_ts_detail[$value] = $result_lack;
@@ -9082,6 +9194,7 @@ class timesheets_model extends app_model
 		}
 		$data['total'] = $total;
 		$data['remain'] = $remain;
+		$data['carry_remain'] = $this->get_leave_remain_from_carry($staff_id, $year);
 		return $data;
 	}
 

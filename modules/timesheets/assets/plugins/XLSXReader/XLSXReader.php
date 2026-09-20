@@ -90,10 +90,10 @@ class XLSXReader_fin {
 				foreach($workbookRelationsXML->Relationship as $wrel) {
 					switch($wrel['Type']) {
 						case self::SCHEMA_WORKSHEETRELATION:
-							$sheets[(string)$wrel['Id']]['path'] = $workbookDir . (string)$wrel['Target'];
+							$sheets[(string)$wrel['Id']]['path'] = (substr((string)$wrel['Target'], 0, 1) === '/') ? ltrim((string)$wrel['Target'], '/') : $workbookDir . (string)$wrel['Target'];
 							break;
 						case self::SCHEMA_SHAREDSTRINGS:
-							$xml_target_ss = $this->getEntryData($workbookDir . (string)$wrel['Target']);
+							$xml_target_ss = $this->getEntryData((substr((string)$wrel['Target'], 0, 1) === '/') ? ltrim((string)$wrel['Target'], '/') : $workbookDir . (string)$wrel['Target']);
 							$xml_target_ss = str_replace('</x:', '</',str_replace('<x:', '<', $xml_target_ss));
 							$sharedStringsXML = simplexml_load_string($xml_target_ss);
 							foreach($sharedStringsXML->si as $val) {

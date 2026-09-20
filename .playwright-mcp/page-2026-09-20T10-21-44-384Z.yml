@@ -1,0 +1,46 @@
+- generic [ref=f96e1]:
+  - navigation [ref=f96e2]:
+    - generic [ref=f96e3]:
+      - link [ref=f96e5] [cursor=pointer]:
+        - /url: http://full.localhost/
+        - img "Abicx" [ref=f96e6]
+      - list [ref=f96e8]:
+        - listitem [ref=f96e9]:
+          - link "Knowledge Base" [ref=f96e10] [cursor=pointer]:
+            - /url: http://full.localhost/knowledge-base
+        - listitem [ref=f96e11]:
+          - link "Register" [ref=f96e12] [cursor=pointer]:
+            - /url: http://full.localhost/authentication/register
+        - listitem [ref=f96e13]:
+          - link " Login" [ref=f96e14] [cursor=pointer]:
+            - /url: http://full.localhost/authentication/login
+            - generic [ref=f96e15]: 
+            - text: Login
+  - generic [ref=f96e19]:
+    - generic:
+      - heading "Please login or register" [level=1] [ref=f96e21]
+      - generic [ref=f96e25]:
+        - generic [ref=f96e26]:
+          - generic [ref=f96e27]: Language
+          - generic [ref=f96e28]:
+            - combobox "Language" [ref=f96e29]:
+              - option "Arabic"
+              - option "English" [selected]
+            - combobox "English" [ref=f96e30] [cursor=pointer]
+        - generic [ref=f96e35]:
+          - generic [ref=f96e36]: Email Address
+          - textbox "Email Address" [active] [ref=f96e37]: test.admin3@abicerp.local
+        - generic [ref=f96e38]:
+          - generic [ref=f96e39]: Password
+          - textbox "Password" [ref=f96e40]: Test#12345
+        - generic [ref=f96e41]:
+          - checkbox "Remember me" [ref=f96e42]
+          - generic [ref=f96e43] [cursor=pointer]: Remember me
+        - generic [ref=f96e44]:
+          - button "Login" [ref=f96e45] [cursor=pointer]
+          - link "Register" [ref=f96e46] [cursor=pointer]:
+            - /url: http://full.localhost/authentication/register
+        - link "Forgot Password?" [ref=f96e48] [cursor=pointer]:
+          - /url: http://full.localhost/authentication/forgot_password
+  - contentinfo [ref=f96e49]:
+    - generic [ref=f96e50]: 2026 Copyright Abicx

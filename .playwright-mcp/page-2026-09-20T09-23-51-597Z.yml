@@ -1,0 +1,980 @@
+- generic [ref=f46e1]:
+  - generic [ref=f46e2]:
+    - button [ref=f46e3] [cursor=pointer]
+    - navigation [ref=f46e6]:
+      - generic [ref=f46e7]:
+        - link "Lotus_Holding" [ref=f46e10] [cursor=pointer]:
+          - /url: http://full.localhost/demo-lotus-holdings/ps/admin/
+        - generic [ref=f46e11]:
+          - generic [ref=f46e12]:
+            - searchbox "Search..." [ref=f46e13]
+            - button "" [ref=f46e15] [cursor=pointer]
+          - list [ref=f46e17]:
+            - listitem "Quick Create" [ref=f46e18]:
+              - link "+" [ref=f46e19] [cursor=pointer]:
+                - /url: "#"
+              - text:                 
+        - text: 
+        - list [ref=f46e22]:
+          - listitem [ref=f46e23]:
+            - link " لوتس القابضة للإستثمارات المالية" [expanded] [ref=f46e24] [cursor=pointer]:
+              - /url: "#"
+              - generic [ref=f46e25]:
+                - generic [ref=f46e26]: 
+                - text: لوتس القابضة للإستثمارات المالية
+            - text: +
+          - listitem [ref=f46e27]:
+            - link "Settings" [ref=f46e28] [cursor=pointer]:
+              - /url: http://full.localhost/demo-lotus-holdings/ps/admin/settings
+          - listitem [ref=f46e29]:
+            - link "Share documents, ideas.." [ref=f46e30] [cursor=pointer]:
+              - /url: "#"
+          - listitem [ref=f46e33]:
+            - link "" [ref=f46e34] [cursor=pointer]:
+              - /url: http://full.localhost/demo-lotus-holdings/ps/admin/todo
+          - listitem [ref=f46e36]:
+            - link "" [ref=f46e37] [cursor=pointer]:
+              - /url: "#"
+            - text: 
+          - listitem "Notifications" [ref=f46e40]:
+            - link "" [ref=f46e41] [cursor=pointer]:
+              - /url: "#"
+  - text:         
+  - complementary [ref=f46e44]:
+    - link "Tenant Admin tenantadmin@abicerp.local" [ref=f46e46] [cursor=pointer]:
+      - /url: "#"
+      - generic [ref=f46e49]:
+        - generic [ref=f46e50]: Tenant Admin
+        - generic [ref=f46e51]: tenantadmin@abicerp.local
+    - list [ref=f46e52]:
+      - listitem [ref=f46e53]:
+        - link " Dashboard" [ref=f46e54] [cursor=pointer]:
+          - /url: http://full.localhost/demo-lotus-holdings/ps/admin/
+          - generic [ref=f46e55]: 
+          - text: Dashboard
+      - listitem [ref=f46e56]:
+        - link " Customers" [ref=f46e57] [cursor=pointer]:
+          - /url: http://full.localhost/demo-lotus-holdings/ps/admin/clients
+          - generic [ref=f46e58]: 
+          - text: Customers
+      - listitem [ref=f46e59]:
+        - link "$ Accounting " [ref=f46e60] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f46e61]: $
+          - text: Accounting
+          - generic [ref=f46e62]: 
+        - text:                 
+      - listitem [ref=f46e63]:
+        - link " Sales " [ref=f46e64] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f46e65]: 
+          - text: Sales
+          - generic [ref=f46e66]: 
+      - listitem [ref=f46e67]:
+        - link " Subscriptions" [ref=f46e68] [cursor=pointer]:
+          - /url: http://full.localhost/demo-lotus-holdings/ps/admin/subscriptions
+          - generic [ref=f46e69]: 
+          - text: Subscriptions
+      - listitem [ref=f46e70]:
+        - link " Expenses" [ref=f46e71] [cursor=pointer]:
+          - /url: http://full.localhost/demo-lotus-holdings/ps/admin/expenses
+          - generic [ref=f46e72]: 
+          - text: Expenses
+      - listitem [ref=f46e73]:
+        - link " Contracts" [ref=f46e74] [cursor=pointer]:
+          - /url: http://full.localhost/demo-lotus-holdings/ps/admin/contracts
+          - generic [ref=f46e75]: 
+          - text: Contracts
+      - listitem [ref=f46e76]:
+        - link " Projects" [ref=f46e77] [cursor=pointer]:
+          - /url: http://full.localhost/demo-lotus-holdings/ps/admin/projects
+          - generic [ref=f46e78]: 
+          - text: Projects
+      - listitem [ref=f46e79]:
+        - link " Tasks" [ref=f46e80] [cursor=pointer]:
+          - /url: http://full.localhost/demo-lotus-holdings/ps/admin/tasks
+          - generic [ref=f46e81]: 
+          - text: Tasks
+      - listitem [ref=f46e82]:
+        - link " Support" [ref=f46e83] [cursor=pointer]:
+          - /url: http://full.localhost/demo-lotus-holdings/ps/admin/tickets
+          - generic [ref=f46e84]: 
+          - text: Support
+      - listitem [ref=f46e85]:
+        - link " Leads" [ref=f46e86] [cursor=pointer]:
+          - /url: http://full.localhost/demo-lotus-holdings/ps/admin/leads
+          - generic [ref=f46e87]: 
+          - text: Leads
+      - listitem [ref=f46e88]:
+        - link " Estimate Request" [ref=f46e89] [cursor=pointer]:
+          - /url: http://full.localhost/demo-lotus-holdings/ps/admin/estimate_request
+          - generic [ref=f46e90]: 
+          - text: Estimate Request
+      - listitem [ref=f46e91]:
+        - link " Knowledge Base" [ref=f46e92] [cursor=pointer]:
+          - /url: http://full.localhost/demo-lotus-holdings/ps/admin/knowledge_base
+          - generic [ref=f46e93]: 
+          - text: Knowledge Base
+      - listitem [ref=f46e94]:
+        - link " Utilities " [ref=f46e95] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f46e96]: 
+          - text: Utilities
+          - generic [ref=f46e97]: 
+      - listitem [ref=f46e98]:
+        - link " Reports " [ref=f46e99] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f46e100]: 
+          - text: Reports
+          - generic [ref=f46e101]: 
+      - listitem [ref=f46e102]:
+        - link " Setup" [ref=f46e103] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f46e104]: 
+          - generic [ref=f46e105]: Setup
+  - generic [ref=f46e108]:
+    - heading "Add new Staff Member" [level=4] [ref=f46e109]
+    - tabpanel [ref=f46e113]:
+      - generic [ref=f46e114]:
+        - tablist [ref=f46e116]:
+          - tab "Profile" [ref=f46e117] [cursor=pointer]
+          - tab "Permissions" [expanded] [ref=f46e118]
+        - generic [ref=f46e119]:
+          - text:       
+          - tabpanel [ref=f46e201]:
+            - generic [ref=f46e202]:
+              - generic [ref=f46e203]: Role
+              - generic [ref=f46e204]:
+                - combobox "Role" [ref=f46e205]:
+                  - option
+                  - option "Employee" [selected]
+                  - option "مدير عام"
+                  - option "مدير حسابات"
+                - combobox "Employee" [ref=f46e206] [cursor=pointer]
+            - generic [ref=f46e212]:
+              - heading "Company access" [level=4] [ref=f46e213]
+              - paragraph [ref=f46e214]: Tick the companies this person may work in. Administrators become administrators in every ticked company. Other staff get the same-named role in each ticked company.
+              - generic [ref=f46e215]:
+                - checkbox "لوتس القابضة للإستثمارات المالية (this company) " [checked] [ref=f46e216]
+                - generic [ref=f46e217] [cursor=pointer]: لوتس القابضة للإستثمارات المالية (this company) 
+              - generic [ref=f46e218]:
+                - checkbox "لوتس للإستثمار والتنمية العقارية" [ref=f46e219]
+                - generic [ref=f46e220] [cursor=pointer]: لوتس للإستثمار والتنمية العقارية
+              - generic [ref=f46e221]:
+                - checkbox "لوتس لمراكز التسوق" [ref=f46e222]
+                - generic [ref=f46e223] [cursor=pointer]: لوتس لمراكز التسوق
+              - generic [ref=f46e224]:
+                - checkbox "الشركة الوطنية" [ref=f46e225]
+                - generic [ref=f46e226] [cursor=pointer]: الشركة الوطنية
+            - separator [ref=f46e227]
+            - heading "Permissions" [level=4] [ref=f46e228]
+            - table [ref=f46e230]:
+              - rowgroup [ref=f46e231]:
+                - row [ref=f46e232]:
+                  - columnheader "features Select all" [ref=f46e233]:
+                    - text: features
+                    - generic [ref=f46e234]:
+                      - checkbox "Select all" [ref=f46e235]
+                      - generic [ref=f46e236] [cursor=pointer]: Select all
+                  - columnheader "Capabilities" [ref=f46e237]
+              - rowgroup [ref=f46e238]:
+                - row [ref=f46e239]:
+                  - cell "Bulk PDF Export Select all" [ref=f46e240]:
+                    - text: Bulk PDF Export
+                    - generic [ref=f46e241]:
+                      - checkbox "Select all" [ref=f46e242]
+                      - generic [ref=f46e243] [cursor=pointer]: Select all
+                  - cell "View(Global)" [ref=f46e244]:
+                    - generic [ref=f46e246]:
+                      - checkbox "View(Global)" [ref=f46e247]
+                      - generic [ref=f46e248] [cursor=pointer]: View(Global)
+                - row [ref=f46e249]:
+                  - cell "Contracts Select all" [ref=f46e250]:
+                    - text: Contracts
+                    - generic [ref=f46e251]:
+                      - checkbox "Select all" [ref=f46e252]
+                      - generic [ref=f46e253] [cursor=pointer]: Select all
+                  - cell "View (Own)  View(Global) Create  Edit  Delete View All Templates " [ref=f46e254]:
+                    - generic [ref=f46e256]:
+                      - checkbox "View (Own) " [checked] [ref=f46e257]
+                      - generic [ref=f46e258] [cursor=pointer]: View (Own) 
+                    - generic [ref=f46e260]:
+                      - checkbox "View(Global)" [disabled] [ref=f46e261]
+                      - generic [ref=f46e262] [cursor=pointer]: View(Global)
+                    - generic [ref=f46e264]:
+                      - checkbox "Create " [checked] [ref=f46e265]
+                      - generic [ref=f46e266] [cursor=pointer]: Create 
+                    - generic [ref=f46e268]:
+                      - checkbox "Edit " [checked] [ref=f46e269]
+                      - generic [ref=f46e270] [cursor=pointer]: Edit 
+                    - generic [ref=f46e272]:
+                      - checkbox "Delete" [ref=f46e273]
+                      - generic [ref=f46e274] [cursor=pointer]: Delete
+                    - generic [ref=f46e276]:
+                      - checkbox "View All Templates " [checked] [ref=f46e277]
+                      - generic [ref=f46e278] [cursor=pointer]: View All Templates 
+                - row [ref=f46e279]:
+                  - cell "Credit Notes Select all" [ref=f46e280]:
+                    - text: Credit Notes
+                    - generic [ref=f46e281]:
+                      - checkbox "Select all" [ref=f46e282]
+                      - generic [ref=f46e283] [cursor=pointer]: Select all
+                  - cell "View (Own)  View(Global) Create  Edit  Delete" [ref=f46e284]:
+                    - generic [ref=f46e286]:
+                      - checkbox "View (Own) " [checked] [ref=f46e287]
+                      - generic [ref=f46e288] [cursor=pointer]: View (Own) 
+                    - generic [ref=f46e290]:
+                      - checkbox "View(Global)" [disabled] [ref=f46e291]
+                      - generic [ref=f46e292] [cursor=pointer]: View(Global)
+                    - generic [ref=f46e294]:
+                      - checkbox "Create " [checked] [ref=f46e295]
+                      - generic [ref=f46e296] [cursor=pointer]: Create 
+                    - generic [ref=f46e298]:
+                      - checkbox "Edit " [checked] [ref=f46e299]
+                      - generic [ref=f46e300] [cursor=pointer]: Edit 
+                    - generic [ref=f46e302]:
+                      - checkbox "Delete" [ref=f46e303]
+                      - generic [ref=f46e304] [cursor=pointer]: Delete
+                - row [ref=f46e305]:
+                  - cell "Customers Select all" [ref=f46e306]:
+                    - text: Customers
+                    - generic [ref=f46e307]:
+                      - checkbox "Select all" [ref=f46e308]
+                      - generic [ref=f46e309] [cursor=pointer]: Select all
+                  - cell "View (Own)  View(Global)  Create  Edit  Delete" [ref=f46e310]:
+                    - generic [ref=f46e312]:
+                      - checkbox "View (Own)" [disabled] [ref=f46e313]
+                      - generic [ref=f46e314] [cursor=pointer]: View (Own)
+                      - generic [ref=f46e315]: 
+                    - generic [ref=f46e317]:
+                      - checkbox "View(Global) " [checked] [ref=f46e318]
+                      - generic [ref=f46e319] [cursor=pointer]: View(Global) 
+                    - generic [ref=f46e321]:
+                      - checkbox "Create " [checked] [ref=f46e322]
+                      - generic [ref=f46e323] [cursor=pointer]: Create 
+                    - generic [ref=f46e325]:
+                      - checkbox "Edit " [checked] [ref=f46e326]
+                      - generic [ref=f46e327] [cursor=pointer]: Edit 
+                    - generic [ref=f46e329]:
+                      - checkbox "Delete" [ref=f46e330]
+                      - generic [ref=f46e331] [cursor=pointer]: Delete
+                - row [ref=f46e332]:
+                  - cell "Email Templates Select all" [ref=f46e333]:
+                    - text: Email Templates
+                    - generic [ref=f46e334]:
+                      - checkbox "Select all" [ref=f46e335]
+                      - generic [ref=f46e336] [cursor=pointer]: Select all
+                  - cell "View(Global) Edit" [ref=f46e337]:
+                    - generic [ref=f46e339]:
+                      - checkbox "View(Global)" [ref=f46e340]
+                      - generic [ref=f46e341] [cursor=pointer]: View(Global)
+                    - generic [ref=f46e343]:
+                      - checkbox "Edit" [ref=f46e344]
+                      - generic [ref=f46e345] [cursor=pointer]: Edit
+                - row [ref=f46e346]:
+                  - cell "Estimates Select all" [ref=f46e347]:
+                    - text: Estimates
+                    - generic [ref=f46e348]:
+                      - checkbox "Select all" [ref=f46e349]
+                      - generic [ref=f46e350] [cursor=pointer]: Select all
+                  - cell "View (Own)  View(Global) Create  Edit  Delete" [ref=f46e351]:
+                    - generic [ref=f46e353]:
+                      - checkbox "View (Own) " [checked] [ref=f46e354]
+                      - generic [ref=f46e355] [cursor=pointer]: View (Own) 
+                    - generic [ref=f46e357]:
+                      - checkbox "View(Global)" [disabled] [ref=f46e358]
+                      - generic [ref=f46e359] [cursor=pointer]: View(Global)
+                    - generic [ref=f46e361]:
+                      - checkbox "Create " [checked] [ref=f46e362]
+                      - generic [ref=f46e363] [cursor=pointer]: Create 
+                    - generic [ref=f46e365]:
+                      - checkbox "Edit " [checked] [ref=f46e366]
+                      - generic [ref=f46e367] [cursor=pointer]: Edit 
+                    - generic [ref=f46e369]:
+                      - checkbox "Delete" [ref=f46e370]
+                      - generic [ref=f46e371] [cursor=pointer]: Delete
+                - row [ref=f46e372]:
+                  - cell "Expenses Select all" [ref=f46e373]:
+                    - text: Expenses
+                    - generic [ref=f46e374]:
+                      - checkbox "Select all" [ref=f46e375]
+                      - generic [ref=f46e376] [cursor=pointer]: Select all
+                  - cell "View (Own)  View(Global) Create  Edit  Delete" [ref=f46e377]:
+                    - generic [ref=f46e379]:
+                      - checkbox "View (Own) " [checked] [ref=f46e380]
+                      - generic [ref=f46e381] [cursor=pointer]: View (Own) 
+                    - generic [ref=f46e383]:
+                      - checkbox "View(Global)" [disabled] [ref=f46e384]
+                      - generic [ref=f46e385] [cursor=pointer]: View(Global)
+                    - generic [ref=f46e387]:
+                      - checkbox "Create " [checked] [ref=f46e388]
+                      - generic [ref=f46e389] [cursor=pointer]: Create 
+                    - generic [ref=f46e391]:
+                      - checkbox "Edit " [checked] [ref=f46e392]
+                      - generic [ref=f46e393] [cursor=pointer]: Edit 
+                    - generic [ref=f46e395]:
+                      - checkbox "Delete" [ref=f46e396]
+                      - generic [ref=f46e397] [cursor=pointer]: Delete
+                - row [ref=f46e398]:
+                  - cell "Invoices Select all" [ref=f46e399]:
+                    - text: Invoices
+                    - generic [ref=f46e400]:
+                      - checkbox "Select all" [ref=f46e401]
+                      - generic [ref=f46e402] [cursor=pointer]: Select all
+                  - cell "View (Own)  View(Global) Create  Edit  Delete" [ref=f46e403]:
+                    - generic [ref=f46e405]:
+                      - checkbox "View (Own) " [checked] [ref=f46e406]
+                      - generic [ref=f46e407] [cursor=pointer]: View (Own) 
+                    - generic [ref=f46e409]:
+                      - checkbox "View(Global)" [disabled] [ref=f46e410]
+                      - generic [ref=f46e411] [cursor=pointer]: View(Global)
+                    - generic [ref=f46e413]:
+                      - checkbox "Create " [checked] [ref=f46e414]
+                      - generic [ref=f46e415] [cursor=pointer]: Create 
+                    - generic [ref=f46e417]:
+                      - checkbox "Edit " [checked] [ref=f46e418]
+                      - generic [ref=f46e419] [cursor=pointer]: Edit 
+                    - generic [ref=f46e421]:
+                      - checkbox "Delete" [ref=f46e422]
+                      - generic [ref=f46e423] [cursor=pointer]: Delete
+                - row [ref=f46e424]:
+                  - cell "Items Select all" [ref=f46e425]:
+                    - text: Items
+                    - generic [ref=f46e426]:
+                      - checkbox "Select all" [ref=f46e427]
+                      - generic [ref=f46e428] [cursor=pointer]: Select all
+                  - cell "View(Global) Create Edit Delete" [ref=f46e429]:
+                    - generic [ref=f46e431]:
+                      - checkbox "View(Global)" [ref=f46e432]
+                      - generic [ref=f46e433] [cursor=pointer]: View(Global)
+                    - generic [ref=f46e435]:
+                      - checkbox "Create" [ref=f46e436]
+                      - generic [ref=f46e437] [cursor=pointer]: Create
+                    - generic [ref=f46e439]:
+                      - checkbox "Edit" [ref=f46e440]
+                      - generic [ref=f46e441] [cursor=pointer]: Edit
+                    - generic [ref=f46e443]:
+                      - checkbox "Delete" [ref=f46e444]
+                      - generic [ref=f46e445] [cursor=pointer]: Delete
+                - row [ref=f46e446]:
+                  - cell "Knowledge Base Select all" [ref=f46e447]:
+                    - text: Knowledge Base
+                    - generic [ref=f46e448]:
+                      - checkbox "Select all" [ref=f46e449]
+                      - generic [ref=f46e450] [cursor=pointer]: Select all
+                  - cell "View(Global) Create Edit Delete" [ref=f46e451]:
+                    - generic [ref=f46e453]:
+                      - checkbox "View(Global)" [ref=f46e454]
+                      - generic [ref=f46e455] [cursor=pointer]: View(Global)
+                    - generic [ref=f46e457]:
+                      - checkbox "Create" [ref=f46e458]
+                      - generic [ref=f46e459] [cursor=pointer]: Create
+                    - generic [ref=f46e461]:
+                      - checkbox "Edit" [ref=f46e462]
+                      - generic [ref=f46e463] [cursor=pointer]: Edit
+                    - generic [ref=f46e465]:
+                      - checkbox "Delete" [ref=f46e466]
+                      - generic [ref=f46e467] [cursor=pointer]: Delete
+                - row [ref=f46e468]:
+                  - cell "Payments Select all" [ref=f46e469]:
+                    - text: Payments
+                    - generic [ref=f46e470]:
+                      - checkbox "Select all" [ref=f46e471]
+                      - generic [ref=f46e472] [cursor=pointer]: Select all
+                  - cell "View (Own)  View(Global) Create Edit Delete" [ref=f46e473]:
+                    - generic [ref=f46e475]:
+                      - checkbox "View (Own)" [disabled] [ref=f46e476]
+                      - generic [ref=f46e477] [cursor=pointer]: View (Own)
+                      - generic [ref=f46e478]: 
+                    - generic [ref=f46e480]:
+                      - checkbox "View(Global)" [ref=f46e481]
+                      - generic [ref=f46e482] [cursor=pointer]: View(Global)
+                    - generic [ref=f46e484]:
+                      - checkbox "Create" [ref=f46e485]
+                      - generic [ref=f46e486] [cursor=pointer]: Create
+                    - generic [ref=f46e488]:
+                      - checkbox "Edit" [ref=f46e489]
+                      - generic [ref=f46e490] [cursor=pointer]: Edit
+                    - generic [ref=f46e492]:
+                      - checkbox "Delete" [ref=f46e493]
+                      - generic [ref=f46e494] [cursor=pointer]: Delete
+                - row [ref=f46e495]:
+                  - cell "Projects Select all" [ref=f46e496]:
+                    - text: Projects
+                    - generic [ref=f46e497]:
+                      - checkbox "Select all" [ref=f46e498]
+                      - generic [ref=f46e499] [cursor=pointer]: Select all
+                  - cell "View (Own)  View(Global)  Create Edit Delete Create Timesheets Edit Milestones Delete Milestones" [ref=f46e500]:
+                    - generic [ref=f46e502]:
+                      - checkbox "View (Own)" [disabled] [ref=f46e503]
+                      - generic [ref=f46e504] [cursor=pointer]: View (Own)
+                      - generic [ref=f46e505]: 
+                    - generic [ref=f46e507]:
+                      - checkbox "View(Global)" [ref=f46e508]
+                      - generic [ref=f46e509] [cursor=pointer]: View(Global)
+                      - generic [ref=f46e510]: 
+                    - generic [ref=f46e512]:
+                      - checkbox "Create" [ref=f46e513]
+                      - generic [ref=f46e514] [cursor=pointer]: Create
+                    - generic [ref=f46e516]:
+                      - checkbox "Edit" [ref=f46e517]
+                      - generic [ref=f46e518] [cursor=pointer]: Edit
+                    - generic [ref=f46e520]:
+                      - checkbox "Delete" [ref=f46e521]
+                      - generic [ref=f46e522] [cursor=pointer]: Delete
+                    - generic [ref=f46e524]:
+                      - checkbox "Create Timesheets" [ref=f46e525]
+                      - generic [ref=f46e526] [cursor=pointer]: Create Timesheets
+                    - generic [ref=f46e528]:
+                      - checkbox "Edit Milestones" [ref=f46e529]
+                      - generic [ref=f46e530] [cursor=pointer]: Edit Milestones
+                    - generic [ref=f46e532]:
+                      - checkbox "Delete Milestones" [ref=f46e533]
+                      - generic [ref=f46e534] [cursor=pointer]: Delete Milestones
+                - row [ref=f46e535]:
+                  - cell "Proposals Select all" [ref=f46e536]:
+                    - text: Proposals
+                    - generic [ref=f46e537]:
+                      - checkbox "Select all" [ref=f46e538]
+                      - generic [ref=f46e539] [cursor=pointer]: Select all
+                  - cell "View (Own) View(Global) Create Edit Delete View All Templates" [ref=f46e540]:
+                    - generic [ref=f46e542]:
+                      - checkbox "View (Own)" [ref=f46e543]
+                      - generic [ref=f46e544] [cursor=pointer]: View (Own)
+                    - generic [ref=f46e546]:
+                      - checkbox "View(Global)" [ref=f46e547]
+                      - generic [ref=f46e548] [cursor=pointer]: View(Global)
+                    - generic [ref=f46e550]:
+                      - checkbox "Create" [ref=f46e551]
+                      - generic [ref=f46e552] [cursor=pointer]: Create
+                    - generic [ref=f46e554]:
+                      - checkbox "Edit" [ref=f46e555]
+                      - generic [ref=f46e556] [cursor=pointer]: Edit
+                    - generic [ref=f46e558]:
+                      - checkbox "Delete" [ref=f46e559]
+                      - generic [ref=f46e560] [cursor=pointer]: Delete
+                    - generic [ref=f46e562]:
+                      - checkbox "View All Templates" [ref=f46e563]
+                      - generic [ref=f46e564] [cursor=pointer]: View All Templates
+                - row [ref=f46e565]:
+                  - cell "Reports Select all" [ref=f46e566]:
+                    - text: Reports
+                    - generic [ref=f46e567]:
+                      - checkbox "Select all" [ref=f46e568]
+                      - generic [ref=f46e569] [cursor=pointer]: Select all
+                  - cell "View(Global) View Timesheets Report" [ref=f46e570]:
+                    - generic [ref=f46e572]:
+                      - checkbox "View(Global)" [ref=f46e573]
+                      - generic [ref=f46e574] [cursor=pointer]: View(Global)
+                    - generic [ref=f46e576]:
+                      - checkbox "View Timesheets Report" [ref=f46e577]
+                      - generic [ref=f46e578] [cursor=pointer]: View Timesheets Report
+                - row [ref=f46e579]:
+                  - cell "Staff Roles Select all" [ref=f46e580]:
+                    - text: Staff Roles
+                    - generic [ref=f46e581]:
+                      - checkbox "Select all" [ref=f46e582]
+                      - generic [ref=f46e583] [cursor=pointer]: Select all
+                  - cell "View(Global) Create Edit Delete" [ref=f46e584]:
+                    - generic [ref=f46e586]:
+                      - checkbox "View(Global)" [ref=f46e587]
+                      - generic [ref=f46e588] [cursor=pointer]: View(Global)
+                    - generic [ref=f46e590]:
+                      - checkbox "Create" [ref=f46e591]
+                      - generic [ref=f46e592] [cursor=pointer]: Create
+                    - generic [ref=f46e594]:
+                      - checkbox "Edit" [ref=f46e595]
+                      - generic [ref=f46e596] [cursor=pointer]: Edit
+                    - generic [ref=f46e598]:
+                      - checkbox "Delete" [ref=f46e599]
+                      - generic [ref=f46e600] [cursor=pointer]: Delete
+                - row [ref=f46e601]:
+                  - cell "Settings Select all" [ref=f46e602]:
+                    - text: Settings
+                    - generic [ref=f46e603]:
+                      - checkbox "Select all" [ref=f46e604]
+                      - generic [ref=f46e605] [cursor=pointer]: Select all
+                  - cell "View(Global) Edit" [ref=f46e606]:
+                    - generic [ref=f46e608]:
+                      - checkbox "View(Global)" [ref=f46e609]
+                      - generic [ref=f46e610] [cursor=pointer]: View(Global)
+                    - generic [ref=f46e612]:
+                      - checkbox "Edit" [ref=f46e613]
+                      - generic [ref=f46e614] [cursor=pointer]: Edit
+                - row [ref=f46e615]:
+                  - cell "Staff Select all" [ref=f46e616]:
+                    - text: Staff
+                    - generic [ref=f46e617]:
+                      - checkbox "Select all" [ref=f46e618]
+                      - generic [ref=f46e619] [cursor=pointer]: Select all
+                  - cell "View(Global) Create Edit Delete" [ref=f46e620]:
+                    - generic [ref=f46e622]:
+                      - checkbox "View(Global)" [ref=f46e623]
+                      - generic [ref=f46e624] [cursor=pointer]: View(Global)
+                    - generic [ref=f46e626]:
+                      - checkbox "Create" [ref=f46e627]
+                      - generic [ref=f46e628] [cursor=pointer]: Create
+                    - generic [ref=f46e630]:
+                      - checkbox "Edit" [ref=f46e631]
+                      - generic [ref=f46e632] [cursor=pointer]: Edit
+                    - generic [ref=f46e634]:
+                      - checkbox "Delete" [ref=f46e635]
+                      - generic [ref=f46e636] [cursor=pointer]: Delete
+                - row [ref=f46e637]:
+                  - cell "Subscriptions Select all" [ref=f46e638]:
+                    - text: Subscriptions
+                    - generic [ref=f46e639]:
+                      - checkbox "Select all" [ref=f46e640]
+                      - generic [ref=f46e641] [cursor=pointer]: Select all
+                  - cell "View (Own) View(Global) Create Edit Delete" [ref=f46e642]:
+                    - generic [ref=f46e644]:
+                      - checkbox "View (Own)" [ref=f46e645]
+                      - generic [ref=f46e646] [cursor=pointer]: View (Own)
+                    - generic [ref=f46e648]:
+                      - checkbox "View(Global)" [ref=f46e649]
+                      - generic [ref=f46e650] [cursor=pointer]: View(Global)
+                    - generic [ref=f46e652]:
+                      - checkbox "Create" [ref=f46e653]
+                      - generic [ref=f46e654] [cursor=pointer]: Create
+                    - generic [ref=f46e656]:
+                      - checkbox "Edit" [ref=f46e657]
+                      - generic [ref=f46e658] [cursor=pointer]: Edit
+                    - generic [ref=f46e660]:
+                      - checkbox "Delete" [ref=f46e661]
+                      - generic [ref=f46e662] [cursor=pointer]: Delete
+                - row [ref=f46e663]:
+                  - cell "Tasks Select all" [ref=f46e664]:
+                    - text: Tasks
+                    - generic [ref=f46e665]:
+                      - checkbox "Select all" [ref=f46e666]
+                      - generic [ref=f46e667] [cursor=pointer]: Select all
+                  - cell "View (Own)  View(Global)  Create Edit Delete Edit Timesheets (Global) Edit Own Timesheets Delete Timesheets (Global) Delete own Timesheets" [ref=f46e668]:
+                    - generic [ref=f46e670]:
+                      - checkbox "View (Own)" [disabled] [ref=f46e671]
+                      - generic [ref=f46e672] [cursor=pointer]: View (Own)
+                      - generic [ref=f46e673]: 
+                    - generic [ref=f46e675]:
+                      - checkbox "View(Global)" [ref=f46e676]
+                      - generic [ref=f46e677] [cursor=pointer]: View(Global)
+                      - generic [ref=f46e678]: 
+                    - generic [ref=f46e680]:
+                      - checkbox "Create" [ref=f46e681]
+                      - generic [ref=f46e682] [cursor=pointer]: Create
+                    - generic [ref=f46e684]:
+                      - checkbox "Edit" [ref=f46e685]
+                      - generic [ref=f46e686] [cursor=pointer]: Edit
+                    - generic [ref=f46e688]:
+                      - checkbox "Delete" [ref=f46e689]
+                      - generic [ref=f46e690] [cursor=pointer]: Delete
+                    - generic [ref=f46e692]:
+                      - checkbox "Edit Timesheets (Global)" [ref=f46e693]
+                      - generic [ref=f46e694] [cursor=pointer]: Edit Timesheets (Global)
+                    - generic [ref=f46e696]:
+                      - checkbox "Edit Own Timesheets" [ref=f46e697]
+                      - generic [ref=f46e698] [cursor=pointer]: Edit Own Timesheets
+                    - generic [ref=f46e700]:
+                      - checkbox "Delete Timesheets (Global)" [ref=f46e701]
+                      - generic [ref=f46e702] [cursor=pointer]: Delete Timesheets (Global)
+                    - generic [ref=f46e704]:
+                      - checkbox "Delete own Timesheets" [ref=f46e705]
+                      - generic [ref=f46e706] [cursor=pointer]: Delete own Timesheets
+                - row [ref=f46e707]:
+                  - cell "Task Checklist Templates Select all" [ref=f46e708]:
+                    - text: Task Checklist Templates
+                    - generic [ref=f46e709]:
+                      - checkbox "Select all" [ref=f46e710]
+                      - generic [ref=f46e711] [cursor=pointer]: Select all
+                  - cell "Create Delete" [ref=f46e712]:
+                    - generic [ref=f46e714]:
+                      - checkbox "Create" [ref=f46e715]
+                      - generic [ref=f46e716] [cursor=pointer]: Create
+                    - generic [ref=f46e718]:
+                      - checkbox "Delete" [ref=f46e719]
+                      - generic [ref=f46e720] [cursor=pointer]: Delete
+                - row [ref=f46e721]:
+                  - cell "Estimate Request Select all" [ref=f46e722]:
+                    - text: Estimate Request
+                    - generic [ref=f46e723]:
+                      - checkbox "Select all" [ref=f46e724]
+                      - generic [ref=f46e725] [cursor=pointer]: Select all
+                  - cell "View (Own) View(Global) Create Edit Delete" [ref=f46e726]:
+                    - generic [ref=f46e728]:
+                      - checkbox "View (Own)" [ref=f46e729]
+                      - generic [ref=f46e730] [cursor=pointer]: View (Own)
+                    - generic [ref=f46e732]:
+                      - checkbox "View(Global)" [ref=f46e733]
+                      - generic [ref=f46e734] [cursor=pointer]: View(Global)
+                    - generic [ref=f46e736]:
+                      - checkbox "Create" [ref=f46e737]
+                      - generic [ref=f46e738] [cursor=pointer]: Create
+                    - generic [ref=f46e740]:
+                      - checkbox "Edit" [ref=f46e741]
+                      - generic [ref=f46e742] [cursor=pointer]: Edit
+                    - generic [ref=f46e744]:
+                      - checkbox "Delete" [ref=f46e745]
+                      - generic [ref=f46e746] [cursor=pointer]: Delete
+                - row [ref=f46e747]:
+                  - cell "Leads Select all" [ref=f46e748]:
+                    - text: Leads
+                    - generic [ref=f46e749]:
+                      - checkbox "Select all" [ref=f46e750]
+                      - generic [ref=f46e751] [cursor=pointer]: Select all
+                  - cell "View(Global)  Delete" [ref=f46e752]:
+                    - generic [ref=f46e754]:
+                      - checkbox "View(Global)" [ref=f46e755]
+                      - generic [ref=f46e756] [cursor=pointer]: View(Global)
+                      - generic [ref=f46e757]: 
+                    - generic [ref=f46e759]:
+                      - checkbox "Delete" [ref=f46e760]
+                      - generic [ref=f46e761] [cursor=pointer]: Delete
+                - row [ref=f46e762]:
+                  - cell "Accounting - Dashboard Select all" [ref=f46e763]:
+                    - text: Accounting - Dashboard
+                    - generic [ref=f46e764]:
+                      - checkbox "Select all" [ref=f46e765]
+                      - generic [ref=f46e766] [cursor=pointer]: Select all
+                  - cell "View" [ref=f46e767]:
+                    - generic [ref=f46e769]:
+                      - checkbox "View" [ref=f46e770]
+                      - generic [ref=f46e771] [cursor=pointer]: View
+                - row [ref=f46e772]:
+                  - cell "Accounting - Banking Select all" [ref=f46e773]:
+                    - text: Accounting - Banking
+                    - generic [ref=f46e774]:
+                      - checkbox "Select all" [ref=f46e775]
+                      - generic [ref=f46e776] [cursor=pointer]: Select all
+                  - cell "View Create Edit Delete" [ref=f46e777]:
+                    - generic [ref=f46e779]:
+                      - checkbox "View" [ref=f46e780]
+                      - generic [ref=f46e781] [cursor=pointer]: View
+                    - generic [ref=f46e783]:
+                      - checkbox "Create" [ref=f46e784]
+                      - generic [ref=f46e785] [cursor=pointer]: Create
+                    - generic [ref=f46e787]:
+                      - checkbox "Edit" [ref=f46e788]
+                      - generic [ref=f46e789] [cursor=pointer]: Edit
+                    - generic [ref=f46e791]:
+                      - checkbox "Delete" [ref=f46e792]
+                      - generic [ref=f46e793] [cursor=pointer]: Delete
+                - row [ref=f46e794]:
+                  - cell "Accounting - Transaction Select all" [ref=f46e795]:
+                    - text: Accounting - Transaction
+                    - generic [ref=f46e796]:
+                      - checkbox "Select all" [ref=f46e797]
+                      - generic [ref=f46e798] [cursor=pointer]: Select all
+                  - cell "View Create Edit Delete" [ref=f46e799]:
+                    - generic [ref=f46e801]:
+                      - checkbox "View" [ref=f46e802]
+                      - generic [ref=f46e803] [cursor=pointer]: View
+                    - generic [ref=f46e805]:
+                      - checkbox "Create" [ref=f46e806]
+                      - generic [ref=f46e807] [cursor=pointer]: Create
+                    - generic [ref=f46e809]:
+                      - checkbox "Edit" [ref=f46e810]
+                      - generic [ref=f46e811] [cursor=pointer]: Edit
+                    - generic [ref=f46e813]:
+                      - checkbox "Delete" [ref=f46e814]
+                      - generic [ref=f46e815] [cursor=pointer]: Delete
+                - row [ref=f46e816]:
+                  - cell "Accounting - Project Budgets Select all" [ref=f46e817]:
+                    - text: Accounting - Project Budgets
+                    - generic [ref=f46e818]:
+                      - checkbox "Select all" [ref=f46e819]
+                      - generic [ref=f46e820] [cursor=pointer]: Select all
+                  - cell "View Create Edit Delete" [ref=f46e821]:
+                    - generic [ref=f46e823]:
+                      - checkbox "View" [ref=f46e824]
+                      - generic [ref=f46e825] [cursor=pointer]: View
+                    - generic [ref=f46e827]:
+                      - checkbox "Create" [ref=f46e828]
+                      - generic [ref=f46e829] [cursor=pointer]: Create
+                    - generic [ref=f46e831]:
+                      - checkbox "Edit" [ref=f46e832]
+                      - generic [ref=f46e833] [cursor=pointer]: Edit
+                    - generic [ref=f46e835]:
+                      - checkbox "Delete" [ref=f46e836]
+                      - generic [ref=f46e837] [cursor=pointer]: Delete
+                - row [ref=f46e838]:
+                  - cell "Accounting - Imprests Select all" [ref=f46e839]:
+                    - text: Accounting - Imprests
+                    - generic [ref=f46e840]:
+                      - checkbox "Select all" [ref=f46e841]
+                      - generic [ref=f46e842] [cursor=pointer]: Select all
+                  - cell "View Create Edit Delete" [ref=f46e843]:
+                    - generic [ref=f46e845]:
+                      - checkbox "View" [ref=f46e846]
+                      - generic [ref=f46e847] [cursor=pointer]: View
+                    - generic [ref=f46e849]:
+                      - checkbox "Create" [ref=f46e850]
+                      - generic [ref=f46e851] [cursor=pointer]: Create
+                    - generic [ref=f46e853]:
+                      - checkbox "Edit" [ref=f46e854]
+                      - generic [ref=f46e855] [cursor=pointer]: Edit
+                    - generic [ref=f46e857]:
+                      - checkbox "Delete" [ref=f46e858]
+                      - generic [ref=f46e859] [cursor=pointer]: Delete
+                - row [ref=f46e860]:
+                  - cell "Accounting - Claims Select all" [ref=f46e861]:
+                    - text: Accounting - Claims
+                    - generic [ref=f46e862]:
+                      - checkbox "Select all" [ref=f46e863]
+                      - generic [ref=f46e864] [cursor=pointer]: Select all
+                  - cell "View Create Edit Delete" [ref=f46e865]:
+                    - generic [ref=f46e867]:
+                      - checkbox "View" [ref=f46e868]
+                      - generic [ref=f46e869] [cursor=pointer]: View
+                    - generic [ref=f46e871]:
+                      - checkbox "Create" [ref=f46e872]
+                      - generic [ref=f46e873] [cursor=pointer]: Create
+                    - generic [ref=f46e875]:
+                      - checkbox "Edit" [ref=f46e876]
+                      - generic [ref=f46e877] [cursor=pointer]: Edit
+                    - generic [ref=f46e879]:
+                      - checkbox "Delete" [ref=f46e880]
+                      - generic [ref=f46e881] [cursor=pointer]: Delete
+                - row [ref=f46e882]:
+                  - cell "Accounting - Registers Select all" [ref=f46e883]:
+                    - text: Accounting - Registers
+                    - generic [ref=f46e884]:
+                      - checkbox "Select all" [ref=f46e885]
+                      - generic [ref=f46e886] [cursor=pointer]: Select all
+                  - cell "View Create Edit Delete" [ref=f46e887]:
+                    - generic [ref=f46e889]:
+                      - checkbox "View" [ref=f46e890]
+                      - generic [ref=f46e891] [cursor=pointer]: View
+                    - generic [ref=f46e893]:
+                      - checkbox "Create" [ref=f46e894]
+                      - generic [ref=f46e895] [cursor=pointer]: Create
+                    - generic [ref=f46e897]:
+                      - checkbox "Edit" [ref=f46e898]
+                      - generic [ref=f46e899] [cursor=pointer]: Edit
+                    - generic [ref=f46e901]:
+                      - checkbox "Delete" [ref=f46e902]
+                      - generic [ref=f46e903] [cursor=pointer]: Delete
+                - row [ref=f46e904]:
+                  - cell "Accounting - Bills Select all" [ref=f46e905]:
+                    - text: Accounting - Bills
+                    - generic [ref=f46e906]:
+                      - checkbox "Select all" [ref=f46e907]
+                      - generic [ref=f46e908] [cursor=pointer]: Select all
+                  - cell "View Create Edit Delete" [ref=f46e909]:
+                    - generic [ref=f46e911]:
+                      - checkbox "View" [ref=f46e912]
+                      - generic [ref=f46e913] [cursor=pointer]: View
+                    - generic [ref=f46e915]:
+                      - checkbox "Create" [ref=f46e916]
+                      - generic [ref=f46e917] [cursor=pointer]: Create
+                    - generic [ref=f46e919]:
+                      - checkbox "Edit" [ref=f46e920]
+                      - generic [ref=f46e921] [cursor=pointer]: Edit
+                    - generic [ref=f46e923]:
+                      - checkbox "Delete" [ref=f46e924]
+                      - generic [ref=f46e925] [cursor=pointer]: Delete
+                - row [ref=f46e926]:
+                  - cell "Accounting - Checks Select all" [ref=f46e927]:
+                    - text: Accounting - Checks
+                    - generic [ref=f46e928]:
+                      - checkbox "Select all" [ref=f46e929]
+                      - generic [ref=f46e930] [cursor=pointer]: Select all
+                  - cell "View Create Edit Delete" [ref=f46e931]:
+                    - generic [ref=f46e933]:
+                      - checkbox "View" [ref=f46e934]
+                      - generic [ref=f46e935] [cursor=pointer]: View
+                    - generic [ref=f46e937]:
+                      - checkbox "Create" [ref=f46e938]
+                      - generic [ref=f46e939] [cursor=pointer]: Create
+                    - generic [ref=f46e941]:
+                      - checkbox "Edit" [ref=f46e942]
+                      - generic [ref=f46e943] [cursor=pointer]: Edit
+                    - generic [ref=f46e945]:
+                      - checkbox "Delete" [ref=f46e946]
+                      - generic [ref=f46e947] [cursor=pointer]: Delete
+                - row [ref=f46e948]:
+                  - cell "Accounting - Journal entry Select all" [ref=f46e949]:
+                    - text: Accounting - Journal entry
+                    - generic [ref=f46e950]:
+                      - checkbox "Select all" [ref=f46e951]
+                      - generic [ref=f46e952] [cursor=pointer]: Select all
+                  - cell "View Create Edit Delete" [ref=f46e953]:
+                    - generic [ref=f46e955]:
+                      - checkbox "View" [ref=f46e956]
+                      - generic [ref=f46e957] [cursor=pointer]: View
+                    - generic [ref=f46e959]:
+                      - checkbox "Create" [ref=f46e960]
+                      - generic [ref=f46e961] [cursor=pointer]: Create
+                    - generic [ref=f46e963]:
+                      - checkbox "Edit" [ref=f46e964]
+                      - generic [ref=f46e965] [cursor=pointer]: Edit
+                    - generic [ref=f46e967]:
+                      - checkbox "Delete" [ref=f46e968]
+                      - generic [ref=f46e969] [cursor=pointer]: Delete
+                - row [ref=f46e970]:
+                  - cell "Accounting - Transfer Select all" [ref=f46e971]:
+                    - text: Accounting - Transfer
+                    - generic [ref=f46e972]:
+                      - checkbox "Select all" [ref=f46e973]
+                      - generic [ref=f46e974] [cursor=pointer]: Select all
+                  - cell "View Create Edit Delete" [ref=f46e975]:
+                    - generic [ref=f46e977]:
+                      - checkbox "View" [ref=f46e978]
+                      - generic [ref=f46e979] [cursor=pointer]: View
+                    - generic [ref=f46e981]:
+                      - checkbox "Create" [ref=f46e982]
+                      - generic [ref=f46e983] [cursor=pointer]: Create
+                    - generic [ref=f46e985]:
+                      - checkbox "Edit" [ref=f46e986]
+                      - generic [ref=f46e987] [cursor=pointer]: Edit
+                    - generic [ref=f46e989]:
+                      - checkbox "Delete" [ref=f46e990]
+                      - generic [ref=f46e991] [cursor=pointer]: Delete
+                - row [ref=f46e992]:
+                  - cell "Accounting - Chart of accounts Select all" [ref=f46e993]:
+                    - text: Accounting - Chart of accounts
+                    - generic [ref=f46e994]:
+                      - checkbox "Select all" [ref=f46e995]
+                      - generic [ref=f46e996] [cursor=pointer]: Select all
+                  - cell "View Create Edit Delete" [ref=f46e997]:
+                    - generic [ref=f46e999]:
+                      - checkbox "View" [ref=f46e1000]
+                      - generic [ref=f46e1001] [cursor=pointer]: View
+                    - generic [ref=f46e1003]:
+                      - checkbox "Create" [ref=f46e1004]
+                      - generic [ref=f46e1005] [cursor=pointer]: Create
+                    - generic [ref=f46e1007]:
+                      - checkbox "Edit" [ref=f46e1008]
+                      - generic [ref=f46e1009] [cursor=pointer]: Edit
+                    - generic [ref=f46e1011]:
+                      - checkbox "Delete" [ref=f46e1012]
+                      - generic [ref=f46e1013] [cursor=pointer]: Delete
+                - row [ref=f46e1014]:
+                  - cell "Accounting - Reconcile Select all" [ref=f46e1015]:
+                    - text: Accounting - Reconcile
+                    - generic [ref=f46e1016]:
+                      - checkbox "Select all" [ref=f46e1017]
+                      - generic [ref=f46e1018] [cursor=pointer]: Select all
+                  - cell "View Create Edit" [ref=f46e1019]:
+                    - generic [ref=f46e1021]:
+                      - checkbox "View" [ref=f46e1022]
+                      - generic [ref=f46e1023] [cursor=pointer]: View
+                    - generic [ref=f46e1025]:
+                      - checkbox "Create" [ref=f46e1026]
+                      - generic [ref=f46e1027] [cursor=pointer]: Create
+                    - generic [ref=f46e1029]:
+                      - checkbox "Edit" [ref=f46e1030]
+                      - generic [ref=f46e1031] [cursor=pointer]: Edit
+                - row [ref=f46e1032]:
+                  - cell "Accounting - Budget Select all" [ref=f46e1033]:
+                    - text: Accounting - Budget
+                    - generic [ref=f46e1034]:
+                      - checkbox "Select all" [ref=f46e1035]
+                      - generic [ref=f46e1036] [cursor=pointer]: Select all
+                  - cell "View Create Edit Delete" [ref=f46e1037]:
+                    - generic [ref=f46e1039]:
+                      - checkbox "View" [ref=f46e1040]
+                      - generic [ref=f46e1041] [cursor=pointer]: View
+                    - generic [ref=f46e1043]:
+                      - checkbox "Create" [ref=f46e1044]
+                      - generic [ref=f46e1045] [cursor=pointer]: Create
+                    - generic [ref=f46e1047]:
+                      - checkbox "Edit" [ref=f46e1048]
+                      - generic [ref=f46e1049] [cursor=pointer]: Edit
+                    - generic [ref=f46e1051]:
+                      - checkbox "Delete" [ref=f46e1052]
+                      - generic [ref=f46e1053] [cursor=pointer]: Delete
+                - row [ref=f46e1054]:
+                  - cell "Accounting - Vendors Select all" [ref=f46e1055]:
+                    - text: Accounting - Vendors
+                    - generic [ref=f46e1056]:
+                      - checkbox "Select all" [ref=f46e1057]
+                      - generic [ref=f46e1058] [cursor=pointer]: Select all
+                  - cell "View Create Edit Delete" [ref=f46e1059]:
+                    - generic [ref=f46e1061]:
+                      - checkbox "View" [ref=f46e1062]
+                      - generic [ref=f46e1063] [cursor=pointer]: View
+                    - generic [ref=f46e1065]:
+                      - checkbox "Create" [ref=f46e1066]
+                      - generic [ref=f46e1067] [cursor=pointer]: Create
+                    - generic [ref=f46e1069]:
+                      - checkbox "Edit" [ref=f46e1070]
+                      - generic [ref=f46e1071] [cursor=pointer]: Edit
+                    - generic [ref=f46e1073]:
+                      - checkbox "Delete" [ref=f46e1074]
+                      - generic [ref=f46e1075] [cursor=pointer]: Delete
+                - row [ref=f46e1076]:
+                  - cell "Accounting - Report Select all" [ref=f46e1077]:
+                    - text: Accounting - Report
+                    - generic [ref=f46e1078]:
+                      - checkbox "Select all" [ref=f46e1079]
+                      - generic [ref=f46e1080] [cursor=pointer]: Select all
+                  - cell "View" [ref=f46e1081]:
+                    - generic [ref=f46e1083]:
+                      - checkbox "View" [ref=f46e1084]
+                      - generic [ref=f46e1085] [cursor=pointer]: View
+                - row [ref=f46e1086]:
+                  - cell "Accounting - Setting Select all" [ref=f46e1087]:
+                    - text: Accounting - Setting
+                    - generic [ref=f46e1088]:
+                      - checkbox "Select all" [ref=f46e1089]
+                      - generic [ref=f46e1090] [cursor=pointer]: Select all
+                  - cell "View Create Edit Delete" [ref=f46e1091]:
+                    - generic [ref=f46e1093]:
+                      - checkbox "View" [ref=f46e1094]
+                      - generic [ref=f46e1095] [cursor=pointer]: View
+                    - generic [ref=f46e1097]:
+                      - checkbox "Create" [ref=f46e1098]
+                      - generic [ref=f46e1099] [cursor=pointer]: Create
+                    - generic [ref=f46e1101]:
+                      - checkbox "Edit" [ref=f46e1102]
+                      - generic [ref=f46e1103] [cursor=pointer]: Edit
+                    - generic [ref=f46e1105]:
+                      - checkbox "Delete" [ref=f46e1106]
+                      - generic [ref=f46e1107] [cursor=pointer]: Delete
+                - row [ref=f46e1108]:
+                  - cell "e-Invoice Select all" [ref=f46e1109]:
+                    - text: e-Invoice
+                    - generic [ref=f46e1110]:
+                      - checkbox "Select all" [ref=f46e1111]
+                      - generic [ref=f46e1112] [cursor=pointer]: Select all
+                  - cell "Bulk export" [ref=f46e1113]:
+                    - generic [ref=f46e1115]:
+                      - checkbox "Bulk export" [ref=f46e1116]
+                      - generic [ref=f46e1117] [cursor=pointer]: Bulk export
+                - row [ref=f46e1118]:
+                  - cell "Goals Select all" [ref=f46e1119]:
+                    - text: Goals
+                    - generic [ref=f46e1120]:
+                      - checkbox "Select all" [ref=f46e1121]
+                      - generic [ref=f46e1122] [cursor=pointer]: Select all
+                  - cell "View(Global) Create Edit Delete" [ref=f46e1123]:
+                    - generic [ref=f46e1125]:
+                      - checkbox "View(Global)" [ref=f46e1126]
+                      - generic [ref=f46e1127] [cursor=pointer]: View(Global)
+                    - generic [ref=f46e1129]:
+                      - checkbox "Create" [ref=f46e1130]
+                      - generic [ref=f46e1131] [cursor=pointer]: Create
+                    - generic [ref=f46e1133]:
+                      - checkbox "Edit" [ref=f46e1134]
+                      - generic [ref=f46e1135] [cursor=pointer]: Edit
+                    - generic [ref=f46e1137]:
+                      - checkbox "Delete" [ref=f46e1138]
+                      - generic [ref=f46e1139] [cursor=pointer]: Delete
+                - row [ref=f46e1140]:
+                  - cell "Surveys Select all" [ref=f46e1141]:
+                    - text: Surveys
+                    - generic [ref=f46e1142]:
+                      - checkbox "Select all" [ref=f46e1143]
+                      - generic [ref=f46e1144] [cursor=pointer]: Select all
+                  - cell "View(Global) Create Edit Delete" [ref=f46e1145]:
+                    - generic [ref=f46e1147]:
+                      - checkbox "View(Global)" [ref=f46e1148]
+                      - generic [ref=f46e1149] [cursor=pointer]: View(Global)
+                    - generic [ref=f46e1151]:
+                      - checkbox "Create" [ref=f46e1152]
+                      - generic [ref=f46e1153] [cursor=pointer]: Create
+                    - generic [ref=f46e1155]:
+                      - checkbox "Edit" [ref=f46e1156]
+                      - generic [ref=f46e1157] [cursor=pointer]: Edit
+                    - generic [ref=f46e1159]:
+                      - checkbox "Delete" [ref=f46e1160]
+                      - generic [ref=f46e1161] [cursor=pointer]: Delete
+        - button "Save" [active] [ref=f46e200] [cursor=pointer]

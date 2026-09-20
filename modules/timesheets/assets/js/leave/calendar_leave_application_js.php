@@ -548,7 +548,7 @@
       var val = $('input[name="type_name"]').val();
       var symbol = $('input[name="symbol"]').val();
       if(val.trim() && symbol.trim()){
-        var list_exist_symbol = new Array("AL", "W", "U", "HO", "E", "L", "B", "SI", "M", "ME", "NS", "P");
+        var list_exist_symbol = new Array("AL", "W", "U", "HO", "E", "L", "B", "SI", "M", "ME", "NS", "P").concat(<?php echo json_encode(array_keys($this->timesheets_model->get_day_off_symbols())); ?>);
         let i, duplicate = 0;
         for(i = 0; i<list_exist_symbol.length; i++){
           if(list_exist_symbol[i] == symbol){

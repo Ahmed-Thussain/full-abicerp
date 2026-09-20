@@ -120,23 +120,7 @@ foreach ($rResult as $aRow) {
 
 				$_data = '<a class="btn btn-primary btn-xs mleft5 text-primary" id="confirmDelete" data-toggle="tooltip" title="" href="'. admin_url('hr_payroll/payslip_update_status/'.$aRow['id']).'"  data-original-title="'._l('payslip_opening').'"><i class="fa fa-check"></i></a>';
 
-				if(null != $aRow['job_id']){
-					if($aRow['job_status'] == 'done'){
-						$_data .= '<a class="btn btn-success btn-xs mleft5 hrp_payslip_download text-primary" data-toggle="tooltip" title="" href="'. admin_url('hr_payroll/payslip_manage_export_pdf/'.$aRow['id']).'"  data-original-title="'._l('hrp_export_pdf').'" data-loading-text="Waitting...">'._l('hrp_export_pdf').'</a>';
-					}
-				}else{
-					$_data .= '<a class="btn btn-success btn-xs mleft5 hrp_payslip_download text-primary" data-toggle="tooltip" title="" href="'. admin_url('hr_payroll/payslip_manage_export_pdf/'.$aRow['id']).'"  data-original-title="'._l('hrp_export_pdf').'" data-loading-text="Waitting...">'._l('hrp_export_pdf').'</a>';
-				}
-
-
-				if(null != $aRow['job_id']){
-					if($aRow['job_status'] == 'done'){
-						$_data .= '<a class="btn btn-success btn-xs mleft5 hrp_payslip_download text-primary" data-toggle="tooltip" title="" href="'. admin_url('hr_payroll/download_payslip/'.$aRow['job_id']).'"  data-original-title="'._l('hrp_payslip_download').'"><i class="fa fa-download"></i></a>';
-					}else{
-
-						$_data .= '<a href="javascript:void(0)" class="btn btn-primary btn-xs mleft5 text-primary" onclick="export_running(); return false;" data-toggle="tooltip" data-original-title="'._l('hrp_check_exported_pdf').'">'._l('hrp_export_is_running').'</a>';
-					}
-				}
+				$_data .= '<a class="btn btn-success btn-xs mleft5 text-primary" data-toggle="tooltip" title="" href="'. admin_url('hr_payroll/payslip_manage_export_pdf/'.$aRow['id']).'" data-original-title="'._l('hrp_payslip_download').'"><i class="fa fa-download"></i></a>';
 				
 			}else{
 				$_data ='';

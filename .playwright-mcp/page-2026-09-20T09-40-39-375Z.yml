@@ -1,0 +1,20 @@
+- generic [ref=f70e2]:
+  - link "Lotus_Holding" [ref=f70e4] [cursor=pointer]:
+    - /url: http://full.localhost/demo-lotus-holdings/ps/
+  - generic [ref=f70e5]:
+    - heading "Login" [level=1] [ref=f70e6]
+    - paragraph [ref=f70e7]: Welcome, please sign in to your dashboard
+  - generic [ref=f70e9]:
+    - generic [ref=f70e10]:
+      - generic [ref=f70e11]: Email Address
+      - textbox "Email Address" [active] [ref=f70e12]
+    - generic [ref=f70e13]:
+      - generic [ref=f70e14]:
+        - generic [ref=f70e15]: Password
+        - link "Forgot Password?" [ref=f70e16] [cursor=pointer]:
+          - /url: http://full.localhost/demo-lotus-holdings/ps/admin/authentication/forgot_password
+      - textbox "Password" [ref=f70e17]
+    - generic [ref=f70e19] [cursor=pointer]:
+      - checkbox "Remember me" [ref=f70e20]
+      - generic [ref=f70e21]: Remember me
+    - button "Login" [ref=f70e23] [cursor=pointer]

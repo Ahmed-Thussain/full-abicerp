@@ -4965,6 +4965,23 @@ div[contenteditable]:focus {
   margin-left: 10px;
 }
 
+/* keep the collapse arrow on the same line as long menu labels in RTL */
+[dir="rtl"] #side-menu > li > a,
+[dir="rtl"] #setup-menu > li > a {
+  position: relative;
+}
+
+[dir="rtl"] #side-menu > li > a > .arrow,
+[dir="rtl"] #setup-menu > li > a > .arrow {
+  float: none;
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  margin: 0;
+  padding-top: 0;
+  transform: translateY(-50%);
+}
+
 [dir="rtl"] #wrapper {
   margin-left: 0;
   margin-right: 230px;

@@ -2260,7 +2260,7 @@ class timesheets extends AdminController {
 						$timesheets_total_day_off += $count;
 					}
 					$row[] = $timesheets_total_day_off;
-					$row[] = $day_off['remain'];
+					$row[] = $day_off['remain'] + $day_off['carry_remain'];
 					$output['aaData'][] = $row;
 				}
 
@@ -2701,14 +2701,15 @@ class timesheets extends AdminController {
 							$color = $data_shift_type->color;
 						}
 						$start_date = $data_shift_type->time_start_work;
-						$st_1 = explode(':', $start_date);
+						$st_1 = array_pad(explode(':', $start_date), 2, '');
 						$st_time = $st_1[0] . 'h' . $st_1[1];
 
 						$end_date = $data_shift_type->time_end_work;
-						$e_2 = explode(':', $end_date);
+						$e_2 = array_pad(explode(':', $end_date), 2, '');
 						$e_time = $e_2[0] . 'h' . $e_2[1];
 
-						$shift_s .= $data_shift_type->shift_type_name . ' (' . $st_time . ' - ' . $e_time . ')' . "\n";
+						$shift_s .= $data_shift_type->shift_type_name . (!empty($data_shift_type->is_day_off) ? ' (' . $data_shift_type->day_off_symbol . ')' : ' (' . $st_time . ' - ' . $e_time . ')') . "
+";
 					}
 				}
 				$day_s = $this->timesheets_month_day_label(strtotime($day));
@@ -3582,6 +3583,8 @@ class timesheets extends AdminController {
 					'time_end_work',
 					'start_lunch_break_time',
 					'end_lunch_break_time',
+					'is_day_off',
+					'day_off_symbol',
 					'description',
 				]);
 
@@ -3595,7 +3598,7 @@ class timesheets extends AdminController {
 
 					$option = '';
 					if (has_permission('table_shiftwork_management', '', 'view') || is_admin()) {
-						$option .= '<a href="#" class="btn btn-default btn-icon" onclick="edit_shift_type(this); return false;" data-id="' . $aRow['id'] . '" data-shift_type_name="' . $aRow['shift_type_name'] . '" data-color="' . $aRow['color'] . '" data-time_start="' . $aRow['time_start'] . '" data-time_end="' . $aRow['time_end'] . '" data-time_start_work="' . $aRow['time_start_work'] . '" data-time_end_work="' . ($aRow['time_end_work'] != '24:00' ? $aRow['time_end_work'] : '00:00') . '" data-start_lunch_break_time="' . $aRow['start_lunch_break_time'] . '" data-end_lunch_break_time="' . $aRow['end_lunch_break_time'] . '" data-description="' . $aRow['description'] . '" >';
+						$option .= '<a href="#" class="btn btn-default btn-icon" onclick="edit_shift_type(this); return false;" data-id="' . $aRow['id'] . '" data-shift_type_name="' . $aRow['shift_type_name'] . '" data-color="' . $aRow['color'] . '" data-time_start="' . $aRow['time_start'] . '" data-time_end="' . $aRow['time_end'] . '" data-time_start_work="' . $aRow['time_start_work'] . '" data-time_end_work="' . ($aRow['time_end_work'] != '24:00' ? $aRow['time_end_work'] : '00:00') . '" data-start_lunch_break_time="' . $aRow['start_lunch_break_time'] . '" data-end_lunch_break_time="' . $aRow['end_lunch_break_time'] . '" data-description="' . $aRow['description'] . '" data-is_day_off="' . (int) $aRow['is_day_off'] . '" data-day_off_symbol="' . $aRow['day_off_symbol'] . '" >';
 						$option .= '<i class="fa fa-edit"></i>';
 						$option .= '</a>';
 						$option .= '<a href="' . admin_url('timesheets/delete_shift_type/' . $aRow['id']) . '" class="btn btn-danger btn-icon _delete">';
@@ -3622,7 +3625,18 @@ class timesheets extends AdminController {
 			$data = $this->input->post();
 			$data['datecreated'] = date('Y-m-d');
 			$data['add_from'] = get_staff_user_id();
-			$message = '';
+				if (!empty($data['is_day_off'])) {
+					$symbol = strtoupper(trim($data['day_off_symbol']));
+					$reserved = ['AL', 'W', 'U', 'HO', 'E', 'L', 'B', 'SI', 'M', 'ME', 'NS', 'P', 'OT', 'EB', 'UB'];
+					foreach ($this->timesheets_model->get_type_of_leave() as $leave_type) {
+						$reserved[] = strtoupper($leave_type['symbol']);
+					}
+					if (in_array($symbol, $reserved)) {
+						set_alert('danger', _l('ts_day_off_symbol_reserved'));
+						redirect(admin_url('timesheets/manage_shift_type'));
+					}
+				}
+				$message = '';
 			if ($data['id'] == '') {
 				$result = $this->timesheets_model->add_shift_type($data);
 				if ($result > 0) {
@@ -3827,6 +3841,10 @@ class timesheets extends AdminController {
 		$data_shift_type = $this->timesheets_model->get_shift_type();
 		$new_list_shift = [];
 		foreach ($data_shift_type as $key => $value) {
+			if (!empty($value['is_day_off'])) {
+				array_push($new_list_shift, array('key' => $value['id'], 'value' => $value['shift_type_name'] . ' (' . $value['day_off_symbol'] . ')'));
+				continue;
+			}
 			$start_date = $value['time_start_work'];
 			$st_1 = explode(':', $start_date);
 			$st_time = $st_1[0] . 'h' . $st_1[1];
@@ -4372,6 +4390,18 @@ public function check_in_ts() {
 		}
 	}
 
+	/**
+	 * convert an Excel cell value (serial number or text) to Y-m-d H:i:s
+	 * @param  mixed $value
+	 * @return string
+	 */
+	private function excel_datetime_to_string($value) {
+		if (is_numeric($value)) {
+			return gmdate('Y-m-d H:i:s', (int) round(($value - 25569) * 86400));
+		}
+		return trim((string) $value);
+	}
+
 /**
  * import timesheets
  * @return
@@ -4403,17 +4433,28 @@ public function check_in_ts() {
 						$flag = 0;
 						$rd = [];
 						$rd['staffid'] = isset($data[$row][0]) ? $data[$row][0] : '';
-						$rd['time_in'] = isset($data[$row][1]) ? $data[$row][1] : '';
-						$rd['time_out'] = isset($data[$row][2]) ? $data[$row][2] : '';
+						// Excel stores date-times as serial numbers; convert to Y-m-d H:i:s
+						$rd['time_in'] = $this->excel_datetime_to_string(isset($data[$row][1]) ? $data[$row][1] : '');
+						$rd['time_out'] = $this->excel_datetime_to_string(isset($data[$row][2]) ? $data[$row][2] : '');
 						if ($rd['staffid'] == '' && $rd['time_in'] == '' && $rd['time_out'] == '') {
+							$flag = 1;
+						}
+						// skip incomplete or unparseable rows instead of inserting bad dates
+						if ($flag == 0 && ($rd['staffid'] == '' || strtotime($rd['time_in']) === false || strtotime($rd['time_out']) === false)) {
 							$flag = 1;
 						}
 						if ($flag == 0) {
 							$rows[] = $rd;
 						}
 					}
-					$this->timesheets_model->import_timesheets($rows);
-					set_alert('success', _l('import_timesheets'));
+					$updated = $this->timesheets_model->import_timesheets($rows);
+					if (count($rows) == 0) {
+						set_alert('warning', 'No valid rows found in the file (check staff IDs and date columns).');
+					} elseif ($updated == 0) {
+						set_alert('warning', 'Check-ins were saved but no timesheet entries were created. Make sure each staff member has a shift assigned for those dates.');
+					} else {
+						set_alert('success', _l('import_timesheets') . ': ' . $updated . ' / ' . count($rows));
+					}
 				}
 			} else {
 				set_alert('warning', _l('import_upload_failed'));
@@ -4560,14 +4601,15 @@ public function check_in_ts() {
 						}
 
 						$start_date = $data_shift_type->time_start_work;
-						$st_1 = explode(':', $start_date);
+						$st_1 = array_pad(explode(':', $start_date), 2, '');
 						$st_time = $st_1[0] . 'h' . $st_1[1];
 
 						$end_date = $data_shift_type->time_end_work;
-						$e_2 = explode(':', $end_date);
+						$e_2 = array_pad(explode(':', $end_date), 2, '');
 						$e_time = $e_2[0] . 'h' . $e_2[1];
 
-						$shift_s .= $data_shift_type->shift_type_name . ' (' . $st_time . ' - ' . $e_time . ')' . "\n";
+						$shift_s .= $data_shift_type->shift_type_name . (!empty($data_shift_type->is_day_off) ? ' (' . $data_shift_type->day_off_symbol . ')' : ' (' . $st_time . ' - ' . $e_time . ')') . "
+";
 					}
 				}
 				$day_s = $this->timesheets_month_day_label(strtotime($day));
@@ -4808,6 +4850,7 @@ public function check_in_ts() {
 		$this->load->model('staff_model');
 		$data['title'] = _l('timesheets');
 		$type_valid = ['AL', 'W', 'U', 'HO', 'E', 'L', 'B', 'SI', 'M', 'ME', 'NS', 'P'];
+		$type_valid = array_merge($type_valid, array_keys($this->timesheets_model->get_day_off_symbols()));
 		$days_in_month = cal_days_in_month(CAL_GREGORIAN, date('m'), date('Y'));
 		$month = date('m');
 		$month_year = date('Y');
@@ -4986,7 +5029,10 @@ public function check_in_ts() {
 							}
 						}
 					} else {
-						$result_lack = 'NS';
+						$result_lack = $this->timesheets_model->get_day_off_symbol($s['staffid'], $value);
+						if ($result_lack == '') {
+							$result_lack = 'NS';
+						}
 					}
 					$dt_ts[$date_s] = $result_lack;
 
@@ -5084,7 +5130,10 @@ public function check_in_ts() {
 							}
 						}
 					} else {
-						$result_lack = 'NS';
+						$result_lack = $this->timesheets_model->get_day_off_symbol($s['staffid'], $value);
+						if ($result_lack == '') {
+							$result_lack = 'NS';
+						}
 					}
 					$dt_ts[$date_s] = $result_lack;
 				}
@@ -5181,7 +5230,10 @@ public function check_in_ts() {
 							}
 						}
 					} else {
-						$result_lack = 'NS';
+						$result_lack = $this->timesheets_model->get_day_off_symbol($s['staffid'], $value);
+						if ($result_lack == '') {
+							$result_lack = 'NS';
+						}
 					}
 					$dt_ts[$date_s] = $result_lack;
 				}
@@ -7045,7 +7097,11 @@ public function check_in_ts() {
 				$remain_day = $data_leave->remain;
 			}
 		}
-		return array('staffid' => $data_staff['staffid'], 'staff' => $data_staff['firstname'] . ' ' . $data_staff['lastname'], 'department' => $department_name, 'role' => $role_name, 'maximum_leave_of_the_year' => $day, 'number_of_leave_days_remaining' => $remain_day);
+		$carry_day = 0;
+		if ($type_of_leave == '' || $type_of_leave == 8) {
+			$carry_day = $this->timesheets_model->get_leave_remain_from_carry($data_staff['staffid'], $year != '' ? $year : date('Y'));
+		}
+		return array('staffid' => $data_staff['staffid'], 'staff' => $data_staff['firstname'] . ' ' . $data_staff['lastname'], 'department' => $department_name, 'role' => $role_name, 'maximum_leave_of_the_year' => $day, 'number_of_leave_days_remaining' => (float) $remain_day + $carry_day, 'remain_current_year' => (float) $remain_day, 'remain_from_carry' => $carry_day);
 	}
 
 	/**

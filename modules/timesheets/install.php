@@ -741,3 +741,10 @@ if (row_timesheets_options_exist('"ts_delay_allowance_hours"') == 0) {
 }
 add_option('ts_leave_carry_enabled', 0);
 add_option('ts_leave_carry_years', 3);
+
+if (!$CI->db->field_exists('is_day_off', db_prefix() . 'shift_type')) {
+	$CI->db->query('ALTER TABLE `' . db_prefix() . 'shift_type` ADD `is_day_off` TINYINT(1) NOT NULL DEFAULT 0');
+}
+if (!$CI->db->field_exists('day_off_symbol', db_prefix() . 'shift_type')) {
+	$CI->db->query('ALTER TABLE `' . db_prefix() . 'shift_type` ADD `day_off_symbol` VARCHAR(10) NULL');
+}

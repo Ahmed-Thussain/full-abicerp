@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>Payslip template - copy</title>
+<style>
+body{font-family:Arial,Helvetica,sans-serif;font-size:13px;margin:24px;background:#fff;color:#222}
+.hint{background:#fff8e1;border:1px solid #f0c36d;padding:10px 14px;margin-bottom:18px;border-radius:4px}
+</style></head><body>
+<div class="hint"><b>How to use:</b> click inside the box below, press <b>Ctrl+A</b> then <b>Ctrl+C</b>. In Payroll &rarr; Settings &rarr; PDF Payslip Templates, click inside the editor, press <b>Ctrl+A</b> then <b>Ctrl+V</b>.</div>
+<div id="tpl" contenteditable="true">
+<table style="width:100%;border-collapse:collapse;" border="1" cellpadding="6">
+<tbody>
+<tr>
+<td style="width:50%;">{logo_image_with_url}</td>
+<td style="width:50%;text-align:right;"><strong>{companyname}</strong></td>
+</tr>
+</tbody>
+</table>
+<p style="text-align:center;font-size:20px;margin:14px 0 2px;"><strong>Payslip</strong></p>
+<p style="text-align:center;margin:0 0 12px;">Time Range: {payslip_range}</p>
+<table style="width:100%;border-collapse:collapse;" cellpadding="4">
+<tbody>
+<tr><td style="width:18%;">Employee ID</td><td style="width:32%;">: {staff_id}</td><td style="width:18%;">Employee Name</td><td style="width:32%;">: {employee_name}</td></tr>
+<tr><td>Payslip No.</td><td>: {pay_slip_number}</td><td>Department</td><td>: {dept_name}</td></tr>
+<tr><td>Month</td><td>: {month}</td><td>Payment Date</td><td>: {payment_run_date}</td></tr>
+<tr><td>Standard Working Time</td><td>: {standard_workday}</td><td>Actual Working Time</td><td>: {actual_workday}</td></tr>
+<tr><td>Paid Leave</td><td>: {paid_leave}</td><td>Unpaid Leave</td><td>: {unpaid_leave}</td></tr>
+</tbody>
+</table>
+<br />
+<table style="width:100%;border-collapse:collapse;" border="1" cellpadding="6">
+<tbody>
+<tr style="background:#333333;color:#ff0000;text-align:center;">
+<td style="width:25%;"><strong>Attendance</strong></td>
+<td style="width:25%;"><strong>Earnings</strong></td>
+<td style="width:25%;"><strong>Deductions</strong></td>
+<td style="width:25%;"><strong>Insurance / Tax</strong></td>
+</tr>
+<tr>
+<td>Standard Working Time:<br />{standard_workday}</td>
+<td>Basic Salary:<br />{st2_1}</td>
+<td>Total Deductions:<br />{total_deductions}</td>
+<td>Total Insurance:<br />{total_insurance}</td>
+</tr>
+<tr>
+<td>Actual Working Time:<br />{actual_workday}</td>
+<td>Allowance:<br />{al2_1}</td>
+<td>&nbsp;</td>
+<td>Income Tax:<br />{income_tax_paye}</td>
+</tr>
+<tr>
+<td>Overtime Hours:<br />{overtime_hours}</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td style="text-align:right;"><strong>Total Earnings</strong></td>
+<td>{gross_pay}</td>
+<td style="text-align:right;"><strong>Total Deductions</strong></td>
+<td>{total_deductions}</td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td style="text-align:right;"><strong>Net Pay</strong></td>
+<td><strong>{net_pay}</strong></td>
+</tr>
+</tbody>
+</table>
+<br /><br />
+<table style="width:100%;" cellpadding="4">
+<tbody>
+<tr><td style="width:50%;">Employer Signature</td><td style="width:50%;">Employee Signature</td></tr>
+</tbody>
+</table>
+</div>
+</body></html>

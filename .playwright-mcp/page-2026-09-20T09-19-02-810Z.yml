@@ -1,0 +1,251 @@
+- generic [active] [ref=f39e1]:
+  - generic [ref=f39e2]:
+    - button [ref=f39e3] [cursor=pointer]
+    - navigation [ref=f39e6]:
+      - generic [ref=f39e7]:
+        - link "Lotus_Holding" [ref=f39e10] [cursor=pointer]:
+          - /url: http://full.localhost/demo-lotus-holdings/ps/admin/
+        - generic [ref=f39e11]:
+          - generic [ref=f39e12]:
+            - searchbox "Search..." [ref=f39e13]
+            - button "" [ref=f39e15] [cursor=pointer]
+          - list [ref=f39e17]:
+            - listitem "Quick Create" [ref=f39e18]:
+              - link "+" [ref=f39e19] [cursor=pointer]:
+                - /url: "#"
+              - text:                 
+        - text: 
+        - list [ref=f39e22]:
+          - listitem [ref=f39e23]:
+            - link " لوتس القابضة للإستثمارات المالية" [expanded] [ref=f39e24] [cursor=pointer]:
+              - /url: "#"
+              - generic [ref=f39e25]:
+                - generic [ref=f39e26]: 
+                - text: لوتس القابضة للإستثمارات المالية
+            - text: +
+          - listitem [ref=f39e27]:
+            - link "Settings" [ref=f39e28] [cursor=pointer]:
+              - /url: http://full.localhost/demo-lotus-holdings/ps/admin/settings
+          - listitem [ref=f39e29]:
+            - link "Share documents, ideas.." [ref=f39e30] [cursor=pointer]:
+              - /url: "#"
+          - listitem [ref=f39e33]:
+            - link "" [ref=f39e34] [cursor=pointer]:
+              - /url: http://full.localhost/demo-lotus-holdings/ps/admin/todo
+          - listitem [ref=f39e36]:
+            - link "" [ref=f39e37] [cursor=pointer]:
+              - /url: "#"
+            - text: 
+          - listitem "Notifications" [ref=f39e40]:
+            - link "" [ref=f39e41] [cursor=pointer]:
+              - /url: "#"
+  - text:         
+  - complementary [ref=f39e44]:
+    - link "Tenant Admin tenantadmin@abicerp.local" [ref=f39e46] [cursor=pointer]:
+      - /url: "#"
+      - generic [ref=f39e49]:
+        - generic [ref=f39e50]: Tenant Admin
+        - generic [ref=f39e51]: tenantadmin@abicerp.local
+    - list [ref=f39e52]:
+      - listitem [ref=f39e53]:
+        - link " Dashboard" [ref=f39e54] [cursor=pointer]:
+          - /url: http://full.localhost/demo-lotus-holdings/ps/admin/
+          - generic [ref=f39e55]: 
+          - text: Dashboard
+      - listitem [ref=f39e56]:
+        - link " Customers" [ref=f39e57] [cursor=pointer]:
+          - /url: http://full.localhost/demo-lotus-holdings/ps/admin/clients
+          - generic [ref=f39e58]: 
+          - text: Customers
+      - listitem [ref=f39e59]:
+        - link "$ Accounting " [ref=f39e60] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f39e61]: $
+          - text: Accounting
+          - generic [ref=f39e62]: 
+        - text:                 
+      - listitem [ref=f39e63]:
+        - link " Sales " [ref=f39e64] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f39e65]: 
+          - text: Sales
+          - generic [ref=f39e66]: 
+      - listitem [ref=f39e67]:
+        - link " Subscriptions" [ref=f39e68] [cursor=pointer]:
+          - /url: http://full.localhost/demo-lotus-holdings/ps/admin/subscriptions
+          - generic [ref=f39e69]: 
+          - text: Subscriptions
+      - listitem [ref=f39e70]:
+        - link " Expenses" [ref=f39e71] [cursor=pointer]:
+          - /url: http://full.localhost/demo-lotus-holdings/ps/admin/expenses
+          - generic [ref=f39e72]: 
+          - text: Expenses
+      - listitem [ref=f39e73]:
+        - link " Contracts" [ref=f39e74] [cursor=pointer]:
+          - /url: http://full.localhost/demo-lotus-holdings/ps/admin/contracts
+          - generic [ref=f39e75]: 
+          - text: Contracts
+      - listitem [ref=f39e76]:
+        - link " Projects" [ref=f39e77] [cursor=pointer]:
+          - /url: http://full.localhost/demo-lotus-holdings/ps/admin/projects
+          - generic [ref=f39e78]: 
+          - text: Projects
+      - listitem [ref=f39e79]:
+        - link " Tasks" [ref=f39e80] [cursor=pointer]:
+          - /url: http://full.localhost/demo-lotus-holdings/ps/admin/tasks
+          - generic [ref=f39e81]: 
+          - text: Tasks
+      - listitem [ref=f39e82]:
+        - link " Support" [ref=f39e83] [cursor=pointer]:
+          - /url: http://full.localhost/demo-lotus-holdings/ps/admin/tickets
+          - generic [ref=f39e84]: 
+          - text: Support
+      - listitem [ref=f39e85]:
+        - link " Leads" [ref=f39e86] [cursor=pointer]:
+          - /url: http://full.localhost/demo-lotus-holdings/ps/admin/leads
+          - generic [ref=f39e87]: 
+          - text: Leads
+      - listitem [ref=f39e88]:
+        - link " Estimate Request" [ref=f39e89] [cursor=pointer]:
+          - /url: http://full.localhost/demo-lotus-holdings/ps/admin/estimate_request
+          - generic [ref=f39e90]: 
+          - text: Estimate Request
+      - listitem [ref=f39e91]:
+        - link " Knowledge Base" [ref=f39e92] [cursor=pointer]:
+          - /url: http://full.localhost/demo-lotus-holdings/ps/admin/knowledge_base
+          - generic [ref=f39e93]: 
+          - text: Knowledge Base
+      - listitem [ref=f39e94]:
+        - link " Utilities " [ref=f39e95] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f39e96]: 
+          - text: Utilities
+          - generic [ref=f39e97]: 
+      - listitem [ref=f39e98]:
+        - link " Reports " [ref=f39e99] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f39e100]: 
+          - text: Reports
+          - generic [ref=f39e101]: 
+      - listitem [ref=f39e102]:
+        - link " Setup" [ref=f39e103] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f39e104]: 
+          - generic [ref=f39e105]: Setup
+  - generic [ref=f39e108]:
+    - generic [ref=f39e109]:
+      - generic [ref=f39e110]:
+        - heading "Timesheet Summary" [level=4] [ref=f39e111]
+        - link "Detailed Overview of Logged Timesheets and Hours →" [ref=f39e112] [cursor=pointer]:
+          - /url: http://full.localhost/demo-lotus-holdings/ps/admin/staff/timesheets
+      - generic [ref=f39e113]:
+        - generic [ref=f39e114]:
+          - generic "Total Logged Time" [ref=f39e115]
+          - generic [ref=f39e116]: 00:00
+        - generic [ref=f39e117]:
+          - generic "Last Month Logged Time" [ref=f39e118]
+          - generic [ref=f39e119]: 00:00
+        - generic [ref=f39e120]:
+          - generic "This Month Logged Time" [ref=f39e121]
+          - generic [ref=f39e122]: 00:00
+        - generic [ref=f39e123]:
+          - generic "Last Week Logged Time" [ref=f39e124]
+          - generic [ref=f39e125]: 00:00
+        - generic [ref=f39e126]:
+          - generic "This Week Logged Time" [ref=f39e127]
+          - generic [ref=f39e128]: 00:00
+    - heading "Test Save1" [level=4] [ref=f39e129]
+    - generic [ref=f39e130]:
+      - text:  
+      - tablist [ref=f39e132]:
+        - tab "Staff" [ref=f39e133]
+        - tab "Notes" [ref=f39e134] [cursor=pointer]
+        - tab "Timesheets & Reports" [ref=f39e135] [cursor=pointer]
+        - tab "Projects" [ref=f39e136] [cursor=pointer]
+    - generic [ref=f39e139]:
+      - tabpanel [ref=f39e140]:
+        - generic [ref=f39e141]:
+          - tablist [ref=f39e143]:
+            - tab "Profile" [ref=f39e144]
+            - tab "Permissions" [ref=f39e145] [cursor=pointer]
+          - generic [ref=f39e146]:
+            - tabpanel [ref=f39e147]:
+              - generic [ref=f39e148]:
+                - checkbox "Administrator" [ref=f39e149]
+                - generic [ref=f39e150] [cursor=pointer]: Administrator
+              - generic [ref=f39e152]:
+                - checkbox "Not Staff Member" [ref=f39e153]
+                - generic [ref=f39e154] [cursor=pointer]: Not Staff Member
+              - separator [ref=f39e155]
+              - generic [ref=f39e156]:
+                - generic [ref=f39e157]: Profile Image
+                - button "Profile Image" [ref=f39e158]
+              - generic [ref=f39e159]:
+                - generic [ref=f39e160]: "* First Name"
+                - textbox "* First Name" [ref=f39e161]: Test
+              - generic [ref=f39e162]:
+                - generic [ref=f39e163]: "* Last Name"
+                - textbox "* Last Name" [ref=f39e164]: Save1
+              - generic [ref=f39e165]:
+                - generic [ref=f39e166]: "* Email"
+                - textbox "* Email" [ref=f39e167]: test.save1@abicerp.local
+              - generic [ref=f39e168]:
+                - generic [ref=f39e169]: Hourly Rate
+                - generic [ref=f39e170]:
+                  - spinbutton "Hourly Rate" [ref=f39e171]: "0.00"
+                  - generic [ref=f39e172]: $
+              - generic [ref=f39e173]:
+                - generic [ref=f39e174]: Phone
+                - textbox "Phone" [ref=f39e175]
+              - generic [ref=f39e176]:
+                - generic [ref=f39e177]:
+                  - generic [ref=f39e178]: 
+                  - text: Facebook
+                - textbox [ref=f39e179]
+              - generic [ref=f39e180]:
+                - generic [ref=f39e181]:
+                  - generic [ref=f39e182]: 
+                  - text: LinkedIn
+                - textbox [ref=f39e183]
+              - generic [ref=f39e184]:
+                - generic [ref=f39e185]:
+                  - generic [ref=f39e186]: 
+                  - text: Skype
+                - textbox [ref=f39e187]
+              - generic [ref=f39e188]:
+                - generic [ref=f39e189]: Default Language
+                - generic [ref=f39e190]:
+                  - combobox "Default Language" [ref=f39e191]:
+                    - option "System Default" [selected]
+                    - option "Arabic"
+                    - option "English"
+                  - combobox "System Default" [ref=f39e192] [cursor=pointer]
+              - generic [ref=f39e197]: 
+              - generic [ref=f39e198]:
+                - generic [ref=f39e199]: Email Signature
+                - textbox "Email Signature" [ref=f39e200]
+              - generic [ref=f39e201]:
+                - generic [ref=f39e202]: Direction
+                - generic [ref=f39e203]:
+                  - combobox "Direction" [ref=f39e204]:
+                    - option [selected]
+                    - option "LTR"
+                    - option "RTL"
+                  - combobox "System Default" [ref=f39e205] [cursor=pointer]
+              - textbox [ref=f39e212]
+              - textbox [ref=f39e213]
+              - generic [ref=f39e214]: "* Password"
+              - generic [ref=f39e215]:
+                - textbox [ref=f39e216]
+                - link "" [ref=f39e218] [cursor=pointer]:
+                  - /url: "#password"
+                - link "" [ref=f39e221] [cursor=pointer]:
+                  - /url: "#"
+              - paragraph [ref=f39e223]: "Note: if you populate this field, password will be changed on this member."
+            - text:                           
+          - button "Save" [ref=f39e225] [cursor=pointer]
+      - text:  x200B x200B    x200B x200B   x200B x200B
+  - generic [ref=f39e226]:
+    - button "Close" [ref=f39e227] [cursor=pointer]: ×
+    - generic [ref=f39e228]: 
+    - generic [ref=f39e229]: Staff Member added successfully.

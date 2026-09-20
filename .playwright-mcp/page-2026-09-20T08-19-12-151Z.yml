@@ -1,0 +1,329 @@
+- generic [active] [ref=f8e1]:
+  - generic [ref=f8e2]:
+    - button [ref=f8e3] [cursor=pointer]
+    - navigation [ref=f8e6]:
+      - generic [ref=f8e7]:
+        - link [ref=f8e10] [cursor=pointer]:
+          - /url: http://full.localhost/admin/
+          - img "Abicx" [ref=f8e11]
+        - generic [ref=f8e12]:
+          - generic [ref=f8e13]:
+            - searchbox "Search..." [ref=f8e14]
+            - button "" [ref=f8e16] [cursor=pointer]
+          - list [ref=f8e18]:
+            - listitem "Quick Create" [ref=f8e19]:
+              - link "+" [ref=f8e20] [cursor=pointer]:
+                - /url: "#"
+              - text:               
+        - text: 
+        - list [ref=f8e23]:
+          - listitem [ref=f8e24]:
+            - link "Settings" [ref=f8e25] [cursor=pointer]:
+              - /url: http://full.localhost/admin/settings
+          - listitem [ref=f8e26]:
+            - link "Share documents, ideas.." [ref=f8e27] [cursor=pointer]:
+              - /url: "#"
+          - listitem [ref=f8e30]:
+            - link "" [ref=f8e31] [cursor=pointer]:
+              - /url: http://full.localhost/admin/todo
+          - listitem [ref=f8e33]:
+            - link "" [ref=f8e34] [cursor=pointer]:
+              - /url: "#"
+            - text: 
+          - listitem "Notifications" [ref=f8e37]:
+            - link "" [ref=f8e38] [cursor=pointer]:
+              - /url: "#"
+  - text:       
+  - complementary [ref=f8e41]:
+    - link "SaaS Admin saasadmin@abicerp.local" [ref=f8e43] [cursor=pointer]:
+      - /url: "#"
+      - generic [ref=f8e46]:
+        - generic [ref=f8e47]: SaaS Admin
+        - generic [ref=f8e48]: saasadmin@abicerp.local
+    - list [ref=f8e49]:
+      - listitem [ref=f8e50]:
+        - link " Dashboard" [ref=f8e51] [cursor=pointer]:
+          - /url: http://full.localhost/admin/
+          - generic [ref=f8e52]: 
+          - text: Dashboard
+      - listitem [ref=f8e53]:
+        - link " SaaS " [ref=f8e54] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f8e55]: 
+          - text: SaaS
+          - generic [ref=f8e56]: 
+        - text:       
+      - listitem [ref=f8e57]:
+        - link " Customers" [ref=f8e58] [cursor=pointer]:
+          - /url: http://full.localhost/admin/clients
+          - generic [ref=f8e59]: 
+          - text: Customers
+      - listitem [ref=f8e60]:
+        - link "$ Accounting " [ref=f8e61] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f8e62]: $
+          - text: Accounting
+          - generic [ref=f8e63]: 
+        - text:                 
+      - listitem [ref=f8e64]:
+        - link " Sales " [ref=f8e65] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f8e66]: 
+          - text: Sales
+          - generic [ref=f8e67]: 
+      - listitem [ref=f8e68]:
+        - link " Subscriptions" [ref=f8e69] [cursor=pointer]:
+          - /url: http://full.localhost/admin/subscriptions
+          - generic [ref=f8e70]: 
+          - text: Subscriptions
+      - listitem [ref=f8e71]:
+        - link " Expenses" [ref=f8e72] [cursor=pointer]:
+          - /url: http://full.localhost/admin/expenses
+          - generic [ref=f8e73]: 
+          - text: Expenses
+      - listitem [ref=f8e74]:
+        - link " Contracts" [ref=f8e75] [cursor=pointer]:
+          - /url: http://full.localhost/admin/contracts
+          - generic [ref=f8e76]: 
+          - text: Contracts
+      - listitem [ref=f8e77]:
+        - link " Projects" [ref=f8e78] [cursor=pointer]:
+          - /url: http://full.localhost/admin/projects
+          - generic [ref=f8e79]: 
+          - text: Projects
+      - listitem [ref=f8e80]:
+        - link " Tasks" [ref=f8e81] [cursor=pointer]:
+          - /url: http://full.localhost/admin/tasks
+          - generic [ref=f8e82]: 
+          - text: Tasks
+      - listitem [ref=f8e83]:
+        - link " Support" [ref=f8e84] [cursor=pointer]:
+          - /url: http://full.localhost/admin/tickets
+          - generic [ref=f8e85]: 
+          - text: Support
+      - listitem [ref=f8e86]:
+        - link " Leads" [ref=f8e87] [cursor=pointer]:
+          - /url: http://full.localhost/admin/leads
+          - generic [ref=f8e88]: 
+          - text: Leads
+      - listitem [ref=f8e89]:
+        - link " Estimate Request" [ref=f8e90] [cursor=pointer]:
+          - /url: http://full.localhost/admin/estimate_request
+          - generic [ref=f8e91]: 
+          - text: Estimate Request
+      - listitem [ref=f8e92]:
+        - link " Knowledge Base" [ref=f8e93] [cursor=pointer]:
+          - /url: http://full.localhost/admin/knowledge_base
+          - generic [ref=f8e94]: 
+          - text: Knowledge Base
+      - listitem [ref=f8e95]:
+        - link " Utilities " [ref=f8e96] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f8e97]: 
+          - text: Utilities
+          - generic [ref=f8e98]: 
+      - listitem [ref=f8e99]:
+        - link " Reports " [ref=f8e100] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f8e101]: 
+          - text: Reports
+          - generic [ref=f8e102]: 
+      - listitem [ref=f8e103]:
+        - link " Setup" [ref=f8e104] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f8e105]: 
+          - text: Setup
+  - generic [ref=f8e107]:
+    - generic [ref=f8e109]:
+      - heading "Upload Module" [level=3] [ref=f8e110]
+      - paragraph [ref=f8e112]: If you have a module in a .zip format, you may install it by uploading it here.
+      - generic [ref=f8e113]:
+        - button "Choose File" [ref=f8e114]
+        - button "Install" [ref=f8e115] [cursor=pointer]
+    - generic [ref=f8e121]:
+      - generic [ref=f8e122]:
+        - generic [ref=f8e123]:
+          - combobox [ref=f8e126]:
+            - option "10"
+            - option "25" [selected]
+            - option "50"
+            - option "100"
+            - option "All"
+          - button "Export" [ref=f8e128] [cursor=pointer]
+        - generic [ref=f8e132]:
+          - generic [ref=f8e133]: 
+          - searchbox "" [ref=f8e135]
+        - text: x200B x200B
+      - grid [ref=f8e137]:
+        - rowgroup [ref=f8e138]:
+          - row [ref=f8e139]:
+            - columnheader "Module activate to sort column descending" [ref=f8e140] [cursor=pointer]: Module
+            - columnheader "Description activate to sort column ascending" [ref=f8e141] [cursor=pointer]: Description
+        - rowgroup [ref=f8e142]:
+          - row [ref=f8e143]:
+            - gridcell [ref=f8e144]:
+              - paragraph [ref=f8e145]: Accounting and Bookkeeping
+              - link "Deactivate" [ref=f8e146] [cursor=pointer]:
+                - /url: http://full.localhost/admin/modules/deactivate/accounting
+            - gridcell [ref=f8e147]:
+              - paragraph [ref=f8e148]: Accounting is the process of recording and tracking financial statements to see the financial health of an entity.
+              - text: Version 1.4.7 | By
+              - link "GreenTech Solutions" [ref=f8e149] [cursor=pointer]:
+                - /url: https://codecanyon.net/user/greentech_solutions
+          - row [ref=f8e150]:
+            - gridcell [ref=f8e151]:
+              - paragraph [ref=f8e152]: Database Backup
+              - link "Activate" [ref=f8e153] [cursor=pointer]:
+                - /url: http://full.localhost/admin/modules/activate/backup
+            - gridcell [ref=f8e154]:
+              - paragraph [ref=f8e155]: Default module to perform database backup
+              - text: Version 2.3.0
+          - row [ref=f8e156]:
+            - gridcell [ref=f8e157]:
+              - paragraph [ref=f8e158]: e-Invoice
+              - link "Activate" [ref=f8e159] [cursor=pointer]:
+                - /url: http://full.localhost/admin/modules/activate/einvoice
+            - gridcell [ref=f8e160]:
+              - paragraph [ref=f8e161]: Default module for e-Invoice
+              - text: Version 1.0.0
+          - row [ref=f8e162]:
+            - gridcell [ref=f8e163]:
+              - paragraph [ref=f8e164]: CSV Export Manager
+              - link "Activate" [ref=f8e165] [cursor=pointer]:
+                - /url: http://full.localhost/admin/modules/activate/exports
+            - gridcell [ref=f8e166]:
+              - paragraph [ref=f8e167]: Default module for Exporting data in CSV
+              - text: Version 1.0.0
+          - row [ref=f8e168]:
+            - gridcell [ref=f8e169]:
+              - paragraph [ref=f8e170]: Goals
+              - link "Activate" [ref=f8e171] [cursor=pointer]:
+                - /url: http://full.localhost/admin/modules/activate/goals
+            - gridcell [ref=f8e172]:
+              - paragraph [ref=f8e173]: Default module for defining goals
+              - text: Version 2.3.0
+          - row [ref=f8e174]:
+            - gridcell [ref=f8e175]:
+              - paragraph [ref=f8e176]: HR Payroll
+              - link "Activate" [ref=f8e177] [cursor=pointer]:
+                - /url: http://full.localhost/admin/modules/activate/hr_payroll
+              - text: "|"
+              - link "Uninstall" [ref=f8e178] [cursor=pointer]:
+                - /url: http://full.localhost/admin/modules/uninstall/hr_payroll
+            - gridcell [ref=f8e179]:
+              - paragraph [ref=f8e180]: This module encompasses everything that goes into onboarding and paying your employees.
+              - text: Version 1.1.8 | By
+              - link "GreenTech Solutions" [ref=f8e181] [cursor=pointer]:
+                - /url: https://codecanyon.net/user/greentech_solutions
+          - row [ref=f8e182]:
+            - gridcell [ref=f8e183]:
+              - paragraph [ref=f8e184]: HR Records
+              - link "Activate" [ref=f8e185] [cursor=pointer]:
+                - /url: http://full.localhost/admin/modules/activate/hr_profile
+              - text: "|"
+              - link "Uninstall" [ref=f8e186] [cursor=pointer]:
+                - /url: http://full.localhost/admin/modules/uninstall/hr_profile
+            - gridcell [ref=f8e187]:
+              - paragraph [ref=f8e188]: The primary function of HR Records is to provide a central database containing records for all employees past and presen
+              - text: Version 1.1.3 | By
+              - link "GreenTech Solutions" [ref=f8e189] [cursor=pointer]:
+                - /url: https://codecanyon.net/user/greentech_solutions
+          - row [ref=f8e190]:
+            - gridcell [ref=f8e191]:
+              - paragraph [ref=f8e192]: Stripe Ideal V2
+              - link "Activate" [ref=f8e193] [cursor=pointer]:
+                - /url: http://full.localhost/admin/modules/activate/ideal
+              - text: "|"
+              - link "Uninstall" [ref=f8e194] [cursor=pointer]:
+                - /url: http://full.localhost/admin/modules/uninstall/ideal
+            - gridcell [ref=f8e195]:
+              - paragraph [ref=f8e196]: Stripe Ideal Payment module
+              - text: Version 1.0.0
+          - row [ref=f8e197]:
+            - gridcell [ref=f8e198]:
+              - paragraph [ref=f8e199]: Menu Setup
+              - link "Activate" [ref=f8e200] [cursor=pointer]:
+                - /url: http://full.localhost/admin/modules/activate/menu_setup
+            - gridcell [ref=f8e201]:
+              - paragraph [ref=f8e202]: Default module to apply changes to the menus
+              - text: Version 2.3.0
+          - row [ref=f8e203]:
+            - gridcell [ref=f8e204]:
+              - paragraph [ref=f8e205]: Multi Company Staff
+              - link "Deactivate" [ref=f8e206] [cursor=pointer]:
+                - /url: http://full.localhost/admin/modules/deactivate/multi_company_staff
+            - gridcell [ref=f8e207]:
+              - paragraph [ref=f8e208]: Give one staff member access to several companies of the same owner and switch between them.
+              - text: Version 1.0.0
+          - row [ref=f8e209]:
+            - gridcell [ref=f8e210]:
+              - paragraph [ref=f8e211]: OpenAi Integration
+              - link "Activate" [ref=f8e212] [cursor=pointer]:
+                - /url: http://full.localhost/admin/modules/activate/openai
+            - gridcell [ref=f8e213]:
+              - paragraph [ref=f8e214]: Default module for Open AI integration
+              - text: Version 1.0.0
+          - row [ref=f8e215]:
+            - gridcell [ref=f8e216]:
+              - paragraph [ref=f8e217]: Perfex SAAS
+              - link "Deactivate" [ref=f8e218] [cursor=pointer]:
+                - /url: http://full.localhost/admin/modules/deactivate/perfex_saas
+            - gridcell [ref=f8e219]:
+              - paragraph [ref=f8e220]: Simple comprehensive module to convert Perfex CRM to SAAS, multi-tenancy or multi-company
+              - text: Version 0.3.9 | By
+              - link "ulutfa" [ref=f8e221] [cursor=pointer]:
+                - /url: https://codecanyon.net/user/ulutfa
+          - row [ref=f8e222]:
+            - gridcell [ref=f8e223]:
+              - paragraph [ref=f8e224]: Real Estate Management
+              - link "Activate" [ref=f8e225] [cursor=pointer]:
+                - /url: http://full.localhost/admin/modules/activate/realestate
+              - text: "|"
+              - link "Uninstall" [ref=f8e226] [cursor=pointer]:
+                - /url: http://full.localhost/admin/modules/uninstall/realestate
+            - gridcell [ref=f8e227]:
+              - paragraph [ref=f8e228]: This module streamlines property management tasks, offering features like tenant screening, lease management, rent collection, accounting, and maintenance requests, ultimately saving time and improving efficiency.
+              - text: Version 1.0.2 | By
+              - link "GreenTech Solutions" [ref=f8e229] [cursor=pointer]:
+                - /url: https://codecanyon.net/user/greentech_solutions
+          - row [ref=f8e230]:
+            - gridcell [ref=f8e231]:
+              - paragraph [ref=f8e232]: Surveys
+              - link "Activate" [ref=f8e233] [cursor=pointer]:
+                - /url: http://full.localhost/admin/modules/activate/surveys
+            - gridcell [ref=f8e234]:
+              - paragraph [ref=f8e235]: Default module for sending surveys
+              - text: Version 2.3.0
+          - row [ref=f8e236]:
+            - gridcell [ref=f8e237]:
+              - paragraph [ref=f8e238]: Theme Style
+              - link "Activate" [ref=f8e239] [cursor=pointer]:
+                - /url: http://full.localhost/admin/modules/activate/theme_style
+            - gridcell [ref=f8e240]:
+              - paragraph [ref=f8e241]: Default module to apply additional CSS styles
+              - text: Version 2.3.0
+          - row [ref=f8e242]:
+            - gridcell [ref=f8e243]:
+              - paragraph [ref=f8e244]: Timesheet Attendance Management
+              - link "Activate" [ref=f8e245] [cursor=pointer]:
+                - /url: http://full.localhost/admin/modules/activate/timesheets
+              - text: "|"
+              - link "Uninstall" [ref=f8e246] [cursor=pointer]:
+                - /url: http://full.localhost/admin/modules/uninstall/timesheets
+            - gridcell [ref=f8e247]:
+              - paragraph [ref=f8e248]: An complete attendance management system application with timesheet mostly work with attendance, leave, holiday and shift
+              - text: Version 1.2.4 | By
+              - link "GreenTech Solutions" [ref=f8e249] [cursor=pointer]:
+                - /url: https://codecanyon.net/user/greentech_solutions
+      - generic [ref=f8e250]:
+        - status [ref=f8e252]: Showing 1 to 16 of 16 entries
+        - list [ref=f8e255]:
+          - listitem:
+            - link "Previous" [ref=f8e256]:
+              - /url: "#"
+          - listitem:
+            - link "1" [ref=f8e257]:
+              - /url: "#"
+          - listitem:
+            - link "Next" [ref=f8e258]:
+              - /url: "#"

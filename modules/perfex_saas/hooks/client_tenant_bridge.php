@@ -154,12 +154,39 @@ if ($client_bridge) {
             !$has_outstanding &&
             !is_subclass_of($CI->router->fetch_class(), 'AdminController')
         ) {
-            // Get primary instance
+            // Get primary instance: the first created active company, preferring the
+            // ones the contact's email has multi_company_staff access to.
             $primary_active_instance = null;
             $companies = $CI->perfex_saas_model->companies();
-            foreach ($companies as $key => $company) {
-                if ($company->status === PERFEX_SAAS_STATUS_ACTIVE) {
-                    $primary_active_instance = $company;
+            usort($companies, function ($a, $b) {
+                return (int)$a->id <=> (int)$b->id;
+            });
+
+            $accessible_slugs = [];
+            if ($CI->db->table_exists(db_prefix() . 'mcs_staff_access')) {
+                $contact = $CI->clients_model->get_contact(get_contact_user_id());
+                if ($contact && !empty($contact->email)) {
+                    $rows = $CI->db->select('company_slug')
+                        ->where('email', $contact->email)
+                        ->get(db_prefix() . 'mcs_staff_access')
+                        ->result();
+                    $accessible_slugs = array_column($rows, 'company_slug');
+                }
+            }
+
+            foreach ($companies as $company) {
+                if ($company->status !== PERFEX_SAAS_STATUS_ACTIVE) continue;
+                if (!empty($accessible_slugs) && !in_array($company->slug, $accessible_slugs)) continue;
+                $primary_active_instance = $company;
+                break;
+            }
+            // No accessible company is active: fall back to the first active one
+            if (!$primary_active_instance) {
+                foreach ($companies as $company) {
+                    if ($company->status === PERFEX_SAAS_STATUS_ACTIVE) {
+                        $primary_active_instance = $company;
+                        break;
+                    }
                 }
             }
 
@@ -169,6 +196,10 @@ if ($client_bridge) {
 
                 // Forward the current page that will be viewed to originally by the client
                 $query = uri_string();
+                // The bare client home lands on the company's admin dashboard instead of billing
+                if (trim($query, '/') === 'clients') {
+                    $query = '';
+                }
                 if (!empty($query) && $query !== '/') {
                     $query = $query . (!empty($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : '');
                     $query = '?redirect=billing/my_account?redirect=' . $query;

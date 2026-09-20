@@ -106,6 +106,12 @@
                   </div>
                 </div>
               </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <?php $value = (isset($journal_entry) ? strip_tags(new_html_entity_decode($journal_entry->description ?? '')) : ''); ?>
+                  <?php echo render_textarea('description', 'dt_expense_description', $value, ['rows' => 3]); ?>
+                </div>
+              </div>
             </div>
           </div>
           <div class="row">
@@ -205,20 +211,6 @@
           <?php echo form_hidden('amount'); ?>
           <div class="row">
             <div class="col-md-12">
-              <p class="bold"><?php echo _l('dt_expense_description'); ?></p>
-              <?php $value = (isset($journal_entry) ? $journal_entry->description : ''); ?>
-              <?php echo render_textarea('description','',$value,array(),array(),'','tinymce'); ?>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-12">    
-              <div class="modal-footer">
-                <button type="button" class="btn btn-info journal-entry-form-submiter"><?php echo _l('submit'); ?></button>
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-12">
               <div class="form-group">
                 <label for="journal_entry_files" class="control-label"><?php echo _l('acc_attachments'); ?></label>
                 <input type="file" name="files[]" id="journal_entry_files" class="form-control" multiple accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx">
@@ -232,6 +224,13 @@
                     <?php } ?>
                   </ul>
                 <?php } ?>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">    
+              <div class="modal-footer">
+                <button type="button" class="btn btn-info journal-entry-form-submiter"><?php echo _l('submit'); ?></button>
               </div>
             </div>
           </div>

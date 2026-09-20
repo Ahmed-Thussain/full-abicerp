@@ -1463,3 +1463,91 @@ if (!function_exists('acc_class_display_name')) {
         return $name;
     }
 }
+
+if (!function_exists('acc_pdf_arabic')) {
+    /**
+     * Prepare Arabic text for dompdf, which does no shaping or bidi:
+     * joins letters into their presentation forms and returns visual (reversed) order.
+     * Latin letters and digits keep their reading order. Text without Arabic is returned untouched.
+     * @param  string $text UTF-8
+     * @return string
+     */
+    function acc_pdf_arabic($text)
+    {
+        $text = (string) $text;
+        if (!preg_match('/\p{Arabic}/u', $text)) {
+            return $text;
+        }
+        // base => [isolated, final, initial, medial] (initial/medial null = does not join to the next letter)
+        $f = [
+            0x621 => [0xFE80], 0x622 => [0xFE81, 0xFE82], 0x623 => [0xFE83, 0xFE84], 0x624 => [0xFE85, 0xFE86],
+            0x625 => [0xFE87, 0xFE88], 0x627 => [0xFE8D, 0xFE8E], 0x629 => [0xFE93, 0xFE94], 0x62F => [0xFEA9, 0xFEAA],
+            0x630 => [0xFEAB, 0xFEAC], 0x631 => [0xFEAD, 0xFEAE], 0x632 => [0xFEAF, 0xFEB0], 0x648 => [0xFEED, 0xFEEE],
+            0x649 => [0xFEEF, 0xFEF0],
+        ];
+        $dual = [0x626 => 0xFE89, 0x628 => 0xFE8F, 0x62A => 0xFE95, 0x62B => 0xFE99, 0x62C => 0xFE9D, 0x62D => 0xFEA1,
+            0x62E => 0xFEA5, 0x633 => 0xFEB1, 0x634 => 0xFEB5, 0x635 => 0xFEB9, 0x636 => 0xFEBD, 0x637 => 0xFEC1,
+            0x638 => 0xFEC5, 0x639 => 0xFEC9, 0x63A => 0xFECD, 0x641 => 0xFED1, 0x642 => 0xFED5, 0x643 => 0xFED9,
+            0x644 => 0xFEDD, 0x645 => 0xFEE1, 0x646 => 0xFEE5, 0x647 => 0xFEE9, 0x64A => 0xFEF1];
+        foreach ($dual as $base => $iso) {
+            $f[$base] = [$iso, $iso + 1, $iso + 2, $iso + 3];
+        }
+        $lam_alef = [0x622 => 0xFEF5, 0x623 => 0xFEF7, 0x625 => 0xFEF9, 0x627 => 0xFEFB];
+
+        $chr = function ($cp) { return html_entity_decode('&#' . $cp . ';', ENT_QUOTES, 'UTF-8'); };
+        $cps = [];
+        foreach (preg_split('//u', $text, -1, PREG_SPLIT_NO_EMPTY) as $ch) {
+            $cps[] = mb_ord($ch, 'UTF-8');
+        }
+        $is_mark   = function ($c) { return ($c >= 0x64B && $c <= 0x652) || $c == 0x670; };
+        $joins_next = function ($c) use ($f) { return isset($f[$c]) && count($f[$c]) == 4; };
+        $joins_prev = function ($c) use ($f) { return isset($f[$c]) && count($f[$c]) >= 2; };
+
+        // shape into logical-order tokens: [string, isArabic]
+        $tokens = [];
+        $n = count($cps);
+        for ($i = 0; $i < $n; $i++) {
+            $c = $cps[$i];
+            if (!isset($f[$c])) {
+                $tokens[] = [mb_chr($c, 'UTF-8'), $is_mark($c) || ($c >= 0x600 && $c <= 0x6FF)];
+                continue;
+            }
+            // previous / next visible letters (skip marks)
+            $pi = $i - 1;
+            while ($pi >= 0 && $is_mark($cps[$pi])) { $pi--; }
+            $prev_joins = $pi >= 0 && $joins_next($cps[$pi]) && $joins_prev($c);
+            if ($c == 0x644) {
+                $ni = $i + 1;
+                while ($ni < $n && $is_mark($cps[$ni])) { $ni++; }
+                if ($ni < $n && isset($lam_alef[$cps[$ni]])) {
+                    $form = $lam_alef[$cps[$ni]] + ($prev_joins ? 1 : 0);
+                    $tokens[] = [$chr($form), true];
+                    $i = $ni;
+                    continue;
+                }
+            }
+            $ni = $i + 1;
+            while ($ni < $n && $is_mark($cps[$ni])) { $ni++; }
+            $next_joins = $joins_next($c) && $ni < $n && $joins_prev($cps[$ni]);
+            if ($prev_joins && $next_joins) { $form = $f[$c][3]; }
+            elseif ($prev_joins)            { $form = $f[$c][1]; }
+            elseif ($next_joins)            { $form = $f[$c][2]; }
+            else                            { $form = $f[$c][0]; }
+            $tokens[] = [$chr($form), true];
+        }
+
+        // visual order: reverse everything, but keep non-Arabic runs (latin, digits) in reading order
+        $out = [];
+        $run = '';
+        foreach (array_reverse($tokens) as $t) {
+            if ($t[1] || preg_match('/[\s\p{P}]/u', $t[0])) {
+                if ($run !== '') { $out[] = $run; $run = ''; }
+                $out[] = $t[0];
+            } else {
+                $run = $t[0] . $run;
+            }
+        }
+        if ($run !== '') { $out[] = $run; }
+        return implode('', $out);
+    }
+}

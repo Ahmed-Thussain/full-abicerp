@@ -70,6 +70,9 @@
         <button type="button" data-toggle="tooltip" data-placement="top" data-original-title="<?php echo _l('UB_x_timekeeping'); ?>" class="btn" >UB</button>
         <button type="button" data-toggle="tooltip" data-placement="top" data-original-title="<?php echo _l('P_timekeeping'); ?>" class="btn" >P</button>
         <button type="button" data-toggle="tooltip" data-placement="top" data-original-title="<?php echo _l('OT_x_timekeeping'); ?>" class="btn" >OT</button>
+        <?php foreach (get_instance()->timesheets_model->get_day_off_symbols() as $day_off_symbol => $day_off_name) { ?>
+          <button type="button" data-toggle="tooltip" data-placement="top" data-original-title="<?php echo html_escape($day_off_name); ?>" class="btn" ><?php echo html_escape($day_off_symbol); ?></button>
+        <?php } ?>
         <div class="clearfix"></div>
       </div>
       <div class="col-md-4">
@@ -164,11 +167,11 @@
         <h4 class="modal-title" id="exampleModalLabel"><?php echo _l('import_timesheets'); ?></h4>
       </div>
       <div class="modal-body">
+        <p><a href="<?php echo site_url('modules/timesheets/uploads/timesheets/import_timesheets.xlsx'); ?>" class="btn btn-default btn-sm"><i class="fa fa-download"></i> <?php echo _l('download_sample'); ?></a></p>
         <?php echo render_input('file_timesheets', 'file', '', 'file', ['accept'=>".xlsx, .xls, .csv"]); ?>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal"><?php echo _l('close'); ?></button>
-        <a href="<?php echo site_url('modules/timesheets/uploads/timesheets/import_timesheets.xlsx'); ?>" class="btn btn-primary"><?php echo _l('download_sample'); ?></a>
         <button class="btn btn-primary"><?php echo _l('submit'); ?></button>
       </div>
     </div>

@@ -3747,6 +3747,7 @@ class Accounting extends AdminController
                 $entries . '.recurring',
                 db_prefix() . 'acc_class.name_ar as class_name_ar',
                 '(SELECT SUM(ah.sec_debit) FROM ' . db_prefix() . 'acc_account_history ah WHERE ah.rel_id = ' . $entries . '.id AND ah.rel_type = "journal_entry") as sec_total',
+                '(SELECT GROUP_CONCAT(ah.description ORDER BY ah.id SEPARATOR "||") FROM ' . db_prefix() . 'acc_account_history ah WHERE ah.rel_id = ' . $entries . '.id AND ah.rel_type = "journal_entry" AND ah.description IS NOT NULL AND ah.description <> "") as line_descriptions',
             ]);
 
             $output  = $result['output'];
@@ -3761,8 +3762,10 @@ class Accounting extends AdminController
                 }
                 $categoryOutput .= '<div class="row-options">';
 
+                $categoryOutput .= '<a href="' . admin_url('accounting/view_journal_entry/' . $aRow['id']) . '">' . _l('acc_view') . '</a>';
+
                 if (has_permission('accounting_journal_entry', '', 'edit')) {
-                    $categoryOutput .= '<a href="' . admin_url('accounting/journal_entry_export/' . $aRow['id']) . '" class="text-success">' . _l('acc_export_excel') . '</a>';
+                    $categoryOutput .= ' | <a href="' . admin_url('accounting/journal_entry_export/' . $aRow['id']) . '" class="text-success">' . _l('acc_export_excel') . '</a>';
                 }
 
                 if (has_permission('accounting_journal_entry', '', 'edit')) {
@@ -3783,7 +3786,12 @@ class Accounting extends AdminController
                 // }
                 
                 // Full description (no truncation); number links to the entry view
-                $row[] = '<a href="' . admin_url('accounting/view_journal_entry/' . $aRow['id']) . '">' . html_escape($aRow['number']) . '</a> - ' . new_html_entity_decode($aRow['description']);
+                $description_cell = '<a href="' . admin_url('accounting/view_journal_entry/' . $aRow['id']) . '">' . html_escape($aRow['number']) . '</a> - ' . new_html_entity_decode($aRow['description']);
+                // every line's description, one under the other
+                foreach (array_filter(array_map('trim', explode("||", (string) $aRow['line_descriptions']))) as $line_description) {
+                    $description_cell .= '<br />' . html_escape($line_description);
+                }
+                $row[] = $description_cell;
 
                 $row[] = acc_class_display_name([
                     'name'    => $aRow['class_name'],

@@ -34096,6 +34096,7 @@ class Accounting_model extends App_Model
         ]);
 
         $result = ['id' => $this->db->insert_id()];
+        $this->recalculate_secondary_amounts($effective_from, $effective_to);
         if ($overlap) {
             $result['overlap'] = true;
         }
@@ -34108,9 +34109,79 @@ class Accounting_model extends App_Model
      * @return bool
      */
     public function delete_rate_period($id) {
+        $period = $this->db->where('id', $id)->get(db_prefix() . 'acc_currency_rate_periods')->row();
         $this->db->where('id', $id);
         $this->db->delete(db_prefix() . 'acc_currency_rate_periods');
-        return $this->db->affected_rows() > 0;
+        $deleted = $this->db->affected_rows() > 0;
+        if ($deleted && $period) {
+            $this->recalculate_secondary_amounts($period->effective_from, $period->effective_to);
+        }
+        return $deleted;
+    }
+
+    /**
+     * Re-derive the stored secondary-currency amounts (sec_debit / sec_credit) of
+     * ledger lines dated inside a window, using the rate in force on each date.
+     * Needed because those amounts are frozen at posting time, so a rate added or
+     * removed afterwards would otherwise never reach existing entries.
+     * @param  string|null $from date/datetime (inclusive), null = no lower bound
+     * @param  string|null $to   date/datetime (inclusive), null = no upper bound
+     * @return int number of ledger lines updated
+     */
+    public function recalculate_secondary_amounts($from = null, $to = null) {
+        if (get_option('acc_enable_secondary_currency') != 1 || get_option('acc_secondary_currency_id') == '') {
+            return 0;
+        }
+        $this->load->model('currencies_model');
+        $base      = $this->currencies_model->get_base_currency();
+        $secondary = $this->currencies_model->get(get_option('acc_secondary_currency_id'));
+        if (!$base || !$secondary) {
+            return 0;
+        }
+        $base_name = strtoupper($base->name);
+        $sec_name  = strtoupper($secondary->name);
+        $history   = db_prefix() . 'acc_account_history';
+
+        $this->db->select('DISTINCT DATE(date) as d', false);
+        if ($from !== null && $from !== '') {
+            $this->db->where('DATE(date) >=', substr($from, 0, 10));
+        }
+        if ($to !== null && $to !== '') {
+            $this->db->where('DATE(date) <=', substr($to, 0, 10));
+        }
+        $days = $this->db->get($history)->result_array();
+
+        $updated = 0;
+        foreach ($days as $day) {
+            $rate = acc_get_rate_at($base_name, $sec_name, $day['d'] . ' 23:59:59');
+
+            // Lines whose document currency is the secondary currency keep the document amounts.
+            $this->db->where('DATE(date)', $day['d']);
+            $this->db->where('doc_currency', $sec_name);
+            $this->db->set('sec_currency', $sec_name);
+            $this->db->set('sec_debit', 'doc_debit', false);
+            $this->db->set('sec_credit', 'doc_credit', false);
+            $this->db->update($history);
+            $updated += $this->db->affected_rows();
+
+            $this->db->where('DATE(date)', $day['d']);
+            $this->db->group_start();
+            $this->db->where('doc_currency IS NULL', null, false);
+            $this->db->or_where('doc_currency !=', $sec_name);
+            $this->db->group_end();
+            $this->db->set('sec_currency', $sec_name);
+            if ($rate === null) {
+                $this->db->set('sec_debit', null);
+                $this->db->set('sec_credit', null);
+            } else {
+                $this->db->set('sec_debit', 'ROUND(debit * ' . (float) $rate . ', 4)', false);
+                $this->db->set('sec_credit', 'ROUND(credit * ' . (float) $rate . ', 4)', false);
+            }
+            $this->db->update($history);
+            $updated += $this->db->affected_rows();
+        }
+
+        return $updated;
     }
 
     /**

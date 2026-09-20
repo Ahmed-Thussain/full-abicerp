@@ -11,11 +11,23 @@
            'color': 'required',
            'time_start': 'required',
            'time_end': 'required',
-           'time_start_work': 'required',
-           'time_end_work': 'required',
+           'time_start_work': {required: function(){ return !$('#is_day_off').is(':checked'); }},
+           'time_end_work': {required: function(){ return !$('#is_day_off').is(':checked'); }},
           
-  })
+  });
+
+  $('#is_day_off').on('change', function(){
+    toggle_day_off_fields();
+  });
 })(jQuery);
+
+function toggle_day_off_fields(){
+  "use strict";
+
+  var is_off = $('#is_day_off').is(':checked');
+  $('#shift_time_fields').toggleClass('hide', is_off);
+  $('#day_off_symbol_wrapper').toggleClass('hide', !is_off);
+}
 
 function new_shift_type(){
   "use strict";
@@ -30,6 +42,9 @@ function new_shift_type(){
 		$('input[name="start_lunch_break_time"]').val('');
 		$('input[name="end_lunch_break_time"]').val('');
 		$('textarea[name="description"]').val('');
+    $('#is_day_off').prop('checked', false);
+    $('input[name="day_off_symbol"]').val('OFF');
+    toggle_day_off_fields();
     $('.edit-title').addClass('hide');
     $('.add-title').removeClass('hide');
     $('#shift').modal('show');
@@ -48,6 +63,9 @@ function edit_shift_type(invoker){
 		$('input[name="start_lunch_break_time"]').val($(invoker).data('start_lunch_break_time'));
 		$('input[name="end_lunch_break_time"]').val($(invoker).data('end_lunch_break_time'));
 		$('textarea[name="description"]').val($(invoker).data('description'));
+    $('#is_day_off').prop('checked', parseInt($(invoker).data('is_day_off')) === 1);
+    $('input[name="day_off_symbol"]').val($(invoker).data('day_off_symbol') || 'OFF');
+    toggle_day_off_fields();
 
     $('.add-title').addClass('hide');
     $('.edit-title').removeClass('hide');

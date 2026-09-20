@@ -1,0 +1,573 @@
+- generic [active] [ref=f79e1]:
+  - generic [ref=f79e2]:
+    - button [ref=f79e3] [cursor=pointer]
+    - navigation [ref=f79e6]:
+      - generic [ref=f79e7]:
+        - link "الشركة الوطنية" [ref=f79e10] [cursor=pointer]:
+          - /url: http://full.localhost/mr_gaa/ps/admin/
+        - generic [ref=f79e11]:
+          - generic [ref=f79e12]:
+            - searchbox "Search..." [ref=f79e13]
+            - button "" [ref=f79e15] [cursor=pointer]
+          - list [ref=f79e17]:
+            - listitem "Quick Create" [ref=f79e18]:
+              - link "+" [ref=f79e19] [cursor=pointer]:
+                - /url: "#"
+              - text:                 
+        - text: 
+        - list [ref=f79e22]:
+          - listitem [ref=f79e23]:
+            - link " الشركة الوطنية" [expanded] [ref=f79e24] [cursor=pointer]:
+              - /url: "#"
+              - generic [ref=f79e25]:
+                - generic [ref=f79e26]: 
+                - text: الشركة الوطنية
+            - text: +
+          - listitem [ref=f79e27]:
+            - link "Settings" [ref=f79e28] [cursor=pointer]:
+              - /url: http://full.localhost/mr_gaa/ps/admin/settings
+          - listitem [ref=f79e29]:
+            - link "Share documents, ideas.." [ref=f79e30] [cursor=pointer]:
+              - /url: "#"
+          - listitem [ref=f79e33]:
+            - link "" [ref=f79e34] [cursor=pointer]:
+              - /url: http://full.localhost/mr_gaa/ps/admin/todo
+          - listitem [ref=f79e36]:
+            - link "" [ref=f79e37] [cursor=pointer]:
+              - /url: "#"
+            - text: 
+          - listitem "Notifications" [ref=f79e40]:
+            - link "" [ref=f79e41] [cursor=pointer]:
+              - /url: "#"
+  - text:         
+  - complementary [ref=f79e44]:
+    - link "demo user s.abicegypt@gmail.com" [ref=f79e46] [cursor=pointer]:
+      - /url: "#"
+      - generic [ref=f79e49]:
+        - generic [ref=f79e50]: demo user
+        - generic [ref=f79e51]: s.abicegypt@gmail.com
+    - list [ref=f79e52]:
+      - listitem [ref=f79e53]:
+        - link " Dashboard" [ref=f79e54] [cursor=pointer]:
+          - /url: http://full.localhost/mr_gaa/ps/admin/
+          - generic [ref=f79e55]: 
+          - text: Dashboard
+      - listitem [ref=f79e56]:
+        - link " Customers" [ref=f79e57] [cursor=pointer]:
+          - /url: http://full.localhost/mr_gaa/ps/admin/clients
+          - generic [ref=f79e58]: 
+          - text: Customers
+      - listitem [ref=f79e59]:
+        - link "$ Accounting " [ref=f79e60] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f79e61]: $
+          - text: Accounting
+          - generic [ref=f79e62]: 
+        - text:                 
+      - listitem [ref=f79e63]:
+        - link " Sales " [ref=f79e64] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f79e65]: 
+          - text: Sales
+          - generic [ref=f79e66]: 
+      - listitem [ref=f79e67]:
+        - link " Subscriptions" [ref=f79e68] [cursor=pointer]:
+          - /url: http://full.localhost/mr_gaa/ps/admin/subscriptions
+          - generic [ref=f79e69]: 
+          - text: Subscriptions
+      - listitem [ref=f79e70]:
+        - link " Expenses" [ref=f79e71] [cursor=pointer]:
+          - /url: http://full.localhost/mr_gaa/ps/admin/expenses
+          - generic [ref=f79e72]: 
+          - text: Expenses
+      - listitem [ref=f79e73]:
+        - link " Contracts" [ref=f79e74] [cursor=pointer]:
+          - /url: http://full.localhost/mr_gaa/ps/admin/contracts
+          - generic [ref=f79e75]: 
+          - text: Contracts
+      - listitem [ref=f79e76]:
+        - link " Projects" [ref=f79e77] [cursor=pointer]:
+          - /url: http://full.localhost/mr_gaa/ps/admin/projects
+          - generic [ref=f79e78]: 
+          - text: Projects
+      - listitem [ref=f79e79]:
+        - link " Tasks" [ref=f79e80] [cursor=pointer]:
+          - /url: http://full.localhost/mr_gaa/ps/admin/tasks
+          - generic [ref=f79e81]: 
+          - text: Tasks
+      - listitem [ref=f79e82]:
+        - link " Support" [ref=f79e83] [cursor=pointer]:
+          - /url: http://full.localhost/mr_gaa/ps/admin/tickets
+          - generic [ref=f79e84]: 
+          - text: Support
+      - listitem [ref=f79e85]:
+        - link " Leads" [ref=f79e86] [cursor=pointer]:
+          - /url: http://full.localhost/mr_gaa/ps/admin/leads
+          - generic [ref=f79e87]: 
+          - text: Leads
+      - listitem [ref=f79e88]:
+        - link " Estimate Request" [ref=f79e89] [cursor=pointer]:
+          - /url: http://full.localhost/mr_gaa/ps/admin/estimate_request
+          - generic [ref=f79e90]: 
+          - text: Estimate Request
+      - listitem [ref=f79e91]:
+        - link " Knowledge Base" [ref=f79e92] [cursor=pointer]:
+          - /url: http://full.localhost/mr_gaa/ps/admin/knowledge_base
+          - generic [ref=f79e93]: 
+          - text: Knowledge Base
+      - listitem [ref=f79e94]:
+        - link " Utilities " [ref=f79e95] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f79e96]: 
+          - text: Utilities
+          - generic [ref=f79e97]: 
+      - listitem [ref=f79e98]:
+        - link " Reports " [ref=f79e99] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f79e100]: 
+          - text: Reports
+          - generic [ref=f79e101]: 
+      - listitem [ref=f79e102]:
+        - link " Setup" [ref=f79e103] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f79e104]: 
+          - generic [ref=f79e105]: Setup
+  - generic [ref=f79e106]:
+    - text:            
+    - generic [ref=f79e107] [cursor=pointer]: Dashboard Options
+    - generic [ref=f79e112]:
+      - generic [ref=f79e115]:
+        - heading "Cron Job Warning" [level=4] [ref=f79e116]
+        - paragraph [ref=f79e117]: It looks like your cron job hasn't run in the last 48 hours, you should re-check if your cron job is properly configured, this message will auto disappear after 5 minutes after the cron job starts working properly again.
+      - generic [ref=f79e119]:
+        - text: 
+        - generic [ref=f79e120]:
+          - generic [ref=f79e121]: 
+          - generic [ref=f79e122]:
+            - generic [ref=f79e124]:
+              - generic [ref=f79e125]:
+                - generic [ref=f79e126]: Invoices Awaiting Payment
+                - generic [ref=f79e130]: 0 / 0
+              - generic [ref=f79e131]:
+                - progressbar
+            - generic [ref=f79e133]:
+              - generic [ref=f79e134]:
+                - generic [ref=f79e135]: Converted Leads
+                - generic [ref=f79e139]: 0 / 0
+              - generic [ref=f79e140]:
+                - progressbar
+            - generic [ref=f79e142]:
+              - generic [ref=f79e143]:
+                - generic [ref=f79e144]: Projects In Progress
+                - generic [ref=f79e148]: 0 / 0
+              - generic [ref=f79e149]:
+                - progressbar
+            - generic [ref=f79e151]:
+              - generic [ref=f79e152]:
+                - generic [ref=f79e153]: Tasks Not Finished
+                - generic [ref=f79e157]: 0 / 0
+              - generic [ref=f79e158]:
+                - progressbar
+      - generic [ref=f79e161]:
+        - generic [ref=f79e165]:
+          - generic [ref=f79e166]: 
+          - generic [ref=f79e167]:
+            - generic [ref=f79e169]:
+              - paragraph [ref=f79e171]:
+                - generic [ref=f79e174]: Invoice overview
+              - link "0 Draft" [ref=f79e176] [cursor=pointer]:
+                - /url: http://full.localhost/mr_gaa/ps/admin/invoices/list_invoices?status=6
+              - generic [ref=f79e177]:
+                - text: 0%
+                - generic [ref=f79e178]:
+                  - progressbar
+              - link "0 Not Sent" [ref=f79e180] [cursor=pointer]:
+                - /url: http://full.localhost/mr_gaa/ps/admin/invoices/list_invoices?not_sent=1
+              - generic [ref=f79e181]:
+                - text: 0%
+                - generic [ref=f79e182]:
+                  - progressbar
+              - link "0 Unpaid" [ref=f79e184] [cursor=pointer]:
+                - /url: http://full.localhost/mr_gaa/ps/admin/invoices/list_invoices?status=1
+              - generic [ref=f79e185]:
+                - text: 0%
+                - generic [ref=f79e186]:
+                  - progressbar
+              - link "0 Partially Paid" [ref=f79e188] [cursor=pointer]:
+                - /url: http://full.localhost/mr_gaa/ps/admin/invoices/list_invoices?status=3
+              - generic [ref=f79e189]:
+                - text: 0%
+                - generic [ref=f79e190]:
+                  - progressbar
+              - link "0 Overdue" [ref=f79e192] [cursor=pointer]:
+                - /url: http://full.localhost/mr_gaa/ps/admin/invoices/list_invoices?status=4
+              - generic [ref=f79e193]:
+                - text: 0%
+                - generic [ref=f79e194]:
+                  - progressbar
+              - link "0 Paid" [ref=f79e196] [cursor=pointer]:
+                - /url: http://full.localhost/mr_gaa/ps/admin/invoices/list_invoices?status=2
+              - generic [ref=f79e197]:
+                - text: 0%
+                - generic [ref=f79e198]:
+                  - progressbar
+            - generic [ref=f79e200]:
+              - paragraph [ref=f79e202]:
+                - generic [ref=f79e205]: Estimate overview
+              - link "0 Draft" [ref=f79e207] [cursor=pointer]:
+                - /url: http://full.localhost/mr_gaa/ps/admin/estimates/list_estimates?status=1
+              - generic [ref=f79e208]:
+                - text: 0%
+                - generic [ref=f79e209]:
+                  - progressbar
+              - link "0 Not Sent" [ref=f79e211] [cursor=pointer]:
+                - /url: http://full.localhost/mr_gaa/ps/admin/estimates/list_estimates?not_sent=1
+              - generic [ref=f79e212]:
+                - text: 0%
+                - generic [ref=f79e213]:
+                  - progressbar
+              - link "0 Sent" [ref=f79e215] [cursor=pointer]:
+                - /url: http://full.localhost/mr_gaa/ps/admin/estimates/list_estimates?status=2
+              - generic [ref=f79e216]:
+                - text: 0%
+                - generic [ref=f79e217]:
+                  - progressbar
+              - link "0 Expired" [ref=f79e219] [cursor=pointer]:
+                - /url: http://full.localhost/mr_gaa/ps/admin/estimates/list_estimates?status=5
+              - generic [ref=f79e220]:
+                - text: 0%
+                - generic [ref=f79e221]:
+                  - progressbar
+              - link "0 Declined" [ref=f79e223] [cursor=pointer]:
+                - /url: http://full.localhost/mr_gaa/ps/admin/estimates/list_estimates?status=3
+              - generic [ref=f79e224]:
+                - text: 0%
+                - generic [ref=f79e225]:
+                  - progressbar
+              - link "0 Accepted" [ref=f79e227] [cursor=pointer]:
+                - /url: http://full.localhost/mr_gaa/ps/admin/estimates/list_estimates?status=4
+              - generic [ref=f79e228]:
+                - text: 0%
+                - generic [ref=f79e229]:
+                  - progressbar
+            - generic [ref=f79e231]:
+              - paragraph [ref=f79e233]:
+                - generic [ref=f79e236]: Proposal overview
+              - link "0 Draft" [ref=f79e238] [cursor=pointer]:
+                - /url: http://full.localhost/mr_gaa/ps/admin/proposals/list_proposals?status=6
+              - generic [ref=f79e239]:
+                - text: 0%
+                - generic [ref=f79e240]:
+                  - progressbar
+              - link "0 Sent" [ref=f79e242] [cursor=pointer]:
+                - /url: http://full.localhost/mr_gaa/ps/admin/proposals/list_proposals?status=4
+              - generic [ref=f79e243]:
+                - text: 0%
+                - generic [ref=f79e244]:
+                  - progressbar
+              - link "0 Open" [ref=f79e246] [cursor=pointer]:
+                - /url: http://full.localhost/mr_gaa/ps/admin/proposals/list_proposals?status=1
+              - generic [ref=f79e247]:
+                - text: 0%
+                - generic [ref=f79e248]:
+                  - progressbar
+              - link "0 Revised" [ref=f79e250] [cursor=pointer]:
+                - /url: http://full.localhost/mr_gaa/ps/admin/proposals/list_proposals?status=5
+              - generic [ref=f79e251]:
+                - text: 0%
+                - generic [ref=f79e252]:
+                  - progressbar
+              - link "0 Declined" [ref=f79e254] [cursor=pointer]:
+                - /url: http://full.localhost/mr_gaa/ps/admin/proposals/list_proposals?status=2
+              - generic [ref=f79e255]:
+                - text: 0%
+                - generic [ref=f79e256]:
+                  - progressbar
+              - link "0 Accepted" [ref=f79e258] [cursor=pointer]:
+                - /url: http://full.localhost/mr_gaa/ps/admin/proposals/list_proposals?status=3
+              - generic [ref=f79e259]:
+                - text: 0%
+                - generic [ref=f79e260]:
+                  - progressbar
+          - separator [ref=f79e262]
+          - generic [ref=f79e264]:
+            - generic [ref=f79e266]:
+              - term [ref=f79e267]: Outstanding Invoices
+              - definition [ref=f79e268]:
+                - generic [ref=f79e269]: 0.00EGP
+            - generic [ref=f79e271]:
+              - term [ref=f79e272]: Past Due Invoices
+              - definition [ref=f79e273]:
+                - generic [ref=f79e274]: 0.00EGP
+            - generic [ref=f79e276]:
+              - term [ref=f79e277]: Paid Invoices
+              - definition [ref=f79e278]:
+                - generic [ref=f79e279]: 0.00EGP
+        - generic [ref=f79e282]:
+          - generic [ref=f79e283]: 
+          - generic [ref=f79e284]:
+            - text:  
+            - tablist [ref=f79e286]:
+              - tab " My Tasks" [ref=f79e287]:
+                - generic [ref=f79e288]: 
+                - text: My Tasks
+              - tab " My Projects" [ref=f79e289] [cursor=pointer]:
+                - generic [ref=f79e290]: 
+                - text: My Projects
+              - tab " My Reminders" [ref=f79e291] [cursor=pointer]:
+                - generic [ref=f79e292]: 
+                - text: My Reminders
+              - tab " Tickets" [ref=f79e293] [cursor=pointer]:
+                - generic [ref=f79e294]: 
+                - text: Tickets
+              - tab " Announcements" [ref=f79e295] [cursor=pointer]:
+                - generic [ref=f79e296]: 
+                - text: Announcements
+              - tab " Latest Activity" [ref=f79e297] [cursor=pointer]:
+                - generic [ref=f79e298]: 
+                - text: Latest Activity
+          - tabpanel [ref=f79e300]:
+            - link "View All" [ref=f79e301] [cursor=pointer]:
+              - /url: http://full.localhost/mr_gaa/ps/admin/tasks/list_tasks
+            - generic [ref=f79e303]:
+              - generic [ref=f79e304]:
+                - generic [ref=f79e305]:
+                  - combobox [ref=f79e308]:
+                    - option "10"
+                    - option "25" [selected]
+                    - option "50"
+                    - option "100"
+                    - option "All"
+                  - generic [ref=f79e309]:
+                    - button "Export" [ref=f79e310] [cursor=pointer]
+                    - button "" [ref=f79e311] [cursor=pointer]
+                - generic [ref=f79e317]:
+                  - generic [ref=f79e318]: 
+                  - searchbox "" [ref=f79e320]
+              - generic [ref=f79e321]: x200B x200B
+              - grid [ref=f79e323]:
+                - rowgroup [ref=f79e324]:
+                  - row [ref=f79e325]:
+                    - columnheader "#" [ref=f79e326] [cursor=pointer]
+                    - columnheader "Name" [ref=f79e327] [cursor=pointer]
+                    - columnheader "Status" [ref=f79e328] [cursor=pointer]
+                    - columnheader "Start Date" [ref=f79e329] [cursor=pointer]
+                    - columnheader "Tags" [ref=f79e330] [cursor=pointer]
+                    - columnheader "Priority" [ref=f79e331] [cursor=pointer]
+                - rowgroup
+              - status [ref=f79e334]
+        - generic [ref=f79e338]:
+          - generic [ref=f79e339]: 
+          - generic [ref=f79e340]: x200B x200B
+          - generic [ref=f79e341]:
+            - generic [ref=f79e342]:
+              - generic [ref=f79e343]:
+                - generic [ref=f79e344]:
+                  - button "prev" [ref=f79e345] [cursor=pointer]:
+                    - generic [ref=f79e346]: 
+                  - button "next" [ref=f79e347] [cursor=pointer]:
+                    - generic [ref=f79e348]: 
+                - generic [ref=f79e349]:
+                  - button "today" [disabled] [ref=f79e350]
+                  - button "expand" [ref=f79e351] [cursor=pointer]
+              - heading "September 2026" [level=2] [ref=f79e353]
+              - generic [ref=f79e355]:
+                - button "month" [ref=f79e356] [cursor=pointer]
+                - button "week" [ref=f79e357] [cursor=pointer]
+                - button "day" [ref=f79e358] [cursor=pointer]
+                - button "filter by" [ref=f79e359] [cursor=pointer]
+            - table [ref=f79e362]:
+              - rowgroup [ref=f79e363]:
+                - row [ref=f79e364]:
+                  - cell [ref=f79e365]:
+                    - table [ref=f79e368]:
+                      - rowgroup [ref=f79e370]:
+                        - row [ref=f79e371]:
+                          - columnheader "Sun" [ref=f79e372]
+                          - columnheader "Mon" [ref=f79e375]
+                          - columnheader "Tue" [ref=f79e378]
+                          - columnheader "Wed" [ref=f79e381]
+                          - columnheader "Thu" [ref=f79e384]
+                          - columnheader "Fri" [ref=f79e387]
+                          - columnheader "Sat" [ref=f79e390]
+              - rowgroup [ref=f79e393]:
+                - row [ref=f79e394]:
+                  - cell [ref=f79e395]:
+                    - table [ref=f79e399]:
+                      - rowgroup [ref=f79e401]:
+                        - row [ref=f79e402]:
+                          - cell "30" [ref=f79e403]
+                          - cell "31" [ref=f79e408]
+                          - cell "1" [ref=f79e413]
+                          - cell "2" [ref=f79e418]
+                          - cell "3" [ref=f79e423]
+                          - cell "4" [ref=f79e428]
+                          - cell "5" [ref=f79e433]
+                        - row [ref=f79e438]:
+                          - cell "6" [ref=f79e439]
+                          - cell "7" [ref=f79e444]
+                          - cell "8" [ref=f79e449]
+                          - cell "9" [ref=f79e454]
+                          - cell "10" [ref=f79e459]
+                          - cell "11" [ref=f79e464]
+                          - cell "12" [ref=f79e469]
+                        - row [ref=f79e474]:
+                          - cell "13" [ref=f79e475]
+                          - cell "14" [ref=f79e480]
+                          - cell "15" [ref=f79e485]
+                          - cell "16" [ref=f79e490]
+                          - cell "17" [ref=f79e495]
+                          - cell "18" [ref=f79e500]
+                          - cell "19" [ref=f79e505]
+                        - row [ref=f79e510]:
+                          - cell "20" [ref=f79e511]
+                          - cell "21" [ref=f79e516]
+                          - cell "22" [ref=f79e521]
+                          - cell "23" [ref=f79e526]
+                          - cell "24" [ref=f79e531]
+                          - cell "25" [ref=f79e536]
+                          - cell "26" [ref=f79e541]
+                        - row [ref=f79e546]:
+                          - cell "27" [ref=f79e547]
+                          - cell "28" [ref=f79e552]
+                          - cell "29" [ref=f79e557]
+                          - cell "30" [ref=f79e562]
+                          - cell "1" [ref=f79e567]
+                          - cell "2" [ref=f79e572]
+                          - cell "3" [ref=f79e577]
+                        - row [ref=f79e582]:
+                          - cell "4" [ref=f79e583]
+                          - cell "5" [ref=f79e588]
+                          - cell "6" [ref=f79e593]
+                          - cell "7" [ref=f79e598]
+                          - cell "8" [ref=f79e603]
+                          - cell "9" [ref=f79e608]
+                          - cell "10" [ref=f79e613]
+        - generic [ref=f79e622]:
+          - iframe [ref=f79e623]
+          - generic [ref=f79e624]: 
+          - generic [ref=f79e625]:
+            - paragraph [ref=f79e626]:
+              - generic [ref=f79e629]: Payment Records
+            - generic [ref=f79e630]:
+              - link "Full Report" [ref=f79e631] [cursor=pointer]:
+                - /url: http://full.localhost/mr_gaa/ps/admin/reports/sales
+              - link "Weekly" [ref=f79e633] [cursor=pointer]:
+                - /url: "#"
+                - text: Weekly
+                - generic [aria-hidden] [ref=f79e634]: 
+          - separator [ref=f79e635]
+        - generic [ref=f79e639]:
+          - generic [ref=f79e640]: 
+          - generic [ref=f79e641]:
+            - paragraph [ref=f79e642]:
+              - generic [ref=f79e645]: Contracts Expiring Soon
+            - link "View All" [ref=f79e646] [cursor=pointer]:
+              - /url: http://full.localhost/mr_gaa/ps/admin/contracts
+          - separator [ref=f79e647]
+          - generic [ref=f79e648]:
+            - generic [aria-hidden] [ref=f79e649]: 
+            - paragraph [ref=f79e650]: There are no contracts that are going to expire in the next 7 days.
+        - generic [ref=f79e655]:
+          - generic [ref=f79e656]: 
+          - generic [ref=f79e657]:
+            - paragraph [ref=f79e658]:
+              - generic [ref=f79e659]: 
+              - generic [ref=f79e660]: Staff Tickets Report
+            - link "This Month" [ref=f79e663] [cursor=pointer]:
+              - /url: "#"
+              - text: This Month
+              - generic [aria-hidden] [ref=f79e664]: 
+          - separator [ref=f79e665]
+          - generic [ref=f79e667]:
+            - generic [ref=f79e668]:
+              - generic [ref=f79e669]:
+                - combobox [ref=f79e672]:
+                  - option "10"
+                  - option "25" [selected]
+                  - option "50"
+                  - option "100"
+                  - option "All"
+                - button "Export" [ref=f79e674] [cursor=pointer]
+              - generic [ref=f79e678]:
+                - generic [ref=f79e679]: 
+                - searchbox "" [ref=f79e681]
+              - text: x200B x200B
+            - grid [ref=f79e683]:
+              - rowgroup [ref=f79e684]:
+                - row [ref=f79e685]:
+                  - columnheader "Staff Member activate to sort column descending" [ref=f79e686] [cursor=pointer]: Staff Member
+                  - columnheader "Total Assigned Tickets activate to sort column ascending" [ref=f79e687] [cursor=pointer]: Total Assigned Tickets
+                  - columnheader "Open Tickets activate to sort column ascending" [ref=f79e688] [cursor=pointer]: Open Tickets
+                  - columnheader "Closed Tickets activate to sort column ascending" [ref=f79e689] [cursor=pointer]: Closed Tickets
+                  - columnheader "Replies To Tickets activate to sort column ascending" [ref=f79e690] [cursor=pointer]: Replies To Tickets
+                  - columnheader "Average Reply Time activate to sort column ascending" [ref=f79e691] [cursor=pointer]:
+                    - generic [ref=f79e692]: 
+                    - text: Average Reply Time
+              - rowgroup [ref=f79e693]:
+                - row [ref=f79e694]:
+                  - gridcell [ref=f79e695]:
+                    - link "Admin Lotus" [ref=f79e696] [cursor=pointer]:
+                      - /url: http://full.localhost/mr_gaa/ps/admin/staff/member/3
+                  - gridcell "0" [ref=f79e697]
+                  - gridcell "0" [ref=f79e698]
+                  - gridcell "0" [ref=f79e699]
+                  - gridcell "0" [ref=f79e700]
+                  - gridcell "-" [ref=f79e701]
+                - row [ref=f79e702]:
+                  - gridcell [ref=f79e703]:
+                    - link "demo user" [ref=f79e704] [cursor=pointer]:
+                      - /url: http://full.localhost/mr_gaa/ps/admin/staff/member/1
+                  - gridcell "0" [ref=f79e705]
+                  - gridcell "0" [ref=f79e706]
+                  - gridcell "0" [ref=f79e707]
+                  - gridcell "0" [ref=f79e708]
+                  - gridcell "-" [ref=f79e709]
+            - generic [ref=f79e710]:
+              - status [ref=f79e712]: Showing 1 to 2 of 2 entries
+              - list [ref=f79e715]:
+                - listitem:
+                  - link "Previous" [ref=f79e716]:
+                    - /url: "#"
+                - listitem:
+                  - link "1" [ref=f79e717]:
+                    - /url: "#"
+                - listitem:
+                  - link "Next" [ref=f79e718]:
+                    - /url: "#"
+      - generic [ref=f79e719]:
+        - generic [ref=f79e722]:
+          - generic [ref=f79e723]: 
+          - generic [ref=f79e724]:
+            - paragraph [ref=f79e725]:
+              - generic [ref=f79e728]: My To Do Items
+            - generic [ref=f79e729]:
+              - link "View All" [ref=f79e730] [cursor=pointer]:
+                - /url: http://full.localhost/mr_gaa/ps/admin/todo
+              - link "New To Do" [ref=f79e731] [cursor=pointer]:
+                - /url: "#__todo"
+          - separator [ref=f79e732]
+          - heading " Latest to do's" [level=4] [ref=f79e733]:
+            - generic [ref=f79e734]: 
+            - text: Latest to do's
+          - list [ref=f79e735]:
+            - listitem: No todos found
+          - heading " Latest finished to do's" [level=4] [ref=f79e736]:
+            - generic [ref=f79e737]: 
+            - text: Latest finished to do's
+          - list [ref=f79e738]:
+            - listitem: No finished todos found
+        - generic [ref=f79e743]:
+          - generic [ref=f79e744]: 
+          - paragraph [ref=f79e745]:
+            - generic [ref=f79e748]: Leads Overview
+          - separator [ref=f79e749]
+          - iframe [ref=f79e751]
+        - generic [ref=f79e757]:
+          - generic [ref=f79e758]: 
+          - paragraph [ref=f79e759]:
+            - generic [ref=f79e762]: Statistics by Project Status
+          - separator [ref=f79e763]
+          - iframe [ref=f79e765]
+        - text:  
+  - text:   

@@ -1,0 +1,19 @@
+[    1318ms] [LOG] JQMIGRATE: Migrate is installed, version 3.0.0 @ http://full.localhost/demo-lotus-holdings/ps/assets/plugins/jquery/jquery-migrate.min.js?v=3.4.1:1
+[    1551ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "new-password"): (More info: https://goo.gl/9p2vKq) %o @ http://full.localhost/demo-lotus-holdings/ps/admin/staff/member:0
+[   82203ms] [LOG] JQMIGRATE: Migrate is installed, version 3.0.0 @ http://full.localhost/demo-lotus-holdings/ps/assets/plugins/jquery/jquery-migrate.min.js?v=3.4.1:1
+[   87413ms] [LOG] JQMIGRATE: Migrate is installed, version 3.0.0 @ http://full.localhost/demo-lotus-holdings/ps/assets/plugins/jquery/jquery-migrate.min.js?v=3.4.1:1
+[   96877ms] [LOG] JQMIGRATE: Migrate is installed, version 3.0.0 @ http://full.localhost/demo-lotus-holdings/ps/assets/plugins/jquery/jquery-migrate.min.js?v=3.4.1:1
+[  106030ms] [LOG] JQMIGRATE: Migrate is installed, version 3.0.0 @ http://full.localhost/shrk/ps/assets/plugins/jquery/jquery-migrate.min.js?v=3.4.1:1
+[  106667ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://rawgit.com/xErik/pdfmake-fonts-google/master/build/script/ofl/amiri.map.js:0
+[  106667ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://rawgit.com/xErik/pdfmake-fonts-google/master/build/script/ofl/amiri.js:0
+[  225923ms] [LOG] JQMIGRATE: Migrate is installed, version 3.0.0 @ http://full.localhost/shrk/ps/assets/plugins/jquery/jquery-migrate.min.js?v=3.4.1:1
+[  226442ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://rawgit.com/xErik/pdfmake-fonts-google/master/build/script/ofl/amiri.map.js:0
+[  226443ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://rawgit.com/xErik/pdfmake-fonts-google/master/build/script/ofl/amiri.js:0
+[  232567ms] [LOG] JQMIGRATE: Migrate is installed, version 3.0.0 @ http://full.localhost/shrk/ps/assets/plugins/jquery/jquery-migrate.min.js?v=3.4.1:1
+[  232866ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "new-password"): (More info: https://goo.gl/9p2vKq) %o @ http://full.localhost/shrk/ps/admin/staff/member/1:0
+[  233027ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://rawgit.com/xErik/pdfmake-fonts-google/master/build/script/ofl/amiri.js:0
+[  233027ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://rawgit.com/xErik/pdfmake-fonts-google/master/build/script/ofl/amiri.map.js:0
+[  239275ms] [LOG] JQMIGRATE: Migrate is installed, version 3.0.0 @ http://full.localhost/shrk/ps/assets/plugins/jquery/jquery-migrate.min.js?v=3.4.1:1
+[  239704ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://rawgit.com/xErik/pdfmake-fonts-google/master/build/script/ofl/amiri.js:0
+[  239704ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://rawgit.com/xErik/pdfmake-fonts-google/master/build/script/ofl/amiri.map.js:0
+[  345989ms] [LOG] JQMIGRATE: Migrate is installed, version 3.0.0 @ http://full.localhost/demo-lotus-holdings/ps/assets/plugins/jquery/jquery-migrate.min.js?v=3.4.1:1

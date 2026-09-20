@@ -1,0 +1,8 @@
+[     495ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://full.localhost/demo-lotus-holdings/ps/admin/authentication:0
+[   14274ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://full.localhost/demo-lotus-holdings/ps/admin/staff/member:0
+[   14520ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "new-password"): (More info: https://goo.gl/9p2vKq) %o @ http://full.localhost/demo-lotus-holdings/ps/admin/staff/member:0
+[   14542ms] TypeError: Cannot read properties of undefined (reading 'ajaxSetup')
+    at csrf_jquery_ajax_setup (http://full.localhost/demo-lotus-holdings/ps/admin/staff/member:71:11)
+    at http://full.localhost/demo-lotus-holdings/ps/admin/staff/member:64:13
+[   37865ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://full.localhost/demo-lotus-holdings/ps/admin/staff/member:0
+[   61543ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://full.localhost/demo-lotus-holdings/ps/admin/staff/member:0

@@ -1,0 +1,4 @@
+[    1710ms] [LOG] JQMIGRATE: Migrate is installed, version 3.0.0 @ http://full.localhost/demo-lotus-holdings/ps/assets/plugins/jquery/jquery-migrate.min.js?v=3.4.1:1
+[    2017ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "new-password"): (More info: https://goo.gl/9p2vKq) %o @ http://full.localhost/demo-lotus-holdings/ps/admin/staff/member:0
+[   28682ms] [LOG] JQMIGRATE: Migrate is installed, version 3.0.0 @ http://full.localhost/demo-lotus-holdings/ps/assets/plugins/jquery/jquery-migrate.min.js?v=3.4.1:1
+[   28838ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "new-password"): (More info: https://goo.gl/9p2vKq) %o @ http://full.localhost/demo-lotus-holdings/ps/admin/staff/member/5:0

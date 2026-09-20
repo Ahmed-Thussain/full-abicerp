@@ -591,51 +591,6 @@ function accounting_load_js() {
                         }
                     }
                 }, 100);
-            } else if (is_payslips) {
-                var interval = setInterval(function() {
-                    if (typeof jQuery !== 'undefined') {
-                        var $ = jQuery;
-                        
-                        // Handle #add_payslip form
-                        var add_form = $('#add_payslip');
-                        if (add_form.length > 0 && add_form.find('select[name="acc_class"]').length === 0) {
-                            var pdf_template_col = add_form.find('select[name="pdf_template_id"]').closest('.col-md-6');
-                            if (pdf_template_col.length > 0) {
-                                var select_html = '<div class="col-md-6 form-group">';
-                                select_html += '<label for="acc_class" class="control-label">' + acc_class_lang + '</label>';
-                                select_html += '<select name="acc_class" class="selectpicker" data-width="100%" data-none-selected-text="None">';
-                                select_html += '<option value="0">None</option>';
-                                $.each(acc_classes, function(i, c) {
-                                    select_html += '<option value="' + c.id + '">' + c.display_name + '</option>';
-                                });
-                                select_html += '</select>';
-                                select_html += '</div>';
-                                $(select_html).insertAfter(pdf_template_col);
-                                add_form.find('select[name="acc_class"]').selectpicker('refresh');
-                            }
-                        }
-
-                        // Handle #edit_payslip form
-                        var edit_form = $('#edit_payslip');
-                        if (edit_form.length > 0 && edit_form.find('select[name="acc_class"]').length === 0) {
-                            var edit_pdf_col = edit_form.find('select[name="pdf_template_id"]').closest('.col-md-6');
-                            if (edit_pdf_col.length > 0) {
-                                var select_html = '<div class="col-md-6 form-group">';
-                                select_html += '<label for="acc_class" class="control-label">' + acc_class_lang + '</label>';
-                                select_html += '<select name="acc_class" class="selectpicker" data-width="100%" data-none-selected-text="None">';
-                                select_html += '<option value="0">None</option>';
-                                $.each(acc_classes, function(i, c) {
-                                    var selected = (typeof acc_transaction_class !== 'undefined' && acc_transaction_class == c.id) ? 'selected' : '';
-                                    select_html += '<option value="' + c.id + '" ' + selected + '>' + c.display_name + '</option>';
-                                });
-                                select_html += '</select>';
-                                select_html += '</div>';
-                                $(select_html).insertAfter(edit_pdf_col);
-                                edit_form.find('select[name="acc_class"]').selectpicker('refresh');
-                            }
-                        }
-                    }
-                }, 100);
             }
 
             if (is_mrp_view_manufacturing_order && typeof acc_transaction_class !== 'undefined' && acc_transaction_class > 0) {

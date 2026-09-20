@@ -1,0 +1,20 @@
+- generic [ref=f112e2]:
+  - link "Lotus_Holding" [ref=f112e4] [cursor=pointer]:
+    - /url: http://full.localhost/lotus-holding/ps/
+  - generic [ref=f112e5]:
+    - heading "Login" [level=1] [ref=f112e6]
+    - paragraph [ref=f112e7]: Welcome, please sign in to your dashboard
+  - generic [ref=f112e9]:
+    - generic [ref=f112e10]:
+      - generic [ref=f112e11]: Email Address
+      - textbox "Email Address" [active] [ref=f112e12]: test.admin3@abicerp.local
+    - generic [ref=f112e13]:
+      - generic [ref=f112e14]:
+        - generic [ref=f112e15]: Password
+        - link "Forgot Password?" [ref=f112e16] [cursor=pointer]:
+          - /url: http://full.localhost/lotus-holding/ps/admin/authentication/forgot_password
+      - textbox "Password" [ref=f112e17]: Test#12345
+    - generic [ref=f112e19] [cursor=pointer]:
+      - checkbox "Remember me" [ref=f112e20]
+      - generic [ref=f112e21]: Remember me
+    - button "Login" [ref=f112e23] [cursor=pointer]

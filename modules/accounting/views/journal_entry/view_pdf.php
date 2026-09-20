@@ -4,7 +4,8 @@
 <meta charset="utf-8">
 <?php $this->load->view('report/convert_style'); ?>
 <style>
-  body { font-family: DejaVu Serif, sans-serif; font-size: 12px; }
+  body, table, td, th, h3, h4, h5 { font-family: DejaVu Sans, sans-serif; font-size: 12px; }
+  h3 { font-size: 24px; } h4 { font-size: 18px; }
   .num { text-align: right; }
   img { max-width: 100%; }
 </style>

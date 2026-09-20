@@ -1,0 +1,599 @@
+- generic [active] [ref=f64e1]:
+  - generic [ref=f64e2]:
+    - button [ref=f64e3] [cursor=pointer]
+    - navigation [ref=f64e6]:
+      - generic [ref=f64e7]:
+        - link "Lotus_Holding" [ref=f64e10] [cursor=pointer]:
+          - /url: http://full.localhost/demo-lotus-holdings/ps/admin/
+        - generic [ref=f64e11]:
+          - generic [ref=f64e12]:
+            - searchbox "Search..." [ref=f64e13]
+            - button "" [ref=f64e15] [cursor=pointer]
+          - list [ref=f64e17]:
+            - listitem "Quick Create" [ref=f64e18]:
+              - link "+" [ref=f64e19] [cursor=pointer]:
+                - /url: "#"
+              - text:                 
+        - text: 
+        - list [ref=f64e22]:
+          - listitem [ref=f64e23]:
+            - link " لوتس القابضة للإستثمارات المالية" [expanded] [ref=f64e24] [cursor=pointer]:
+              - /url: "#"
+              - generic [ref=f64e25]:
+                - generic [ref=f64e26]: 
+                - text: لوتس القابضة للإستثمارات المالية
+            - text: +
+          - listitem [ref=f64e27]:
+            - link "Settings" [ref=f64e28] [cursor=pointer]:
+              - /url: http://full.localhost/demo-lotus-holdings/ps/admin/settings
+          - listitem [ref=f64e29]:
+            - link "Share documents, ideas.." [ref=f64e30] [cursor=pointer]:
+              - /url: "#"
+          - listitem [ref=f64e33]:
+            - link "" [ref=f64e34] [cursor=pointer]:
+              - /url: http://full.localhost/demo-lotus-holdings/ps/admin/todo
+          - listitem [ref=f64e36]:
+            - link "" [ref=f64e37] [cursor=pointer]:
+              - /url: "#"
+            - text: 
+          - listitem "Notifications" [ref=f64e40]:
+            - link "" [ref=f64e41] [cursor=pointer]:
+              - /url: "#"
+  - text:         
+  - complementary [ref=f64e44]:
+    - link "Tenant Admin tenantadmin@abicerp.local" [ref=f64e46] [cursor=pointer]:
+      - /url: "#"
+      - generic [ref=f64e49]:
+        - generic [ref=f64e50]: Tenant Admin
+        - generic [ref=f64e51]: tenantadmin@abicerp.local
+    - list [ref=f64e52]:
+      - listitem [ref=f64e53]:
+        - link " Dashboard" [ref=f64e54] [cursor=pointer]:
+          - /url: http://full.localhost/demo-lotus-holdings/ps/admin/
+          - generic [ref=f64e55]: 
+          - text: Dashboard
+      - listitem [ref=f64e56]:
+        - link " Customers" [ref=f64e57] [cursor=pointer]:
+          - /url: http://full.localhost/demo-lotus-holdings/ps/admin/clients
+          - generic [ref=f64e58]: 
+          - text: Customers
+      - listitem [ref=f64e59]:
+        - link "$ Accounting " [ref=f64e60] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f64e61]: $
+          - text: Accounting
+          - generic [ref=f64e62]: 
+        - text:                 
+      - listitem [ref=f64e63]:
+        - link " Sales " [ref=f64e64] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f64e65]: 
+          - text: Sales
+          - generic [ref=f64e66]: 
+      - listitem [ref=f64e67]:
+        - link " Subscriptions" [ref=f64e68] [cursor=pointer]:
+          - /url: http://full.localhost/demo-lotus-holdings/ps/admin/subscriptions
+          - generic [ref=f64e69]: 
+          - text: Subscriptions
+      - listitem [ref=f64e70]:
+        - link " Expenses" [ref=f64e71] [cursor=pointer]:
+          - /url: http://full.localhost/demo-lotus-holdings/ps/admin/expenses
+          - generic [ref=f64e72]: 
+          - text: Expenses
+      - listitem [ref=f64e73]:
+        - link " Contracts" [ref=f64e74] [cursor=pointer]:
+          - /url: http://full.localhost/demo-lotus-holdings/ps/admin/contracts
+          - generic [ref=f64e75]: 
+          - text: Contracts
+      - listitem [ref=f64e76]:
+        - link " Projects" [ref=f64e77] [cursor=pointer]:
+          - /url: http://full.localhost/demo-lotus-holdings/ps/admin/projects
+          - generic [ref=f64e78]: 
+          - text: Projects
+      - listitem [ref=f64e79]:
+        - link " Tasks" [ref=f64e80] [cursor=pointer]:
+          - /url: http://full.localhost/demo-lotus-holdings/ps/admin/tasks
+          - generic [ref=f64e81]: 
+          - text: Tasks
+      - listitem [ref=f64e82]:
+        - link " Support" [ref=f64e83] [cursor=pointer]:
+          - /url: http://full.localhost/demo-lotus-holdings/ps/admin/tickets
+          - generic [ref=f64e84]: 
+          - text: Support
+      - listitem [ref=f64e85]:
+        - link " Leads" [ref=f64e86] [cursor=pointer]:
+          - /url: http://full.localhost/demo-lotus-holdings/ps/admin/leads
+          - generic [ref=f64e87]: 
+          - text: Leads
+      - listitem [ref=f64e88]:
+        - link " Estimate Request" [ref=f64e89] [cursor=pointer]:
+          - /url: http://full.localhost/demo-lotus-holdings/ps/admin/estimate_request
+          - generic [ref=f64e90]: 
+          - text: Estimate Request
+      - listitem [ref=f64e91]:
+        - link " Knowledge Base" [ref=f64e92] [cursor=pointer]:
+          - /url: http://full.localhost/demo-lotus-holdings/ps/admin/knowledge_base
+          - generic [ref=f64e93]: 
+          - text: Knowledge Base
+      - listitem [ref=f64e94]:
+        - link " Utilities " [ref=f64e95] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f64e96]: 
+          - text: Utilities
+          - generic [ref=f64e97]: 
+      - listitem [ref=f64e98]:
+        - link " Reports " [ref=f64e99] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f64e100]: 
+          - text: Reports
+          - generic [ref=f64e101]: 
+      - listitem [ref=f64e102]:
+        - link " Setup" [ref=f64e103] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f64e104]: 
+          - generic [ref=f64e105]: Setup
+  - generic [ref=f64e106]:
+    - text:             
+    - generic [ref=f64e107] [cursor=pointer]: Dashboard Options
+    - generic [ref=f64e112]:
+      - generic [ref=f64e115]:
+        - heading "Cron Job Warning" [level=4] [ref=f64e116]
+        - paragraph [ref=f64e117]: It looks like your cron job hasn't run in the last 48 hours, you should re-check if your cron job is properly configured, this message will auto disappear after 5 minutes after the cron job starts working properly again.
+      - generic [ref=f64e119]:
+        - generic [ref=f64e120]:
+          - generic [ref=f64e121]: 
+          - heading "Quota" [level=4] [ref=f64e123]
+        - generic [ref=f64e124]:
+          - generic [ref=f64e125]: 
+          - generic [ref=f64e126]:
+            - generic [ref=f64e128]:
+              - generic [ref=f64e129]:
+                - generic [ref=f64e130]: Invoices Awaiting Payment
+                - generic [ref=f64e134]: 1 / 1
+              - progressbar [ref=f64e136]
+            - generic [ref=f64e138]:
+              - generic [ref=f64e139]:
+                - generic [ref=f64e140]: Converted Leads
+                - generic [ref=f64e144]: 0 / 0
+              - generic [ref=f64e145]:
+                - progressbar
+            - generic [ref=f64e147]:
+              - generic [ref=f64e148]:
+                - generic [ref=f64e149]: Projects In Progress
+                - generic [ref=f64e153]: 0 / 0
+              - generic [ref=f64e154]:
+                - progressbar
+            - generic [ref=f64e156]:
+              - generic [ref=f64e157]:
+                - generic [ref=f64e158]: Tasks Not Finished
+                - generic [ref=f64e162]: 0 / 0
+              - generic [ref=f64e163]:
+                - progressbar
+      - generic [ref=f64e166]:
+        - generic [ref=f64e170]:
+          - generic [ref=f64e171]: 
+          - generic [ref=f64e172]:
+            - generic [ref=f64e174]:
+              - paragraph [ref=f64e176]:
+                - generic [ref=f64e179]: Invoice overview
+              - link "0 Draft" [ref=f64e181] [cursor=pointer]:
+                - /url: http://full.localhost/demo-lotus-holdings/ps/admin/invoices/list_invoices?status=6
+              - generic [ref=f64e182]:
+                - text: 0.00%
+                - generic [ref=f64e183]:
+                  - progressbar
+              - link "1 Not Sent" [ref=f64e185] [cursor=pointer]:
+                - /url: http://full.localhost/demo-lotus-holdings/ps/admin/invoices/list_invoices?not_sent=1
+              - generic [ref=f64e186]:
+                - text: 100.00%
+                - progressbar [ref=f64e188]
+              - link "1 Unpaid" [ref=f64e190] [cursor=pointer]:
+                - /url: http://full.localhost/demo-lotus-holdings/ps/admin/invoices/list_invoices?status=1
+              - generic [ref=f64e191]:
+                - text: 100.00%
+                - progressbar [ref=f64e193]
+              - link "0 Partially Paid" [ref=f64e195] [cursor=pointer]:
+                - /url: http://full.localhost/demo-lotus-holdings/ps/admin/invoices/list_invoices?status=3
+              - generic [ref=f64e196]:
+                - text: 0.00%
+                - generic [ref=f64e197]:
+                  - progressbar
+              - link "0 Overdue" [ref=f64e199] [cursor=pointer]:
+                - /url: http://full.localhost/demo-lotus-holdings/ps/admin/invoices/list_invoices?status=4
+              - generic [ref=f64e200]:
+                - text: 0.00%
+                - generic [ref=f64e201]:
+                  - progressbar
+              - link "0 Paid" [ref=f64e203] [cursor=pointer]:
+                - /url: http://full.localhost/demo-lotus-holdings/ps/admin/invoices/list_invoices?status=2
+              - generic [ref=f64e204]:
+                - text: 0.00%
+                - generic [ref=f64e205]:
+                  - progressbar
+            - generic [ref=f64e207]:
+              - paragraph [ref=f64e209]:
+                - generic [ref=f64e212]: Estimate overview
+              - link "0 Draft" [ref=f64e214] [cursor=pointer]:
+                - /url: http://full.localhost/demo-lotus-holdings/ps/admin/estimates/list_estimates?status=1
+              - generic [ref=f64e215]:
+                - text: 0%
+                - generic [ref=f64e216]:
+                  - progressbar
+              - link "0 Not Sent" [ref=f64e218] [cursor=pointer]:
+                - /url: http://full.localhost/demo-lotus-holdings/ps/admin/estimates/list_estimates?not_sent=1
+              - generic [ref=f64e219]:
+                - text: 0%
+                - generic [ref=f64e220]:
+                  - progressbar
+              - link "0 Sent" [ref=f64e222] [cursor=pointer]:
+                - /url: http://full.localhost/demo-lotus-holdings/ps/admin/estimates/list_estimates?status=2
+              - generic [ref=f64e223]:
+                - text: 0%
+                - generic [ref=f64e224]:
+                  - progressbar
+              - link "0 Expired" [ref=f64e226] [cursor=pointer]:
+                - /url: http://full.localhost/demo-lotus-holdings/ps/admin/estimates/list_estimates?status=5
+              - generic [ref=f64e227]:
+                - text: 0%
+                - generic [ref=f64e228]:
+                  - progressbar
+              - link "0 Declined" [ref=f64e230] [cursor=pointer]:
+                - /url: http://full.localhost/demo-lotus-holdings/ps/admin/estimates/list_estimates?status=3
+              - generic [ref=f64e231]:
+                - text: 0%
+                - generic [ref=f64e232]:
+                  - progressbar
+              - link "0 Accepted" [ref=f64e234] [cursor=pointer]:
+                - /url: http://full.localhost/demo-lotus-holdings/ps/admin/estimates/list_estimates?status=4
+              - generic [ref=f64e235]:
+                - text: 0%
+                - generic [ref=f64e236]:
+                  - progressbar
+            - generic [ref=f64e238]:
+              - paragraph [ref=f64e240]:
+                - generic [ref=f64e243]: Proposal overview
+              - link "0 Draft" [ref=f64e245] [cursor=pointer]:
+                - /url: http://full.localhost/demo-lotus-holdings/ps/admin/proposals/list_proposals?status=6
+              - generic [ref=f64e246]:
+                - text: 0%
+                - generic [ref=f64e247]:
+                  - progressbar
+              - link "0 Sent" [ref=f64e249] [cursor=pointer]:
+                - /url: http://full.localhost/demo-lotus-holdings/ps/admin/proposals/list_proposals?status=4
+              - generic [ref=f64e250]:
+                - text: 0%
+                - generic [ref=f64e251]:
+                  - progressbar
+              - link "0 Open" [ref=f64e253] [cursor=pointer]:
+                - /url: http://full.localhost/demo-lotus-holdings/ps/admin/proposals/list_proposals?status=1
+              - generic [ref=f64e254]:
+                - text: 0%
+                - generic [ref=f64e255]:
+                  - progressbar
+              - link "0 Revised" [ref=f64e257] [cursor=pointer]:
+                - /url: http://full.localhost/demo-lotus-holdings/ps/admin/proposals/list_proposals?status=5
+              - generic [ref=f64e258]:
+                - text: 0%
+                - generic [ref=f64e259]:
+                  - progressbar
+              - link "0 Declined" [ref=f64e261] [cursor=pointer]:
+                - /url: http://full.localhost/demo-lotus-holdings/ps/admin/proposals/list_proposals?status=2
+              - generic [ref=f64e262]:
+                - text: 0%
+                - generic [ref=f64e263]:
+                  - progressbar
+              - link "0 Accepted" [ref=f64e265] [cursor=pointer]:
+                - /url: http://full.localhost/demo-lotus-holdings/ps/admin/proposals/list_proposals?status=3
+              - generic [ref=f64e266]:
+                - text: 0%
+                - generic [ref=f64e267]:
+                  - progressbar
+          - separator [ref=f64e269]
+          - generic [ref=f64e271]:
+            - generic [ref=f64e273]:
+              - term [ref=f64e274]: Outstanding Invoices
+              - definition [ref=f64e275]:
+                - generic [ref=f64e276]: $10,000.00
+            - generic [ref=f64e278]:
+              - term [ref=f64e279]: Past Due Invoices
+              - definition [ref=f64e280]:
+                - generic [ref=f64e281]: $0.00
+            - generic [ref=f64e283]:
+              - term [ref=f64e284]: Paid Invoices
+              - definition [ref=f64e285]:
+                - generic [ref=f64e286]: $0.00
+        - generic [ref=f64e289]:
+          - generic [ref=f64e290]: 
+          - generic [ref=f64e291]:
+            - text:  
+            - tablist [ref=f64e293]:
+              - tab " My Tasks" [ref=f64e294]:
+                - generic [ref=f64e295]: 
+                - text: My Tasks
+              - tab " My Projects" [ref=f64e296] [cursor=pointer]:
+                - generic [ref=f64e297]: 
+                - text: My Projects
+              - tab " My Reminders" [ref=f64e298] [cursor=pointer]:
+                - generic [ref=f64e299]: 
+                - text: My Reminders
+              - tab " Tickets" [ref=f64e300] [cursor=pointer]:
+                - generic [ref=f64e301]: 
+                - text: Tickets
+              - tab " Announcements" [ref=f64e302] [cursor=pointer]:
+                - generic [ref=f64e303]: 
+                - text: Announcements
+              - tab " Latest Activity" [ref=f64e304] [cursor=pointer]:
+                - generic [ref=f64e305]: 
+                - text: Latest Activity
+          - tabpanel [ref=f64e307]:
+            - link "View All" [ref=f64e308] [cursor=pointer]:
+              - /url: http://full.localhost/demo-lotus-holdings/ps/admin/tasks/list_tasks
+            - generic [ref=f64e310]:
+              - generic [ref=f64e311]:
+                - generic [ref=f64e312]:
+                  - combobox [ref=f64e315]:
+                    - option "10"
+                    - option "25" [selected]
+                    - option "50"
+                    - option "100"
+                    - option "All"
+                  - generic [ref=f64e316]:
+                    - button "Export" [ref=f64e317] [cursor=pointer]
+                    - button "" [ref=f64e318] [cursor=pointer]
+                - generic [ref=f64e324]:
+                  - generic [ref=f64e325]: 
+                  - searchbox "" [ref=f64e327]
+              - generic [ref=f64e328]: x200B x200B
+              - grid [ref=f64e330]:
+                - rowgroup [ref=f64e331]:
+                  - row [ref=f64e332]:
+                    - columnheader "#" [ref=f64e333] [cursor=pointer]
+                    - columnheader "Name" [ref=f64e334] [cursor=pointer]
+                    - columnheader "Status" [ref=f64e335] [cursor=pointer]
+                    - columnheader "Start Date" [ref=f64e336] [cursor=pointer]
+                    - columnheader "Tags" [ref=f64e337] [cursor=pointer]
+                    - columnheader "Priority" [ref=f64e338] [cursor=pointer]
+                - rowgroup
+              - status [ref=f64e341]
+        - generic [ref=f64e345]:
+          - generic [ref=f64e346]: 
+          - generic [ref=f64e347]: x200B x200B
+          - generic [ref=f64e348]:
+            - generic [ref=f64e349]:
+              - generic [ref=f64e350]:
+                - generic [ref=f64e351]:
+                  - button "prev" [ref=f64e352] [cursor=pointer]:
+                    - generic [ref=f64e353]: 
+                  - button "next" [ref=f64e354] [cursor=pointer]:
+                    - generic [ref=f64e355]: 
+                - generic [ref=f64e356]:
+                  - button "today" [disabled] [ref=f64e357]
+                  - button "expand" [ref=f64e358] [cursor=pointer]
+              - heading "September 2026" [level=2] [ref=f64e360]
+              - generic [ref=f64e362]:
+                - button "month" [ref=f64e363] [cursor=pointer]
+                - button "week" [ref=f64e364] [cursor=pointer]
+                - button "day" [ref=f64e365] [cursor=pointer]
+                - button "filter by" [ref=f64e366] [cursor=pointer]
+            - table [ref=f64e369]:
+              - rowgroup [ref=f64e370]:
+                - row [ref=f64e371]:
+                  - cell [ref=f64e372]:
+                    - table [ref=f64e375]:
+                      - rowgroup [ref=f64e377]:
+                        - row [ref=f64e378]:
+                          - columnheader "Sun" [ref=f64e379]
+                          - columnheader "Mon" [ref=f64e382]
+                          - columnheader "Tue" [ref=f64e385]
+                          - columnheader "Wed" [ref=f64e388]
+                          - columnheader "Thu" [ref=f64e391]
+                          - columnheader "Fri" [ref=f64e394]
+                          - columnheader "Sat" [ref=f64e397]
+              - rowgroup [ref=f64e400]:
+                - row [ref=f64e401]:
+                  - cell [ref=f64e402]:
+                    - table [ref=f64e406]:
+                      - rowgroup [ref=f64e408]:
+                        - row [ref=f64e409]:
+                          - cell "30" [ref=f64e410]
+                          - cell "31" [ref=f64e415]
+                          - cell "1" [ref=f64e420]
+                          - cell "2" [ref=f64e425]
+                          - cell "3" [ref=f64e430]
+                          - cell "4" [ref=f64e435]
+                          - cell "5" [ref=f64e440]
+                        - row [ref=f64e445]:
+                          - cell "6" [ref=f64e446]
+                          - cell "7" [ref=f64e451]
+                          - cell "8" [ref=f64e456]
+                          - cell "9" [ref=f64e461]
+                          - cell "10" [ref=f64e466]
+                          - cell "11" [ref=f64e471]
+                          - cell "12" [ref=f64e476]
+                        - row [ref=f64e481]:
+                          - cell "13" [ref=f64e482]
+                          - cell "14" [ref=f64e487]
+                          - cell "15" [ref=f64e492]
+                          - cell "16" [ref=f64e497]
+                          - cell "17" [ref=f64e502]
+                          - cell "18" [ref=f64e507]
+                          - cell "19" [ref=f64e512]
+                        - row [ref=f64e517]:
+                          - cell "20" [ref=f64e518]
+                          - cell "21" [ref=f64e523]
+                          - cell "22" [ref=f64e528]
+                          - cell "23" [ref=f64e533]
+                          - cell "24" [ref=f64e538]
+                          - cell "25" [ref=f64e543]
+                          - cell "26" [ref=f64e548]
+                        - row [ref=f64e553]:
+                          - cell "27" [ref=f64e554]
+                          - cell "28" [ref=f64e559]
+                          - cell "29" [ref=f64e564]
+                          - cell "30" [ref=f64e569]
+                          - cell "1" [ref=f64e574]
+                          - cell "2" [ref=f64e579]
+                          - cell "3" [ref=f64e584]
+                        - row [ref=f64e589]:
+                          - cell "4" [ref=f64e590]
+                          - cell "5" [ref=f64e595]
+                          - cell "6" [ref=f64e600]
+                          - cell "7" [ref=f64e605]
+                          - cell "8" [ref=f64e610]
+                          - cell "9" [ref=f64e615]
+                          - cell "10" [ref=f64e620]
+        - generic [ref=f64e629]:
+          - iframe [ref=f64e630]
+          - generic [ref=f64e631]: 
+          - generic [ref=f64e632]:
+            - paragraph [ref=f64e633]:
+              - generic [ref=f64e636]: Payment Records
+            - generic [ref=f64e637]:
+              - link "Full Report" [ref=f64e638] [cursor=pointer]:
+                - /url: http://full.localhost/demo-lotus-holdings/ps/admin/reports/sales
+              - link "Weekly" [ref=f64e640] [cursor=pointer]:
+                - /url: "#"
+                - text: Weekly
+                - generic [aria-hidden] [ref=f64e641]: 
+          - separator [ref=f64e642]
+        - generic [ref=f64e646]:
+          - generic [ref=f64e647]: 
+          - generic [ref=f64e648]:
+            - paragraph [ref=f64e649]:
+              - generic [ref=f64e652]: Contracts Expiring Soon
+            - link "View All" [ref=f64e653] [cursor=pointer]:
+              - /url: http://full.localhost/demo-lotus-holdings/ps/admin/contracts
+          - separator [ref=f64e654]
+          - generic [ref=f64e655]:
+            - generic [aria-hidden] [ref=f64e656]: 
+            - paragraph [ref=f64e657]: There are no contracts that are going to expire in the next 7 days.
+        - generic [ref=f64e662]:
+          - generic [ref=f64e663]: 
+          - generic [ref=f64e664]:
+            - paragraph [ref=f64e665]:
+              - generic [ref=f64e666]: 
+              - generic [ref=f64e667]: Staff Tickets Report
+            - link "This Month" [ref=f64e670] [cursor=pointer]:
+              - /url: "#"
+              - text: This Month
+              - generic [aria-hidden] [ref=f64e671]: 
+          - separator [ref=f64e672]
+          - generic [ref=f64e674]:
+            - generic [ref=f64e675]:
+              - generic [ref=f64e676]:
+                - combobox [ref=f64e679]:
+                  - option "10"
+                  - option "25" [selected]
+                  - option "50"
+                  - option "100"
+                  - option "All"
+                - button "Export" [ref=f64e681] [cursor=pointer]
+              - generic [ref=f64e685]:
+                - generic [ref=f64e686]: 
+                - searchbox "" [ref=f64e688]
+              - text: x200B x200B
+            - grid [ref=f64e690]:
+              - rowgroup [ref=f64e691]:
+                - row [ref=f64e692]:
+                  - columnheader "Staff Member activate to sort column descending" [ref=f64e693] [cursor=pointer]: Staff Member
+                  - columnheader "Total Assigned Tickets activate to sort column ascending" [ref=f64e694] [cursor=pointer]: Total Assigned Tickets
+                  - columnheader "Open Tickets activate to sort column ascending" [ref=f64e695] [cursor=pointer]: Open Tickets
+                  - columnheader "Closed Tickets activate to sort column ascending" [ref=f64e696] [cursor=pointer]: Closed Tickets
+                  - columnheader "Replies To Tickets activate to sort column ascending" [ref=f64e697] [cursor=pointer]: Replies To Tickets
+                  - columnheader "Average Reply Time activate to sort column ascending" [ref=f64e698] [cursor=pointer]:
+                    - generic [ref=f64e699]: 
+                    - text: Average Reply Time
+              - rowgroup [ref=f64e700]:
+                - row [ref=f64e701]:
+                  - gridcell [ref=f64e702]:
+                    - link "Admin Lotus" [ref=f64e703] [cursor=pointer]:
+                      - /url: http://full.localhost/demo-lotus-holdings/ps/admin/staff/member/2
+                  - gridcell "0" [ref=f64e704]
+                  - gridcell "0" [ref=f64e705]
+                  - gridcell "0" [ref=f64e706]
+                  - gridcell "0" [ref=f64e707]
+                  - gridcell "-" [ref=f64e708]
+                - row [ref=f64e709]:
+                  - gridcell [ref=f64e710]:
+                    - link "demo user" [ref=f64e711] [cursor=pointer]:
+                      - /url: http://full.localhost/demo-lotus-holdings/ps/admin/staff/member/1
+                  - gridcell "0" [ref=f64e712]
+                  - gridcell "0" [ref=f64e713]
+                  - gridcell "0" [ref=f64e714]
+                  - gridcell "0" [ref=f64e715]
+                  - gridcell "-" [ref=f64e716]
+                - row [ref=f64e717]:
+                  - gridcell [ref=f64e718]:
+                    - link "Tenant Admin" [ref=f64e719] [cursor=pointer]:
+                      - /url: http://full.localhost/demo-lotus-holdings/ps/admin/staff/member/3
+                  - gridcell "0" [ref=f64e720]
+                  - gridcell "0" [ref=f64e721]
+                  - gridcell "0" [ref=f64e722]
+                  - gridcell "0" [ref=f64e723]
+                  - gridcell "-" [ref=f64e724]
+                - row [ref=f64e725]:
+                  - gridcell [ref=f64e726]:
+                    - link "Test Save1" [ref=f64e727] [cursor=pointer]:
+                      - /url: http://full.localhost/demo-lotus-holdings/ps/admin/staff/member/4
+                  - gridcell "0" [ref=f64e728]
+                  - gridcell "0" [ref=f64e729]
+                  - gridcell "0" [ref=f64e730]
+                  - gridcell "0" [ref=f64e731]
+                  - gridcell "-" [ref=f64e732]
+                - row [ref=f64e733]:
+                  - gridcell [ref=f64e734]:
+                    - link "Test Save2" [ref=f64e735] [cursor=pointer]:
+                      - /url: http://full.localhost/demo-lotus-holdings/ps/admin/staff/member/5
+                  - gridcell "0" [ref=f64e736]
+                  - gridcell "0" [ref=f64e737]
+                  - gridcell "0" [ref=f64e738]
+                  - gridcell "0" [ref=f64e739]
+                  - gridcell "-" [ref=f64e740]
+            - generic [ref=f64e741]:
+              - status [ref=f64e743]: Showing 1 to 5 of 5 entries
+              - list [ref=f64e746]:
+                - listitem:
+                  - link "Previous" [ref=f64e747]:
+                    - /url: "#"
+                - listitem:
+                  - link "1" [ref=f64e748]:
+                    - /url: "#"
+                - listitem:
+                  - link "Next" [ref=f64e749]:
+                    - /url: "#"
+      - generic [ref=f64e750]:
+        - generic [ref=f64e753]:
+          - generic [ref=f64e754]: 
+          - generic [ref=f64e755]:
+            - paragraph [ref=f64e756]:
+              - generic [ref=f64e759]: My To Do Items
+            - generic [ref=f64e760]:
+              - link "View All" [ref=f64e761] [cursor=pointer]:
+                - /url: http://full.localhost/demo-lotus-holdings/ps/admin/todo
+              - link "New To Do" [ref=f64e762] [cursor=pointer]:
+                - /url: "#__todo"
+          - separator [ref=f64e763]
+          - heading " Latest to do's" [level=4] [ref=f64e764]:
+            - generic [ref=f64e765]: 
+            - text: Latest to do's
+          - list [ref=f64e766]:
+            - listitem: No todos found
+          - heading " Latest finished to do's" [level=4] [ref=f64e767]:
+            - generic [ref=f64e768]: 
+            - text: Latest finished to do's
+          - list [ref=f64e769]:
+            - listitem: No finished todos found
+        - generic [ref=f64e774]:
+          - generic [ref=f64e775]: 
+          - paragraph [ref=f64e776]:
+            - generic [ref=f64e779]: Leads Overview
+          - separator [ref=f64e780]
+          - iframe [ref=f64e782]
+        - generic [ref=f64e788]:
+          - generic [ref=f64e789]: 
+          - paragraph [ref=f64e790]:
+            - generic [ref=f64e793]: Statistics by Project Status
+          - separator [ref=f64e794]
+          - iframe [ref=f64e796]
+        - text:  
+  - text:   

@@ -1,0 +1,3 @@
+[     544ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://full.localhost/demo-lotus-holdings/ps/admin/authentication:0
+[     883ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://full.localhost/favicon.ico:0
+[   12550ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://full.localhost/demo-lotus-holdings/ps/admin/authentication:0

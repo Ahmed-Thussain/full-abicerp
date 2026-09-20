@@ -6888,9 +6888,20 @@ class hr_payroll extends AdminController {
     	]);
     	$job_id = $this->db->insert_id();
 
-    	$message = _l('hrp_Export_PDF_is_running_please_load_in_a_few_minutes');
-    	set_alert('success', $message);
-    	redirect(admin_url('hr_payroll/payslip_manage'));
+    	// build the PDFs now instead of waiting for the cron job, then download the zip
+    	try {
+    		$file_path = $this->hr_payroll_model->export_payslip_task($id);
+    		$this->db->where('id', $job_id)->update('hrp_export_jobs', [
+    			'status' => 'done',
+    			'file_path' => $file_path,
+    			'finished_at' => date('Y-m-d H:i:s'),
+    		]);
+    		redirect(admin_url('hr_payroll/download_payslip/' . $job_id));
+    	} catch (Throwable $e) {
+    		$this->db->where('id', $job_id)->update('hrp_export_jobs', ['status' => 'failed']);
+    		set_alert('danger', $e->getMessage());
+    		redirect(admin_url('hr_payroll/payslip_manage'));
+    	}
 
     }
 

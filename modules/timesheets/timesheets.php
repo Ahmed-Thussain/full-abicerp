@@ -5,7 +5,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 /*
 Module Name: Timesheet Attendance Management
 Description: An complete attendance management system application with timesheet mostly work with attendance, leave, holiday and shift
-Version: 1.2.6
+Version: 1.2.7
 Requires at least: 2.3.*
 Author: GreenTech Solutions
 Author URI: https://codecanyon.net/user/greentech_solutions

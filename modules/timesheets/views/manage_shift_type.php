@@ -61,17 +61,28 @@
                     <div class="col-md-6">
                         <?php echo render_color_picker('color', _l('leads_status_color')); ?>
                     </div>
-                    <div class="col-md-6">
-                        <?php echo render_input('time_start_work','time_start_work','', 'time'); ?>
+                    <div id="shift_time_fields" class="clearfix">
+                        <div class="col-md-6">
+                            <?php echo render_input('time_start_work','time_start_work','', 'time'); ?>
+                        </div>
+                        <div class="col-md-6">
+                            <?php echo render_input('time_end_work','time_end_work','', 'time'); ?>
+                        </div>
+                        <div class="col-md-6">
+                            <?php echo render_input('start_lunch_break_time','start_lunch_break_time','', 'time'); ?>
+                        </div>
+                        <div class="col-md-6">
+                            <?php echo render_input('end_lunch_break_time','end_lunch_break_time','', 'time'); ?>
+                        </div>
                     </div>
                     <div class="col-md-6">
-                        <?php echo render_input('time_end_work','time_end_work','', 'time'); ?>
+                        <div class="checkbox checkbox-primary">
+                            <input type="checkbox" name="is_day_off" id="is_day_off" value="1">
+                            <label for="is_day_off"><?php echo _l('ts_is_day_off'); ?></label>
+                        </div>
                     </div>
-                    <div class="col-md-6">
-                        <?php echo render_input('start_lunch_break_time','start_lunch_break_time','', 'time'); ?>
-                    </div>
-                    <div class="col-md-6">
-                        <?php echo render_input('end_lunch_break_time','end_lunch_break_time','', 'time'); ?>
+                    <div class="col-md-6 hide" id="day_off_symbol_wrapper">
+                        <?php echo render_input('day_off_symbol','ts_day_off_symbol','OFF', 'text', ['maxlength' => 10]); ?>
                     </div>
                     <div class="col-md-12">
                         <?php echo render_textarea('description','description') ?>

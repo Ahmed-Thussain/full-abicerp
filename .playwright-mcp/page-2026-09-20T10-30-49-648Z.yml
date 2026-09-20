@@ -1,0 +1,279 @@
+- generic [active] [ref=f117e1]:
+  - generic [ref=f117e2]:
+    - button [ref=f117e3] [cursor=pointer]
+    - navigation [ref=f117e6]:
+      - generic [ref=f117e7]:
+        - link "شركة لوتس للإستثمار والتنمية العقارية" [ref=f117e10] [cursor=pointer]:
+          - /url: http://full.localhost/shrk/ps/admin/
+        - generic [ref=f117e11]:
+          - generic [ref=f117e12]:
+            - searchbox "Search..." [ref=f117e13]
+            - button "" [ref=f117e15] [cursor=pointer]
+          - list [ref=f117e17]:
+            - listitem "Quick Create" [ref=f117e18]:
+              - link "+" [ref=f117e19] [cursor=pointer]:
+                - /url: "#"
+              - text: 
+        - text: 
+        - list [ref=f117e22]:
+          - listitem [ref=f117e23]:
+            - link " لوتس للإستثمار والتنمية العقارية" [expanded] [ref=f117e24] [cursor=pointer]:
+              - /url: "#"
+              - generic [ref=f117e25]:
+                - generic [ref=f117e26]: 
+                - text: لوتس للإستثمار والتنمية العقارية
+          - listitem [ref=f117e27]:
+            - link "Share documents, ideas.." [ref=f117e28] [cursor=pointer]:
+              - /url: "#"
+          - listitem [ref=f117e31]:
+            - link "" [ref=f117e32] [cursor=pointer]:
+              - /url: http://full.localhost/shrk/ps/admin/todo
+          - listitem [ref=f117e34]:
+            - link "" [ref=f117e35] [cursor=pointer]:
+              - /url: "#"
+            - text: 
+          - listitem "Notifications" [ref=f117e38]:
+            - link "" [ref=f117e39] [cursor=pointer]:
+              - /url: "#"
+  - text: 
+  - complementary [ref=f117e42]:
+    - link "Test Save2 test.save2@abicerp.local" [ref=f117e44] [cursor=pointer]:
+      - /url: "#"
+      - generic [ref=f117e47]:
+        - generic [ref=f117e48]: Test Save2
+        - generic [ref=f117e49]: test.save2@abicerp.local
+    - list [ref=f117e50]:
+      - listitem [ref=f117e51]:
+        - link " Dashboard" [ref=f117e52] [cursor=pointer]:
+          - /url: http://full.localhost/shrk/ps/admin/
+          - generic [ref=f117e53]: 
+          - text: Dashboard
+      - listitem [ref=f117e54]:
+        - link " Projects" [ref=f117e55] [cursor=pointer]:
+          - /url: http://full.localhost/shrk/ps/admin/projects
+          - generic [ref=f117e56]: 
+          - text: Projects
+      - listitem [ref=f117e57]:
+        - link " Tasks" [ref=f117e58] [cursor=pointer]:
+          - /url: http://full.localhost/shrk/ps/admin/tasks
+          - generic [ref=f117e59]: 
+          - text: Tasks
+      - listitem [ref=f117e60]:
+        - link " Support" [ref=f117e61] [cursor=pointer]:
+          - /url: http://full.localhost/shrk/ps/admin/tickets
+          - generic [ref=f117e62]: 
+          - text: Support
+      - listitem [ref=f117e63]:
+        - link " Leads" [ref=f117e64] [cursor=pointer]:
+          - /url: http://full.localhost/shrk/ps/admin/leads
+          - generic [ref=f117e65]: 
+          - text: Leads
+      - listitem [ref=f117e66]:
+        - link " Utilities " [ref=f117e67] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f117e68]: 
+          - text: Utilities
+          - generic [ref=f117e69]: 
+  - generic [ref=f117e70]:
+    - text:         
+    - generic [ref=f117e71] [cursor=pointer]: Dashboard Options
+    - generic [ref=f117e76]:
+      - generic [ref=f117e77]:
+        - generic [ref=f117e78]:
+          - generic [ref=f117e79]: 
+          - heading "Quota" [level=4] [ref=f117e81]
+        - generic [ref=f117e82]:
+          - generic [ref=f117e83]: 
+          - generic [ref=f117e84]:
+            - generic [ref=f117e86]:
+              - generic [ref=f117e87]:
+                - generic [ref=f117e88]: Converted Leads
+                - generic [ref=f117e92]: 0 / 0
+              - generic [ref=f117e93]:
+                - progressbar
+            - generic [ref=f117e95]:
+              - generic [ref=f117e96]:
+                - generic [ref=f117e97]: Projects In Progress
+                - generic [ref=f117e101]: 0 / 0
+              - generic [ref=f117e102]:
+                - progressbar
+            - generic [ref=f117e104]:
+              - generic [ref=f117e105]:
+                - generic [ref=f117e106]: Tasks Not Finished
+                - generic [ref=f117e110]: 0 / 0
+              - generic [ref=f117e111]:
+                - progressbar
+      - generic [ref=f117e114]:
+        - generic [ref=f117e117]:
+          - generic [ref=f117e118]: 
+          - generic [ref=f117e119]:
+            - text:  
+            - tablist [ref=f117e121]:
+              - tab " My Tasks" [ref=f117e122]:
+                - generic [ref=f117e123]: 
+                - text: My Tasks
+              - tab " My Projects" [ref=f117e124] [cursor=pointer]:
+                - generic [ref=f117e125]: 
+                - text: My Projects
+              - tab " My Reminders" [ref=f117e126] [cursor=pointer]:
+                - generic [ref=f117e127]: 
+                - text: My Reminders
+              - tab " Tickets" [ref=f117e128] [cursor=pointer]:
+                - generic [ref=f117e129]: 
+                - text: Tickets
+              - tab " Announcements" [ref=f117e130] [cursor=pointer]:
+                - generic [ref=f117e131]: 
+                - text: Announcements
+          - tabpanel [ref=f117e133]:
+            - link "View All" [ref=f117e134] [cursor=pointer]:
+              - /url: http://full.localhost/shrk/ps/admin/tasks/list_tasks
+            - generic [ref=f117e136]:
+              - generic [ref=f117e137]:
+                - generic [ref=f117e138]:
+                  - combobox [ref=f117e141]:
+                    - option "10"
+                    - option "25" [selected]
+                    - option "50"
+                    - option "100"
+                    - option "All"
+                  - generic [ref=f117e142]:
+                    - button "Export" [ref=f117e143] [cursor=pointer]
+                    - button "" [ref=f117e144] [cursor=pointer]
+                - generic [ref=f117e150]:
+                  - generic [ref=f117e151]: 
+                  - searchbox "" [ref=f117e153]
+              - generic [ref=f117e154]: x200B x200B
+              - grid [ref=f117e156]:
+                - rowgroup [ref=f117e157]:
+                  - row [ref=f117e158]:
+                    - columnheader "#" [ref=f117e159] [cursor=pointer]
+                    - columnheader "Name" [ref=f117e160] [cursor=pointer]
+                    - columnheader "Status" [ref=f117e161] [cursor=pointer]
+                    - columnheader "Start Date" [ref=f117e162] [cursor=pointer]
+                    - columnheader "Tags" [ref=f117e163] [cursor=pointer]
+                    - columnheader "Priority" [ref=f117e164] [cursor=pointer]
+                - rowgroup
+              - status [ref=f117e167]
+        - generic [ref=f117e171]:
+          - generic [ref=f117e172]: 
+          - generic [ref=f117e173]: x200B x200B
+          - generic [ref=f117e174]:
+            - generic [ref=f117e175]:
+              - generic [ref=f117e176]:
+                - generic [ref=f117e177]:
+                  - button "prev" [ref=f117e178] [cursor=pointer]:
+                    - generic [ref=f117e179]: 
+                  - button "next" [ref=f117e180] [cursor=pointer]:
+                    - generic [ref=f117e181]: 
+                - generic [ref=f117e182]:
+                  - button "today" [disabled] [ref=f117e183]
+                  - button "expand" [ref=f117e184] [cursor=pointer]
+              - heading "September 2026" [level=2] [ref=f117e186]
+              - generic [ref=f117e188]:
+                - button "month" [ref=f117e189] [cursor=pointer]
+                - button "week" [ref=f117e190] [cursor=pointer]
+                - button "day" [ref=f117e191] [cursor=pointer]
+                - button "filter by" [ref=f117e192] [cursor=pointer]
+            - table [ref=f117e195]:
+              - rowgroup [ref=f117e196]:
+                - row [ref=f117e197]:
+                  - cell [ref=f117e198]:
+                    - table [ref=f117e201]:
+                      - rowgroup [ref=f117e203]:
+                        - row [ref=f117e204]:
+                          - columnheader "Sun" [ref=f117e205]
+                          - columnheader "Mon" [ref=f117e208]
+                          - columnheader "Tue" [ref=f117e211]
+                          - columnheader "Wed" [ref=f117e214]
+                          - columnheader "Thu" [ref=f117e217]
+                          - columnheader "Fri" [ref=f117e220]
+                          - columnheader "Sat" [ref=f117e223]
+              - rowgroup [ref=f117e226]:
+                - row [ref=f117e227]:
+                  - cell [ref=f117e228]:
+                    - table [ref=f117e232]:
+                      - rowgroup [ref=f117e234]:
+                        - row [ref=f117e235]:
+                          - cell "30" [ref=f117e236]
+                          - cell "31" [ref=f117e241]
+                          - cell "1" [ref=f117e246]
+                          - cell "2" [ref=f117e251]
+                          - cell "3" [ref=f117e256]
+                          - cell "4" [ref=f117e261]
+                          - cell "5" [ref=f117e266]
+                        - row [ref=f117e271]:
+                          - cell "6" [ref=f117e272]
+                          - cell "7" [ref=f117e277]
+                          - cell "8" [ref=f117e282]
+                          - cell "9" [ref=f117e287]
+                          - cell "10" [ref=f117e292]
+                          - cell "11" [ref=f117e297]
+                          - cell "12" [ref=f117e302]
+                        - row [ref=f117e307]:
+                          - cell "13" [ref=f117e308]
+                          - cell "14" [ref=f117e313]
+                          - cell "15" [ref=f117e318]
+                          - cell "16" [ref=f117e323]
+                          - cell "17" [ref=f117e328]
+                          - cell "18" [ref=f117e333]
+                          - cell "19" [ref=f117e338]
+                        - row [ref=f117e343]:
+                          - cell "20" [ref=f117e344]
+                          - cell "21" [ref=f117e349]
+                          - cell "22" [ref=f117e354]
+                          - cell "23" [ref=f117e359]
+                          - cell "24" [ref=f117e364]
+                          - cell "25" [ref=f117e369]
+                          - cell "26" [ref=f117e374]
+                        - row [ref=f117e379]:
+                          - cell "27" [ref=f117e380]
+                          - cell "28" [ref=f117e385]
+                          - cell "29" [ref=f117e390]
+                          - cell "30" [ref=f117e395]
+                          - cell "1" [ref=f117e400]
+                          - cell "2" [ref=f117e405]
+                          - cell "3" [ref=f117e410]
+                        - row [ref=f117e415]:
+                          - cell "4" [ref=f117e416]
+                          - cell "5" [ref=f117e421]
+                          - cell "6" [ref=f117e426]
+                          - cell "7" [ref=f117e431]
+                          - cell "8" [ref=f117e436]
+                          - cell "9" [ref=f117e441]
+                          - cell "10" [ref=f117e446]
+      - generic [ref=f117e451]:
+        - generic [ref=f117e454]:
+          - generic [ref=f117e455]: 
+          - generic [ref=f117e456]:
+            - paragraph [ref=f117e457]:
+              - generic [ref=f117e460]: My To Do Items
+            - generic [ref=f117e461]:
+              - link "View All" [ref=f117e462] [cursor=pointer]:
+                - /url: http://full.localhost/shrk/ps/admin/todo
+              - link "New To Do" [ref=f117e463] [cursor=pointer]:
+                - /url: "#__todo"
+          - separator [ref=f117e464]
+          - heading " Latest to do's" [level=4] [ref=f117e465]:
+            - generic [ref=f117e466]: 
+            - text: Latest to do's
+          - list [ref=f117e467]:
+            - listitem: No todos found
+          - heading " Latest finished to do's" [level=4] [ref=f117e468]:
+            - generic [ref=f117e469]: 
+            - text: Latest finished to do's
+          - list [ref=f117e470]:
+            - listitem: No finished todos found
+        - generic [ref=f117e475]:
+          - generic [ref=f117e476]: 
+          - paragraph [ref=f117e477]:
+            - generic [ref=f117e480]: Leads Overview
+          - separator [ref=f117e481]
+          - iframe [ref=f117e483]
+        - generic [ref=f117e489]:
+          - generic [ref=f117e490]: 
+          - paragraph [ref=f117e491]:
+            - generic [ref=f117e494]: Statistics by Project Status
+          - separator [ref=f117e495]
+          - iframe [ref=f117e497]
+        - text:  
+  - text:   

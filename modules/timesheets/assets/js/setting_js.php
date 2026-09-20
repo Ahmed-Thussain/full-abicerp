@@ -136,7 +136,17 @@
         data: 'number_of_leave_days_remaining',
         type: 'numeric',
         readOnly: true      
-      }     
+      },
+      {
+        data: 'remain_current_year',
+        type: 'numeric',
+        readOnly: true
+      },
+      {
+        data: 'remain_from_carry',
+        type: 'numeric',
+        readOnly: true
+      }
       ],
       contextMenu: true,
       manualRowMove: true,
@@ -175,7 +185,7 @@
       minRows: 10,
       maxRows: <?php echo html_entity_decode($max_row); ?>,
       rowHeaders: true,
-      colWidths: [80,200,200,200,200,200],
+      colWidths: [80,200,200,200,200,200,200,200],
       colHeaders: [
       "<?php echo _l('staffid'); ?>",
       "<?php echo _l('staff'); ?>",
@@ -183,6 +193,8 @@
       "<?php echo _l('role'); ?>",
       "<?php echo _l('maximum_leave_of_the_year'); ?>",
       "<?php echo _l('ts_number_of_leave_days_remaining'); ?>",
+      "<?php echo _l('ts_remaining_current_year'); ?>",
+      "<?php echo _l('ts_remaining_from_carry'); ?>",
       ],
       columnSorting: {
         indicator: true

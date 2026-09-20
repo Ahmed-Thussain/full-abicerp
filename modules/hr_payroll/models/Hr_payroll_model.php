@@ -8625,7 +8625,9 @@ order by staff_id, header_oder
 			$this->zip->read_file(HR_PAYROLL_EXPORT_EMPLOYEE_PAYSLIP.$id.'/'. $filename);
 		}
 
-	    $this->zip->archive($zip_file); // Lưu file zip
+	    if (!$this->zip->archive($zip_file) || !file_exists($zip_file)) {
+	    	throw new Exception('Could not create the payslip zip file: ' . $zip_file);
+	    }
 	    return $zip_file;
 	}
 
