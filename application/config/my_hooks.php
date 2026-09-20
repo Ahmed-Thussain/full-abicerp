@@ -8,3 +8,11 @@ require_once(FCPATH.'modules/perfex_saas/config/my_hooks.php');
 hooks()->add_filter('before_get_languages', function ($languages) {
     return array_values(array_intersect($languages, ['arabic', 'english']));
 });
+
+// "Select all" boxes on the permissions table (staff form and roles page)
+hooks()->add_action('app_admin_footer', function () {
+    $label = _l('select_all');
+    $label = $label === 'select_all' ? 'Select all' : $label;
+    echo '<script>window.permissionsSelectAllLabel = ' . json_encode($label) . ';'
+        . file_get_contents(FCPATH . 'assets/js/permissions-select-all.js') . '</script>';
+});
