@@ -4112,6 +4112,93 @@ class Accounting extends AdminController
     }
 
     /**
+     * report monthly cash flow
+     * @return view
+     */
+    public function rp_cashflow_monthly(){
+        if (!has_permission('accounting_report', '', 'view')) {
+            access_denied('accounting_report');
+        }
+        $this->load->model('currencies_model');
+        $data['title'] = _l('cashflow_monthly');
+        $data['year'] = (int) date('Y');
+        $data['years'] = range((int) date('Y') + 1, (int) date('Y') - 10);
+        $data['currency'] = $this->currencies_model->get_base_currency();
+        $this->load->view('report/includes/cashflow_monthly', $data);
+    }
+
+    /**
+     * monthly cash flow data
+     * @return json
+     */
+    public function cashflow_monthly_data(){
+        if (!has_permission('accounting_report', '', 'view')) {
+            access_denied('accounting_report');
+        }
+        $year = (int) $this->input->post('year');
+        if ($year < 1900) {
+            $year = (int) date('Y');
+        }
+        echo json_encode($this->accounting_model->get_data_cashflow_monthly($year));
+        die();
+    }
+
+    /**
+     * monthly cash flow excel export
+     * @param  integer $year
+     */
+    public function cashflow_monthly_export($year){
+        if (!has_permission('accounting_report', '', 'view')) {
+            access_denied('accounting_report');
+        }
+        $this->delete_error_file_day_before(1,ACCOUTING_EXPORT_XLSX);
+
+        $year = (int) $year;
+        $report = $this->accounting_model->get_data_cashflow_monthly($year);
+
+        if(!class_exists('XLSXWriter')){
+            require_once(module_dir_path(ACCOUNTING_MODULE_NAME).'/assets/plugins/XLSXWriter/xlsxwriter.class.php');
+        }
+
+        $header = [1 => _l('acc_account')];
+        for ($m = 1; $m <= 12; $m++) {
+            $header[$m + 1] = date('M', mktime(0, 0, 0, $m, 1, $year));
+        }
+        $header[14] = _l('total');
+
+        $style3 = array('fill' => '#C65911', 'height'=>25, 'font-style'=>'bold', 'color' => '#FFFFFF', 'border'=>'left,right,top,bottom', 'border-color' => '#FFFFFF', 'font-size' => 15, 'font' => 'Calibri');
+        $style1 = array('fill' => '#F8CBAD', 'height'=>25, 'border'=>'left,right,top,bottom', 'border-color' => '#FFFFFF', 'font-size' => 15, 'font' => 'Calibri', 'color' => '#000000');
+        $style2 = array('fill' => '#FCE4D6', 'height'=>25, 'border'=>'left,right,top,bottom', 'border-color' => '#FFFFFF', 'font-size' => 15, 'font' => 'Calibri', 'color' => '#000000');
+
+        $writer = new XLSXWriter();
+        $writer->writeSheetRow('Sheet1', [1 => get_option('companyname')]);
+        $writer->writeSheetRow('Sheet1', [1 => _l('cashflow_monthly').' - '.$year]);
+        $writer->writeSheetRow('Sheet1', []);
+        $writer->writeSheetRow('Sheet1', $header, $style3);
+
+        foreach ($report['data'] as $k => $row) {
+            $line = [1 => $row['account_name']];
+            for ($m = 1; $m <= 12; $m++) {
+                $line[$m + 1] = round($row['m'.$m], 2);
+            }
+            $line[14] = round($row['total'], 2);
+            $writer->writeSheetRow('Sheet1', $line, ($k % 2) == 0 ? $style1 : $style2);
+        }
+
+        $line = [1 => _l('total')];
+        for ($m = 1; $m <= 12; $m++) {
+            $line[$m + 1] = round($report['month_totals'][$m], 2);
+        }
+        $line[14] = round($report['total'], 2);
+        $writer->writeSheetRow('Sheet1', $line, $style3);
+
+        $filename = 'cashflow_monthly_'.time().'.xlsx';
+        $writer->writeToFile(str_replace($filename, ACCOUTING_EXPORT_XLSX.$filename, $filename));
+        $this->download_xlsx_file(ACCOUTING_EXPORT_XLSX.$filename);
+        die();
+    }
+
+    /**
      * report statement of changes in equity description
      * @return view
      */

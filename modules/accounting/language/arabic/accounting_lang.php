@@ -1436,3 +1436,6 @@ $lang['acc_enable_secondary_currency_note'] = 'عند التفعيل، يظهر 
 $lang['acc_secondary_currency_id'] = 'العملة الثانوية';
 $lang['acc_secondary_currency_amount'] = 'المبلغ بالعملة الثانوية';
 $lang['acc_secondary_currency_rate_not_set'] = 'لم يتم تحديد سعر صرف من %s إلى %s';
+$lang['cashflow_monthly'] = 'التدفق النقدي الشهري';
+$lang['cashflow_monthly_note'] = 'حركة النقد في حسابات البنك والصندوق حسب الشهر مجمعة حسب الحساب المقابل.';
+$lang['acc_unallocated'] = 'غير مخصص';

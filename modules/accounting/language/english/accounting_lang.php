@@ -1511,3 +1511,6 @@ $lang['acc_class_name_ar'] = 'Name (Arabic)';
 $lang['list_view'] = 'List View';
 $lang['tree_view'] = 'Tree View';
 $lang['acc_no_accounts_found'] = 'No accounts found';
+$lang['cashflow_monthly'] = 'Monthly Cash Flow';
+$lang['cashflow_monthly_note'] = 'Cash movement on bank and cash accounts by month, grouped by counterpart account.';
+$lang['acc_unallocated'] = 'Unallocated';

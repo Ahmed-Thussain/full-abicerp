@@ -55,6 +55,8 @@
                       <p class="hide"><?php echo _l('quarterly_profit_and_loss_summary_note'); ?></p>
                       <a href="<?php echo admin_url('accounting/rp_statement_of_cash_flows'); ?>"><h4 class="no-margin"><?php echo _l('statement_of_cash_flows'); ?></h4></a>
                       <p><?php echo _l('statement_of_cash_flows_note'); ?></p>
+                      <a href="<?php echo admin_url('accounting/rp_cashflow_monthly'); ?>"><h4 class="no-margin"><?php echo _l('cashflow_monthly'); ?></h4></a>
+                      <p><?php echo _l('cashflow_monthly_note'); ?></p>
                       <a href="<?php echo admin_url('accounting/rp_statement_of_changes_in_equity'); ?>"><h4 class="no-margin"><?php echo _l('statement_of_changes_in_equity'); ?></h4></a>
                       <p><?php echo _l('statement_of_changes_in_equity_note'); ?></p>
                     </div>
@@ -104,6 +106,8 @@
                       <p class="hide"><?php echo _l('recurring_template_list_note'); ?></p>
                       <a href="<?php echo admin_url('accounting/rp_statement_of_cash_flows'); ?>"><h4 class="no-margin"><?php echo _l('statement_of_cash_flows'); ?></h4></a>
                       <p><?php echo _l('statement_of_cash_flows_note'); ?></p>
+                      <a href="<?php echo admin_url('accounting/rp_cashflow_monthly'); ?>"><h4 class="no-margin"><?php echo _l('cashflow_monthly'); ?></h4></a>
+                      <p><?php echo _l('cashflow_monthly_note'); ?></p>
                       <a href="<?php echo admin_url('accounting/rp_transaction_detail_by_account'); ?>"><h4 class="no-margin"><?php echo _l('transaction_detail_by_account'); ?></h4></a>
                       <p><?php echo _l('transaction_detail_by_account_note'); ?></p>
                       <a href="<?php echo admin_url('accounting/rp_transaction_list_by_date'); ?>"><h4 class="no-margin"><?php echo _l('transaction_list_by_date'); ?></h4></a>
