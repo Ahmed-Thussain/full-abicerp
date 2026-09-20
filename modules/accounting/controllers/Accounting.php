@@ -3777,7 +3777,8 @@ class Accounting extends AdminController
                 //     $row[] = $aRow['number'].' - '.new_html_entity_decode($description);
                 // }
                 
-                $row[] = $aRow['number'].' - '.new_html_entity_decode($aRow['description']);
+                // Full description (no truncation); number links to the entry view
+                $row[] = '<a href="' . admin_url('accounting/view_journal_entry/' . $aRow['id']) . '">' . html_escape($aRow['number']) . '</a> - ' . new_html_entity_decode($aRow['description']);
 
                 $row[] = acc_class_display_name([
                     'name'    => $aRow['class_name'],
@@ -3820,6 +3821,10 @@ class Accounting extends AdminController
                     $message = _l('has_closed_the_book');
                     set_alert('warning', _l('has_closed_the_book'));
                 }elseif ($success) {
+                    $new_entry = $this->db->select('id')->where('number', $data['number'])->order_by('id', 'desc')->get(db_prefix() . 'acc_journal_entries')->row();
+                    if ($new_entry) {
+                        $this->upload_journal_entry_files($new_entry->id);
+                    }
                     set_alert('success', _l('added_successfully', _l('journal_entry')));
                 }
             }else{
@@ -3835,6 +3840,7 @@ class Accounting extends AdminController
                     $message = _l('has_closed_the_book');
                     set_alert('warning', _l('has_closed_the_book'));
                 }elseif ($success) {
+                    $this->upload_journal_entry_files($id);
                     set_alert('success', _l('updated_successfully', _l('journal_entry')));
                 }
             }
@@ -3843,6 +3849,7 @@ class Accounting extends AdminController
 
         if($id != ''){
             $data['journal_entry'] = $this->accounting_model->get_journal_entry($id);
+            $data['attachments'] = $this->get_journal_entry_files($id);
         }
         $this->load->model('currencies_model');
         $data['currency'] = $this->currencies_model->get_base_currency();
@@ -6704,6 +6711,12 @@ class Accounting extends AdminController
         $writer->writeSheetRow('Sheet1', [1 => _l('number').': '. $journal_entry->number, ]);
         $writer->writeSheetRow('Sheet1', [1 => _l('journal_date').': '. _d($journal_entry->journal_date), ]);
         $writer->writeSheetRow('Sheet1', [1 => _l('reference').': '. $journal_entry->reference, ]);
+        if (isset($journal_entry->doc_currency)) {
+            $writer->writeSheetRow('Sheet1', [1 => _l('currency').': '. $journal_entry->doc_currency, ]);
+            if (isset($journal_entry->doc_rate)) {
+                $writer->writeSheetRow('Sheet1', [1 => _l('acc_rate').': '. $journal_entry->doc_rate, ]);
+            }
+        }
         $writer->writeSheetRow('Sheet1', [1 => _l('description').': '. new_html_entity_decode(strip_tags($journal_entry->description ?? '')), ]);
         $writer->writeSheetRow('Sheet1', []);
 
@@ -6730,10 +6743,177 @@ class Accounting extends AdminController
 
         $writer->writeSheetRow('Sheet1', [1 => _l('total'), 2 => app_format_money($journal_entry->amount, $currency->name), 3 => app_format_money($journal_entry->amount, $currency->name), 4 => ''], $style3);
 
+        $entry_files = $this->get_journal_entry_files($id);
+        if (count($entry_files) > 0) {
+            $writer->writeSheetRow('Sheet1', []);
+            $writer->writeSheetRow('Sheet1', [1 => _l('acc_attachments')], $style3);
+            foreach ($entry_files as $entry_file) {
+                $writer->writeSheetRow('Sheet1', [1 => $entry_file['file_name']]);
+            }
+        }
+
         $filename = 'journal_entry_'.time().'.xlsx';
         $writer->writeToFile(str_replace($filename, ACCOUTING_EXPORT_XLSX.$filename, $filename));
         $this->download_xlsx_file(ACCOUTING_EXPORT_XLSX.$filename);
         die();
+    }
+
+    /**
+     * Attachment rows of a journal entry (core files table)
+     * @param  integer $id
+     * @return array
+     */
+    private function get_journal_entry_files($id)
+    {
+        return $this->db->where('rel_id', (int) $id)->where('rel_type', 'acc_journal_entry')->get(db_prefix() . 'files')->result_array();
+    }
+
+    /**
+     * View a journal entry (read-only, printable)
+     * @param  integer $id
+     */
+    public function view_journal_entry($id)
+    {
+        if (!has_permission('accounting_journal_entry', '', 'view')) {
+            access_denied('accounting_journal_entry');
+        }
+        $data = $this->journal_entry_view_data($id);
+        $data['title'] = _l('journal_entry');
+        $this->load->view('journal_entry/view', $data);
+    }
+
+    /**
+     * Shared data for the journal entry view and PDF
+     * @param  integer $id
+     * @return array
+     */
+    private function journal_entry_view_data($id)
+    {
+        $journal_entry = $this->accounting_model->get_journal_entry($id);
+        if (!$journal_entry) {
+            show_404();
+        }
+        $this->load->model('currencies_model');
+        $account_name = [];
+        foreach ($this->accounting_model->get_accounts() as $account) {
+            $account_name[$account['id']] = $account['name'];
+        }
+        return [
+            'journal_entry' => $journal_entry,
+            'account_name'  => $account_name,
+            'attachments'   => $this->get_journal_entry_files($id),
+            'currency'      => $this->currencies_model->get_base_currency(),
+            'company_logo'  => get_option('company_logo'),
+        ];
+    }
+
+    /**
+     * Journal entry PDF
+     * @param  integer $id
+     */
+    public function journal_entry_pdf($id)
+    {
+        if (!has_permission('accounting_journal_entry', '', 'view')) {
+            access_denied('accounting_journal_entry');
+        }
+        $data = $this->journal_entry_view_data($id);
+        $html = $this->load->view('journal_entry/view_pdf', $data, true);
+
+        $options = new Options();
+        $options->set('isRemoteEnabled', true);
+        $dompdf = new Dompdf($options);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+        $dompdf->stream('journal_entry_' . $data['journal_entry']->number . '.pdf', ['Attachment' => false]);
+        exit(0);
+    }
+
+    /**
+     * Save uploaded attachments (files[]) of a journal entry
+     * @param  integer $id
+     * @return void
+     */
+    private function upload_journal_entry_files($id)
+    {
+        if (!isset($_FILES['files']) || !is_array($_FILES['files']['name'])) {
+            return;
+        }
+        $allowed  = ['pdf', 'jpg', 'jpeg', 'png', 'doc', 'docx', 'xls', 'xlsx'];
+        $path     = ACCOUTING_MODULE_UPLOAD_FOLDER . '/journal_entry/' . (int) $id . '/';
+        $rejected = [];
+
+        for ($i = 0; $i < count($_FILES['files']['name']); $i++) {
+            $name = $_FILES['files']['name'][$i];
+            if ($name == '' || _perfex_upload_error($_FILES['files']['error'][$i])) {
+                continue;
+            }
+            $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+            if (!in_array($ext, $allowed) || $_FILES['files']['size'][$i] > 10 * 1024 * 1024) {
+                $rejected[] = $name;
+                continue;
+            }
+            accounting_maybe_create_upload_path($path);
+            $filename = unique_filename($path, $name);
+            if (move_uploaded_file($_FILES['files']['tmp_name'][$i], $path . $filename)) {
+                $this->misc_model->add_attachment_to_database($id, 'acc_journal_entry', [[
+                    'file_name' => $filename,
+                    'filetype'  => $_FILES['files']['type'][$i],
+                ]]);
+            }
+        }
+        if (count($rejected) > 0) {
+            set_alert('warning', _l('acc_attachment_rejected', implode(', ', $rejected)));
+        }
+    }
+
+    /**
+     * Load an attachment row and check the permission
+     */
+    private function get_journal_entry_file_or_deny($file_id, $permission)
+    {
+        $file = $this->db->where('id', (int) $file_id)->where('rel_type', 'acc_journal_entry')->get(db_prefix() . 'files')->row();
+        if (!$file || !has_permission('accounting_journal_entry', '', $permission)) {
+            access_denied('accounting_journal_entry');
+        }
+        return $file;
+    }
+
+    /**
+     * Remove an attachment of a journal entry
+     * @param  integer $file_id
+     */
+    public function remove_journal_entry_file($file_id)
+    {
+        $file = $this->get_journal_entry_file_or_deny($file_id, 'edit');
+        $path = ACCOUTING_MODULE_UPLOAD_FOLDER . '/journal_entry/' . $file->rel_id . '/' . $file->file_name;
+        if (file_exists($path)) {
+            unlink($path);
+        }
+        $this->db->where('id', $file->id)->delete(db_prefix() . 'files');
+        set_alert('success', _l('acc_attachment_removed'));
+        redirect(admin_url('accounting/new_journal_entry/' . $file->rel_id));
+    }
+
+    /**
+     * Stream an attachment of a journal entry
+     * @param  integer $file_id
+     * @param  integer $inline  1 to open in the browser, 0 to download
+     */
+    public function download_journal_entry_file($file_id, $inline = 0)
+    {
+        $file = $this->get_journal_entry_file_or_deny($file_id, 'view');
+        $path = ACCOUTING_MODULE_UPLOAD_FOLDER . '/journal_entry/' . $file->rel_id . '/' . $file->file_name;
+        if (!file_exists($path)) {
+            show_404();
+        }
+        $mime = $file->filetype ?: 'application/octet-stream';
+        ob_end_clean();
+        header('Content-Type: ' . $mime);
+        header('Content-Disposition: ' . ($inline ? 'inline' : 'attachment') . '; filename="' . basename($file->file_name) . '"');
+        header('Content-Length: ' . filesize($path));
+        readfile($path);
+        exit();
     }
 
     /**
