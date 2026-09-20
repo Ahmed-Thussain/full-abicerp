@@ -1381,6 +1381,7 @@ class Accounting extends AdminController
                     'detail_type_name'  => isset($detail_type_name[$value['account_detail_type_id']]) ? $detail_type_name[$value['account_detail_type_id']] : '',
                     'balance_raw'       => $balance,
                     'balance'           => app_format_money($balance, $currency->name),
+                    'sec_raw'           => $acc_enable_secondary_currency == 1 ? $this->accounting_model->get_account_sec_balance($value['id']) : 0,
                     'secondary_amount'  => $acc_enable_secondary_currency == 1 ? acc_secondary_currency_cell_from_stored($this->accounting_model->get_account_sec_balance($value['id'])) : '',
                     'active'            => (int) $value['active'],
                     'default_account'   => (int) $value['default_account'],
@@ -1422,6 +1423,7 @@ class Accounting extends AdminController
 
             $class_children = [];
             $class_totals   = [];
+            $class_sec_totals = [];
             foreach ($account_types as $type) {
                 if (!isset($type_roots[$type['id']])) {
                     continue;
@@ -1431,8 +1433,10 @@ class Accounting extends AdminController
 
                 // Each root already carries its own sub-accounts, so summing the roots is enough
                 $type_total = 0;
+                $type_sec_total = 0;
                 foreach ($type_roots[$type['id']] as $root) {
                     $type_total += $root['balance_raw'];
+                    $type_sec_total += $root['sec_raw'];
                 }
 
                 $class_children[$class][] = [
@@ -1440,11 +1444,12 @@ class Accounting extends AdminController
                     'name'             => $type['name'],
                     'balance_raw'      => $type_total,
                     'balance'          => app_format_money($type_total, $currency->name),
-                    'secondary_amount' => $acc_enable_secondary_currency == 1 ? acc_secondary_currency_cell_html($type_total) : '',
+                    'secondary_amount' => $acc_enable_secondary_currency == 1 ? acc_secondary_currency_cell_from_stored($type_sec_total) : '',
                     'children'         => $type_roots[$type['id']],
                 ];
 
                 $class_totals[$class] = (isset($class_totals[$class]) ? $class_totals[$class] : 0) + $type_total;
+                $class_sec_totals[$class] = (isset($class_sec_totals[$class]) ? $class_sec_totals[$class] : 0) + $type_sec_total;
             }
 
             $tree = [];
@@ -1460,7 +1465,7 @@ class Accounting extends AdminController
                     'name'             => $label,
                     'balance_raw'      => $class_total,
                     'balance'          => app_format_money($class_total, $currency->name),
-                    'secondary_amount' => $acc_enable_secondary_currency == 1 ? acc_secondary_currency_cell_html($class_total) : '',
+                    'secondary_amount' => $acc_enable_secondary_currency == 1 ? acc_secondary_currency_cell_from_stored($class_sec_totals[$class]) : '',
                     'children'         => $class_children[$class],
                 ];
             }
@@ -3821,10 +3826,7 @@ class Accounting extends AdminController
                     $message = _l('has_closed_the_book');
                     set_alert('warning', _l('has_closed_the_book'));
                 }elseif ($success) {
-                    $new_entry = $this->db->select('id')->where('number', $data['number'])->order_by('id', 'desc')->get(db_prefix() . 'acc_journal_entries')->row();
-                    if ($new_entry) {
-                        $this->upload_journal_entry_files($new_entry->id);
-                    }
+                    $this->upload_journal_entry_files($success);
                     set_alert('success', _l('added_successfully', _l('journal_entry')));
                 }
             }else{
