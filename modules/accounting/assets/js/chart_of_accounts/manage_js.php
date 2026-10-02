@@ -6,6 +6,7 @@
 		history: '<?php echo _l('account_history'); ?>',
 		status: '<?php echo _l('staff_dt_active'); ?>',
 		no_records: '<?php echo _l('acc_no_accounts_found'); ?>',
+		self_parent: '<?php echo _l('acc_parent_account_self_error'); ?>',
 	};
 	(function($) {
 		"use strict";
@@ -15,6 +16,7 @@
 			account_type_id: 'required',
 			account_detail_type_id: 'required',
 			name: 'required',
+			number: 'required',
     	},account_form_handler);
 
 		fnServerParams = {
@@ -84,8 +86,8 @@
     });
 
     // Clicking a category/type header row anywhere toggles that branch
-    $('#accounts-tree-root').on('click', '.tree-group > .tree-row', function(e) {
-      if ($(e.target).closest('.tree-toggle').length) {
+    $('#accounts-tree-root').on('click', '.tree-group > .tree-row, .tree-parent > .tree-row', function(e) {
+      if ($(e.target).closest('.tree-toggle, .tree-actions').length) {
         return;
       }
       var $node = $(this).closest('.tree-node');
@@ -122,8 +124,13 @@
           $('select[name="parent_account"]').val('').change();
 
           $('input[name="name"]').val('');
+          $('input[name="number"]').val('');
           $('input[name="balance"]').val('');
           $('input[name="balance_as_of"]').val('');
+          $('input[name="bank_name"]').val('');
+          $('input[name="bank_account"]').val('');
+          $('input[name="bank_routing"]').val('');
+          $('input[name="address_line_1"]').val('');
 
           tinyMCE.activeEditor.setContent('');
           $('textarea[name="description"]').val('');
@@ -152,8 +159,28 @@
           }
       });
 
-	 	// Tree is the default view; the list table is initialized the first time it is opened
-	 	load_accounts_tree();
+ 	// Tree is the default view; the list table is initialized the first time it is opened
+ 	load_accounts_tree();
+
+ 	// Hierarchical codes: picking a parent suggests the next free child
+ 	// code (parent 1 -> 11, 12, ...), otherwise the next free code inside
+ 	// the group digit of the selected type (never another group's digit).
+ 	// Only fills an empty number field, never overwrites what the user typed.
+ 	function suggest_account_number() {
+ 	  var $number = $('#account-modal input[name="number"]');
+ 	  if ($number.length === 0 || $.trim($number.val()) !== '') {
+ 	    return;
+ 	  }
+ 	  var parent_id = $('#account-modal select[name="parent_account"]').val() || 0;
+ 	  var type_id = $('#account-modal select[name="account_type_id"]').val() || 0;
+ 	  requestGetJSON(admin_url + 'accounting/suggest_account_number?parent_account=' + parent_id + '&account_type_id=' + type_id).done(function(response) {
+ 	    if (response && response.number && $.trim($number.val()) === '') {
+ 	      $number.val(response.number);
+ 	    }
+ 	  });
+ 	}
+ 	$('#account-modal select[name="parent_account"]').on('change', suggest_account_number);
+ 	$('#account-modal select[name="account_type_id"]').on('change', suggest_account_number);
 
 		$('select[name="account_type_id"]').on('change', function() {
 
@@ -282,6 +309,15 @@ function edit_account(id) {
 
 function account_form_handler(form) {
     "use strict";
+    // An account can never be its own parent; deeper loops are rejected
+    // server-side with an explanatory message.
+    var edited_id = $(form).find('input[name="id"]').val();
+    var parent_val = $(form).find('select[name="parent_account"]').val();
+    if (edited_id != '' && parent_val != '' && parent_val != null && String(parent_val) === String(edited_id)) {
+      alert_float('danger', acc_tree_lang.self_parent || 'An account cannot be its own parent account');
+      $('#account-modal').find('button[type="submit"]').prop('disabled', false);
+      return false;
+    }
     $('#account-modal').find('button[type="submit"]').prop('disabled', true);
     tinyMCE.triggerSave();
     
@@ -301,12 +337,15 @@ function account_form_handler(form) {
         if (response.success === true || response.success == 'true' || $.isNumeric(response.success)) {
           	alert_float('success', response.message);
 
-           window.location.reload();
+          	$('#account-modal').modal('hide');
+          	window.location.reload();
         }else{
+          // Keep the modal open so the user can fix the parent selection.
+          $('#account-modal').find('button[type="submit"]').prop('disabled', false);
           alert_float('danger', response.message);
         }
-        $('#account-modal').modal('hide');
     }).fail(function(error) {
+        $('#account-modal').find('button[type="submit"]').prop('disabled', false);
         alert_float('danger', JSON.parse(error.mesage));
     });
 
@@ -469,7 +508,7 @@ function render_accounts_tree_nodes(nodes, show_secondary, depth) {
   $.each(nodes, function(index, node) {
     var has_children = node.children && node.children.length > 0;
     var icon_class = accounts_tree_icon(node, depth, has_children);
-    var row_class = node.is_group ? (depth === 0 ? ' tree-group tree-class' : ' tree-group') : '';
+    var row_class = node.is_group ? (depth === 0 ? ' tree-group tree-class' : ' tree-group') : (has_children ? ' tree-parent' : '');
 
     html += '<li class="tree-node' + row_class + '"' + (node.is_group ? '' : ' data-id="' + node.id + '"') + '>';
     html += '<div class="tree-row">';
@@ -498,7 +537,8 @@ function render_accounts_tree_nodes(nodes, show_secondary, depth) {
         actions += '<a href="' + admin_url + 'accounting/delete_account/' + node.id + '" class="tree-btn tree-btn-delete _delete" title="' + acc_tree_lang.delete + '"><i class="fa fa-trash-o"></i></a>';
       }
 
-      html += '<span class="tree-name' + (node.active == 1 ? '' : ' inactive-account') + '" onclick="edit_account(' + node.id + ')" title="' + acc_tree_escape(node.name) + '">' + acc_tree_escape(node.name) + '</span>';
+      // a parent account expands/collapses on click (edit stays on the pencil); a leaf opens the editor
+      html += '<span class="tree-name' + (node.active == 1 ? '' : ' inactive-account') + '"' + (has_children ? '' : ' onclick="edit_account(' + node.id + ')"') + ' title="' + acc_tree_escape(node.name) + '">' + acc_tree_escape(node.name) + '</span>';
       html += '<span class="tree-actions">' + actions + '</span>';
       html += '<span class="tree-leader"></span>';
       html += '<span class="tree-meta">';

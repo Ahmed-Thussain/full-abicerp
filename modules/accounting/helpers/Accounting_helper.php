@@ -1122,6 +1122,112 @@ function acc_get_rate_at($from, $to, $datetime)
 }
 
 /**
+ * Resolve the currency a report should be shown in.
+ * Returns null (= base currency, no conversion) when nothing was requested,
+ * the base currency was requested, or the requested currency does not exist.
+ *
+ * @param  mixed $requested_id currency id (or name) from the report filter
+ * @return array|null ['id' => int, 'name' => string, 'base_name' => string]
+ */
+function acc_resolve_report_currency($requested_id)
+{
+    if (empty($requested_id)) {
+        return null;
+    }
+
+    $CI = & get_instance();
+    $CI->load->model('currencies_model');
+
+    $base = $CI->currencies_model->get_base_currency();
+    if (!$base) {
+        return null;
+    }
+
+    if (is_numeric($requested_id)) {
+        if ((int) $requested_id === (int) $base->id) {
+            return null;
+        }
+        $currency = $CI->currencies_model->get($requested_id);
+    } else {
+        if (strtoupper((string) $requested_id) === strtoupper($base->name)) {
+            return null;
+        }
+        $currency = $CI->currencies_model->get_by_name(strtoupper((string) $requested_id));
+    }
+
+    if (!$currency) {
+        return null;
+    }
+
+    $id   = is_array($currency) ? $currency['id'] : $currency->id;
+    $name = is_array($currency) ? $currency['name'] : $currency->name;
+
+    if ((int) $id === (int) $base->id || strtoupper($name) === strtoupper($base->name)) {
+        return null;
+    }
+
+    return ['id' => (int) $id, 'name' => strtoupper($name), 'base_name' => strtoupper($base->name)];
+}
+
+/**
+ * Strict variant of acc_get_rate_at() for reports: same first steps
+ * (same currency = 1; manual period covering the date; live rate when
+ * auto_rate is on; latest manual period starting before the date) but NO
+ * earliest-rate or initial-rate fallback. A date earlier than the first rate
+ * (or a pair with no rate at all) returns null so the report can warn.
+ *
+ * @param  string $from
+ * @param  string $to
+ * @param  string $datetime
+ * @return float|null
+ */
+function acc_get_report_rate_at($from, $to, $datetime)
+{
+    if ($from == $to) {
+        return 1;
+    }
+
+    $CI   = & get_instance();
+    $from = strtoupper($from);
+    $to   = strtoupper($to);
+
+    $CI->db->where('from_currency_name', $from);
+    $CI->db->where('to_currency_name', $to);
+    $CI->db->where('effective_from <=', $datetime);
+    $CI->db->group_start();
+    $CI->db->where('effective_to IS NULL', null, false);
+    $CI->db->or_where('effective_to >=', $datetime);
+    $CI->db->group_end();
+    $CI->db->order_by('id', 'DESC');
+    $CI->db->limit(1);
+    $period = $CI->db->get(db_prefix() . 'acc_currency_rate_periods')->row();
+    if ($period) {
+        return (float) $period->rate;
+    }
+
+    $CI->db->where('from_currency_name', $from);
+    $CI->db->where('to_currency_name', $to);
+    $live = $CI->db->get(db_prefix() . 'currency_rates')->row();
+    if ($live && $live->auto_rate == 1) {
+        return (float) $live->to_currency_rate;
+    }
+
+    $CI->db->where('from_currency_name', $from);
+    $CI->db->where('to_currency_name', $to);
+    $CI->db->where('effective_from <=', $datetime);
+    $CI->db->order_by('effective_from', 'DESC');
+    $CI->db->order_by('id', 'DESC');
+    $CI->db->limit(1);
+    $latest = $CI->db->get(db_prefix() . 'acc_currency_rate_periods')->row();
+    if ($latest) {
+        return (float) $latest->rate;
+    }
+
+    // No rate covers the date: report it as missing instead of inventing one.
+    return null;
+}
+
+/**
  * Convert a base-currency amount to the configured secondary currency for
  * display, if the feature is enabled and fully configured.
  *

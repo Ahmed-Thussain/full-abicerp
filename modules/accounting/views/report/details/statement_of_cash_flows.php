@@ -1,5 +1,7 @@
 <div id="accordion">
   <div class="card">
+    <?php $this->load->view('report/includes/report_currency_bar'); ?>
+    <?php $incomplete_mark = !empty($missing_rate_dates) ? _l('acc_report_incomplete_total') : ''; ?>
     <table class="tree">
       <tbody>
         <tr>
@@ -20,6 +22,14 @@
           </td>
           <td></td>
         </tr>
+        <?php if (!empty($report_currency_info)) { ?>
+        <tr>
+          <td colspan="2">
+            <p class="text-center"><?php echo _l('acc_report_currency') . ': ' . $currency->name; ?></p>
+          </td>
+          <td></td>
+        </tr>
+        <?php } ?>
         <tr>
           <td>
           </td>
@@ -42,7 +52,7 @@
         <?php $row_index += 1; ?>
         <tr data-node-id="<?php echo new_html_entity_decode($row_index); ?>" data-node-pid="<?php echo new_html_entity_decode($parent_index); ?>" class="parent-node expanded">
           <td class="parent"><?php echo _l('profit_for_the_year'); ?></td>
-          <td class="total_amount"><?php echo app_format_money($data_report['net_income'], $currency->name); ?> </td>
+          <td class="total_amount"><?php echo $data_report['net_income'] === null ? '' : app_format_money($data_report['net_income'], $currency->name); ?><?php echo $incomplete_mark; ?> </td>
         </tr>
         <?php
           $total_cash_flows_from_operating_activities += $data_report['net_income'];
@@ -57,47 +67,47 @@
           <?php 
             $_index = $row_index;
 
-            $data = $this->accounting_model->get_html_statement_of_cash_flows($data_report['data']['accounts_receivable'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency);
+            $data = $this->accounting_model->get_html_statement_of_cash_flows($data_report['data']['accounts_receivable'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency, false, 1, $incomplete_mark);
             $row_index = $data['row_index'];
             echo new_html_entity_decode($data['html']);
             $total += $data['total_amount'];
 
-            $data = $this->accounting_model->get_html_statement_of_cash_flows($data_report['data']['current_assets_1'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency);
+            $data = $this->accounting_model->get_html_statement_of_cash_flows($data_report['data']['current_assets_1'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency, false, 1, $incomplete_mark);
             $row_index = $data['row_index'];
             echo new_html_entity_decode($data['html']);
             $total += $data['total_amount'];
 
-            $data = $this->accounting_model->get_html_statement_of_cash_flows($data_report['data']['fixed_assets_1'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency);
+            $data = $this->accounting_model->get_html_statement_of_cash_flows($data_report['data']['fixed_assets_1'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency, false, 1, $incomplete_mark);
             $row_index = $data['row_index'];
             echo new_html_entity_decode($data['html']);
             $total += $data['total_amount'];
 
-            $data = $this->accounting_model->get_html_statement_of_cash_flows($data_report['data']['non_current_assets_1'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency);
+            $data = $this->accounting_model->get_html_statement_of_cash_flows($data_report['data']['non_current_assets_1'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency, false, 1, $incomplete_mark);
             $row_index = $data['row_index'];
             echo new_html_entity_decode($data['html']);
             $total += $data['total_amount'];
 
-            $data = $this->accounting_model->get_html_statement_of_cash_flows($data_report['data']['accounts_payable'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency);
+            $data = $this->accounting_model->get_html_statement_of_cash_flows($data_report['data']['accounts_payable'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency, false, 1, $incomplete_mark);
             $row_index = $data['row_index'];
             echo new_html_entity_decode($data['html']);
             $total += $data['total_amount'];
 
-            $data = $this->accounting_model->get_html_statement_of_cash_flows($data_report['data']['credit_card'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency);
+            $data = $this->accounting_model->get_html_statement_of_cash_flows($data_report['data']['credit_card'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency, false, 1, $incomplete_mark);
             $row_index = $data['row_index'];
             echo new_html_entity_decode($data['html']);
             $total += $data['total_amount'];
 
-            $data = $this->accounting_model->get_html_statement_of_cash_flows($data_report['data']['current_liabilities'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency);
+            $data = $this->accounting_model->get_html_statement_of_cash_flows($data_report['data']['current_liabilities'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency, false, 1, $incomplete_mark);
             $row_index = $data['row_index'];
             echo new_html_entity_decode($data['html']);
             $total += $data['total_amount'];
 
-            $data = $this->accounting_model->get_html_statement_of_cash_flows($data_report['data']['non_current_liabilities_1'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency);
+            $data = $this->accounting_model->get_html_statement_of_cash_flows($data_report['data']['non_current_liabilities_1'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency, false, 1, $incomplete_mark);
             $row_index = $data['row_index'];
             echo new_html_entity_decode($data['html']);
             $total += $data['total_amount'];
 
-            $data = $this->accounting_model->get_html_statement_of_cash_flows($data_report['data']['cash_flows_from_operating_activities'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency);
+            $data = $this->accounting_model->get_html_statement_of_cash_flows($data_report['data']['cash_flows_from_operating_activities'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency, false, 1, $incomplete_mark);
             $row_index = $data['row_index'];
             echo new_html_entity_decode($data['html']);
             $total += $data['total_amount'];
@@ -107,12 +117,12 @@
             
             <tr data-node-id="<?php echo new_html_entity_decode($row_index); ?>" data-node-pid="1"  class="parent-node expanded tr_total">
               <td class="parent"><?php echo _l('total_adjustments_for_non_cash_income_and_expenses'); ?></td>
-              <td class="total_amount"><?php echo app_format_money($total, $currency->name); ?> </td>
+              <td class="total_amount"><?php echo app_format_money($total, $currency->name); ?><?php echo $incomplete_mark; ?> </td>
             </tr>
             <?php $total_cash_flows_from_operating_activities += $total; ?>
             <tr data-node-id="<?php echo new_html_entity_decode($row_index); ?>" class="parent-node expanded tr_total">
               <td class="parent"><?php echo _l('net_cash_from_operating_activities'); ?></td>
-              <td class="total_amount"><?php echo app_format_money($total_cash_flows_from_operating_activities, $currency->name); ?> </td>
+              <td class="total_amount"><?php echo app_format_money($total_cash_flows_from_operating_activities, $currency->name); ?><?php echo $incomplete_mark; ?> </td>
             </tr>
             <?php 
               $row_index += 1; 
@@ -124,22 +134,22 @@
             </tr>
             <?php $parent_index = $row_index; ?>
             <?php 
-            $data = $this->accounting_model->get_html_statement_of_cash_flows($data_report['data']['current_assets_2'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency);
+            $data = $this->accounting_model->get_html_statement_of_cash_flows($data_report['data']['current_assets_2'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency, false, 1, $incomplete_mark);
             $row_index = $data['row_index'];
             echo new_html_entity_decode($data['html']);
             $net_cash_used_in_investing_activities += $data['total_amount'];
 
-            $data = $this->accounting_model->get_html_statement_of_cash_flows($data_report['data']['fixed_assets_2'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency);
+            $data = $this->accounting_model->get_html_statement_of_cash_flows($data_report['data']['fixed_assets_2'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency, false, 1, $incomplete_mark);
             $row_index = $data['row_index'];
             echo new_html_entity_decode($data['html']);
             $net_cash_used_in_investing_activities += $data['total_amount'];
 
-            $data = $this->accounting_model->get_html_statement_of_cash_flows($data_report['data']['non_current_assets_2'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency);
+            $data = $this->accounting_model->get_html_statement_of_cash_flows($data_report['data']['non_current_assets_2'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency, false, 1, $incomplete_mark);
             $row_index = $data['row_index'];
             echo new_html_entity_decode($data['html']);
             $net_cash_used_in_investing_activities += $data['total_amount'];
 
-            $data = $this->accounting_model->get_html_statement_of_cash_flows($data_report['data']['cash_flows_from_investing_activities'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency);
+            $data = $this->accounting_model->get_html_statement_of_cash_flows($data_report['data']['cash_flows_from_investing_activities'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency, false, 1, $incomplete_mark);
             $row_index = $data['row_index'];
             echo new_html_entity_decode($data['html']);
             $net_cash_used_in_investing_activities += $data['total_amount'];
@@ -148,7 +158,7 @@
           ?>
             <tr data-node-id="<?php echo new_html_entity_decode($row_index); ?>"  class="parent-node expanded tr_total">
               <td class="parent"><?php echo _l('net_cash_used_in_investing_activities'); ?></td>
-              <td class="total_amount"><?php echo app_format_money($net_cash_used_in_investing_activities, $currency->name); ?> </td>
+              <td class="total_amount"><?php echo app_format_money($net_cash_used_in_investing_activities, $currency->name); ?><?php echo $incomplete_mark; ?> </td>
             </tr>
             <?php $row_index += 1; ?>
             <tr data-node-id="<?php echo new_html_entity_decode($row_index); ?>" class="parent-node expanded">
@@ -159,17 +169,17 @@
               $net_cash_used_in_financing_activities = 0;
             ?>
             <?php 
-            $data = $this->accounting_model->get_html_statement_of_cash_flows($data_report['data']['non_current_liabilities_2'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency);
+            $data = $this->accounting_model->get_html_statement_of_cash_flows($data_report['data']['non_current_liabilities_2'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency, false, 1, $incomplete_mark);
             $row_index = $data['row_index'];
             echo new_html_entity_decode($data['html']);
             $net_cash_used_in_financing_activities += $data['total_amount'];
 
-            $data = $this->accounting_model->get_html_statement_of_cash_flows($data_report['data']['owner_equity'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency);
+            $data = $this->accounting_model->get_html_statement_of_cash_flows($data_report['data']['owner_equity'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency, false, 1, $incomplete_mark);
             $row_index = $data['row_index'];
             echo new_html_entity_decode($data['html']);
             $net_cash_used_in_financing_activities += $data['total_amount'];
 
-            $data = $this->accounting_model->get_html_statement_of_cash_flows($data_report['data']['cash_flows_from_financing_activities'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency);
+            $data = $this->accounting_model->get_html_statement_of_cash_flows($data_report['data']['cash_flows_from_financing_activities'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency, false, 1, $incomplete_mark);
             $row_index = $data['row_index'];
             echo new_html_entity_decode($data['html']);
             $net_cash_used_in_financing_activities += $data['total_amount'];
@@ -177,12 +187,12 @@
             $row_index += 1; ?>
             <tr data-node-id="<?php echo new_html_entity_decode($row_index); ?>" class="parent-node expanded tr_total">
               <td class="parent"><?php echo _l('net_cash_used_in_financing_activities'); ?></td>
-              <td class="total_amount"><?php echo app_format_money($net_cash_used_in_financing_activities, $currency->name); ?> </td>
+              <td class="total_amount"><?php echo app_format_money($net_cash_used_in_financing_activities, $currency->name); ?><?php echo $incomplete_mark; ?> </td>
             </tr>
             <?php $row_index += 1; ?>
             <tr data-node-id="<?php echo new_html_entity_decode($row_index); ?>" class="parent-node expanded tr_total">
               <td class="parent"><?php echo _l('net_increase_decrease_in_cash_and_cash_equivalents_uppercase'); ?></td>
-              <td class="total_amount"><?php echo app_format_money($net_cash_used_in_financing_activities + $net_cash_used_in_investing_activities + $total_cash_flows_from_operating_activities, $currency->name); ?> </td>
+              <td class="total_amount"><?php echo app_format_money($net_cash_used_in_financing_activities + $net_cash_used_in_investing_activities + $total_cash_flows_from_operating_activities, $currency->name); ?><?php echo $incomplete_mark; ?> </td>
             </tr>
             <?php $row_index += 1; ?>
             <tr data-node-id="<?php echo new_html_entity_decode($row_index); ?>" class="parent-node expanded hide">
@@ -192,13 +202,13 @@
             <?php $parent_index = $row_index; 
             $total = 0;
 
-            $data = $this->accounting_model->get_html_statement_of_cash_flows($data_report['data']['cash_and_cash_equivalents'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency);
+            $data = $this->accounting_model->get_html_statement_of_cash_flows($data_report['data']['cash_and_cash_equivalents'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency, false, 1, $incomplete_mark);
             $row_index = $data['row_index'];
 
-            $data = $this->accounting_model->get_html_statement_of_cash_flows($data_report['data']['current_assets_3'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency);
+            $data = $this->accounting_model->get_html_statement_of_cash_flows($data_report['data']['current_assets_3'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency, false, 1, $incomplete_mark);
             $row_index = $data['row_index'];
 
-            $data = $this->accounting_model->get_html_statement_of_cash_flows($data_report['data']['cash_and_cash_equivalents_at_beginning_of_year'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency);
+            $data = $this->accounting_model->get_html_statement_of_cash_flows($data_report['data']['cash_and_cash_equivalents_at_beginning_of_year'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency, false, 1, $incomplete_mark);
             $row_index = $data['row_index'];
 
             ?>
@@ -208,7 +218,7 @@
             </tr>
           <tr data-node-id="<?php echo new_html_entity_decode($row_index); ?>" class="parent-node expanded tr_total">
             <td class="parent"><?php echo _l('cash_and_cash_equivalents_at_end_of_year_uppercase'); ?></td>
-            <td class="total_amount"><?php echo app_format_money($total + $net_cash_used_in_financing_activities + $net_cash_used_in_investing_activities + $total_cash_flows_from_operating_activities, $currency->name); ?> </td>
+            <td class="total_amount"><?php echo app_format_money($total + $net_cash_used_in_financing_activities + $net_cash_used_in_investing_activities + $total_cash_flows_from_operating_activities, $currency->name); ?><?php echo $incomplete_mark; ?> </td>
           </tr>
         </tbody>
     </table>

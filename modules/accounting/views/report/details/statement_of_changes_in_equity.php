@@ -1,5 +1,7 @@
 <div id="accordion">
   <div class="card">
+    <?php $this->load->view('report/includes/report_currency_bar'); ?>
+    <?php $incomplete_mark = !empty($missing_rate_dates) ? _l('acc_report_incomplete_total') : ''; ?>
     <table class="tree">
       <tbody>
         <tr>
@@ -20,6 +22,14 @@
           </td>
           <td></td>
         </tr>
+        <?php if (!empty($report_currency_info)) { ?>
+        <tr>
+          <td colspan="2">
+            <p class="text-center"><?php echo _l('acc_report_currency') . ': ' . $currency->name; ?></p>
+          </td>
+          <td></td>
+        </tr>
+        <?php } ?>
         <tr>
           <td>
           </td>
@@ -31,14 +41,14 @@
         </tr>
         <?php
           $row_index = 1;
-          $data = $this->accounting_model->get_html_statement_of_changes_in_equity($data_report['data']['owner_equity'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], 0, $currency);
+          $data = $this->accounting_model->get_html_statement_of_changes_in_equity($data_report['data']['owner_equity'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], 0, $currency, $incomplete_mark);
             $row_index = $data['row_index'];
             echo new_html_entity_decode($data['html']);
             $total = $data['total_amount'];
           ?>
             <tr data-node-id="<?php echo new_html_entity_decode($row_index); ?>" class="parent-node expanded tr_total" data-node-pid="10000">
               <td class="parent"><?php echo _l('total_equity'); ?></td>
-              <td class="total_amount"><?php echo app_format_money($total, $currency->name); ?> </td>
+              <td class="total_amount"><?php echo app_format_money($total, $currency->name); ?><?php echo $incomplete_mark; ?> </td>
             </tr>
         </tbody>
     </table>

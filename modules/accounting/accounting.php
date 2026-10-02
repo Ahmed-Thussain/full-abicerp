@@ -1578,9 +1578,13 @@ function acc_automatic_expense_conversion($data) {
 			$CI->load->model('accounting/accounting_model');
 
 			if(isset($data['id'])){
-				$CI->accounting_model->automatic_expense_conversion($data['id']);
+				$converted = $CI->accounting_model->automatic_expense_conversion($data['id']);
 			}else{
-				$CI->accounting_model->automatic_expense_conversion($data);
+				$converted = $CI->accounting_model->automatic_expense_conversion($data);
+			}
+
+			if($converted === false && $CI->accounting_model->expense_conversion_skip_reason != ''){
+				set_alert('warning', _l($CI->accounting_model->expense_conversion_skip_reason));
 			}
 		}
 

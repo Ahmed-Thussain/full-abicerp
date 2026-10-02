@@ -1,5 +1,6 @@
 <div id="accordion">
   <div class="card">
+    <?php $this->load->view('report/includes/report_currency_bar'); ?>
     <table class="tree">
       <tbody>
         <tr>
@@ -23,6 +24,15 @@
           <td></td>
           <td></td>
         </tr>
+        <?php if (!empty($report_currency_info)) { ?>
+        <tr>
+          <td colspan="3">
+            <p class="text-center"><?php echo _l('acc_report_currency') . ': ' . $currency->name; ?></p>
+          </td>
+          <td></td>
+          <td></td>
+        </tr>
+        <?php } ?>
         <tr>
           <td></td>
           <td></td>
@@ -133,8 +143,8 @@
      
           <tr data-node-id="<?php echo new_html_entity_decode($row_index); ?>" data-node-pid="10000" class="tr_total">
             <td class="parent"><?php echo _l('total'); ?></td>
-            <td class="total_amount"><?php echo app_format_money($total_debit, $currency->name); ?> </td>
-            <td class="total_amount"><?php echo app_format_money($total_credit, $currency->name); ?> </td>
+            <td class="total_amount"><?php echo app_format_money($total_debit, $currency->name) . (!empty($missing_rate_dates) ? _l('acc_report_incomplete_total') : ''); ?> </td>
+            <td class="total_amount"><?php echo app_format_money($total_credit, $currency->name) . (!empty($missing_rate_dates) ? _l('acc_report_incomplete_total') : ''); ?> </td>
           </tr>
         </tbody>
     </table>

@@ -83,15 +83,21 @@
   .accounts-tree .tree-node.collapsed > ul.tree-children {
     display: none;
   }
+  .accounts-tree .tree-parent > .tree-row .tree-name,
   .accounts-tree .tree-group > .tree-row .tree-name {
-    cursor: default;
+    cursor: pointer;
     font-weight: 600;
     color: #4c6ef5;
   }
+  .accounts-tree .tree-parent > .tree-row .tree-name:hover,
   .accounts-tree .tree-group > .tree-row .tree-name:hover {
     color: #4c6ef5;
     text-decoration: none;
   }
+  .accounts-tree .tree-parent > .tree-row .tree-name.inactive-account {
+    color: #aaa;
+  }
+  .accounts-tree .tree-parent > .tree-row,
   .accounts-tree .tree-group > .tree-row {
     cursor: pointer;
   }
@@ -101,6 +107,7 @@
   .accounts-tree .tree-class > .tree-row .tree-name {
     font-size: 14px;
   }
+  .accounts-tree .tree-parent > .tree-row .tree-balance,
   .accounts-tree .tree-group > .tree-row .tree-balance {
     font-weight: 600;
   }
@@ -237,9 +244,7 @@
           <?php echo render_select('account_detail_type_id',$detail_types,array('id','name'),'detail_type','',array(),array(),'','',false); ?>
           <p><i class="detail_type_note"><?php echo new_html_entity_decode($detail_types[0]['note']); ?></i></p>
         <?php echo render_input('name','name'); ?>
-        <?php if(get_option('acc_enable_account_numbers') == 1){
-           echo render_input('number','number'); 
-        } ?>
+        <?php echo render_input('number','account_code'); ?>
         <?php echo render_select('parent_account',$accounts,array('id','name'),'parent_account'); ?>
         <div class="row hide" id="div_balance">
           <div class="col-md-6">

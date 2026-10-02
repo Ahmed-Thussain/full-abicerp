@@ -1,5 +1,6 @@
 <div id="accordion">
   <div class="card">
+    <?php $this->load->view('report/includes/report_currency_bar'); ?>
     <table class="tree">
       <tbody>
         <tr>
@@ -32,6 +33,18 @@
           <td></td>
           <td></td>
         </tr>
+        <?php if (!empty($report_currency_info)) { ?>
+        <tr>
+          <td colspan="6">
+            <p class="text-center"><?php echo _l('acc_report_currency') . ': ' . $currency->name; ?></p>
+          </td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <?php } ?>
         <tr>
           <td></td>
           <td></td>
@@ -45,7 +58,7 @@
           <td width="20%" class="text-bold"><?php echo _l('transaction_type'); ?></td>
           <td width="20%" class="text-bold"><?php echo _l('description'); ?></td>
           <td width="15%" class="text-bold"><?php echo _l('acc_account'); ?></td>
-          <td width="15%" class="text-bold"><?php echo _l('split'); ?></td>
+          <td width="15%" class="text-bold"><?php echo _l('acc_report_counter_account'); ?></td>
           <td width="15%" class="total_amount text-bold"><?php echo _l('acc_amount'); ?></td>
         </tr>
         <?php
@@ -78,7 +91,7 @@
               <?php echo new_html_entity_decode($val['split']); ?> 
               </td>
               <td class="total_amount">
-              <?php echo app_format_money($val['amount'], $currency->name); ?> 
+              <?php echo $val['amount'] === null ? '' : app_format_money($val['amount'], $currency->name); ?> 
               </td>
             </tr>
           <?php }

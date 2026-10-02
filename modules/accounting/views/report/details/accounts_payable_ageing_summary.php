@@ -1,4 +1,5 @@
 <?php 
+$incomplete_mark = !empty($missing_rate_dates) ? _l('acc_report_incomplete_total') : '';
 $data_html = []; 
 $data_html[1] = '<tr>
           <td colspan="7">
@@ -32,7 +33,32 @@ $data_html[1] = '<tr>
           <td></td>
           <td></td>
           <td></td>
-        </tr>
+        </tr>';
+if (!empty($report_currency_info)) {
+  $data_html[1] .= '<tr>
+          <td colspan="7">
+            <p class="text-center">'. _l('acc_report_currency').': '. $currency->name.'</p>
+          </td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>';
+  if (!empty($missing_rate_dates)) {
+    $data_html[1] .= '<tr>
+          <td colspan="7">'. $this->load->view('report/includes/report_currency_bar', [], true).'</td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>';
+  }
+}
+$data_html[1] .= '
         <tr>
           <td></td>
           <td></td>
@@ -144,12 +170,12 @@ $data_html[1] = '<tr>
             }
            $data_html[floor($_page)] .= '<tr data-node-id="'.new_html_entity_decode($row_index).'" data-node-pid="10000" class="parent-node expanded tr_total">
             <td class="parent">'._l('total').'</td>
-            <td class="total_amount">'.app_format_money($total_current, $currency->name).'</td>
-            <td class="total_amount">'.app_format_money($total_1_30, $currency->name).'</td>
-            <td class="total_amount">'.app_format_money($total_31_60, $currency->name).'</td>
-            <td class="total_amount">'.app_format_money($total_61_90, $currency->name).'</td>
-            <td class="total_amount">'.app_format_money($total_91_and_over, $currency->name).'</td>
-            <td class="total_amount">'.app_format_money($total, $currency->name).'</td>
+            <td class="total_amount">'.app_format_money($total_current, $currency->name).$incomplete_mark.'</td>
+            <td class="total_amount">'.app_format_money($total_1_30, $currency->name).$incomplete_mark.'</td>
+            <td class="total_amount">'.app_format_money($total_31_60, $currency->name).$incomplete_mark.'</td>
+            <td class="total_amount">'.app_format_money($total_61_90, $currency->name).$incomplete_mark.'</td>
+            <td class="total_amount">'.app_format_money($total_91_and_over, $currency->name).$incomplete_mark.'</td>
+            <td class="total_amount">'.app_format_money($total, $currency->name).$incomplete_mark.'</td>
           </tr>';
       if(isset($data_html[$page])){
   echo $data_html[$page];

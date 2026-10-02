@@ -31,6 +31,7 @@
               <div class="col-md-3">
                   <?php echo render_select('items[]',$items,array('id', 'description', 'sku_code'),'acc_item', '', array('multiple' => true, 'data-actions-box' => true), array(), '', '', false); ?>
                 </div>
+              <?php $this->load->view('report/includes/report_currency_bar'); ?>
               <div class="col-md-2">
                 <?php echo form_hidden('type', 'profit_and_loss_12_months'); ?>
                 <button type="submit" class="btn btn-info btn-submit mtop25"><?php echo _l('filter'); ?></button>
@@ -77,3 +78,4 @@
 <?php init_tail(); ?>
 </body>
 </html>
+<?php require 'modules/accounting/assets/js/report/report_currency_js.php'; ?>

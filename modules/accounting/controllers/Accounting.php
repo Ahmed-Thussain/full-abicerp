@@ -890,6 +890,29 @@ class Accounting extends AdminController
             $this->load->model('payment_modes_model');
             $data['_payment_modes'] = $this->payment_modes_model->get();
             $data['payment_modes'] = $this->accounting_model->get_payment_mode_not_yet_auto();
+
+            // red warning above the Expense block when conversion is on but a
+            // default expense account is empty or no longer exists
+            $data['expense_default_account_warning'] = false;
+            if(get_option('acc_expense_automatic_conversion') == 1 && $this->accounting_model->validate_expense_mapping_accounts(get_option('acc_expense_payment_account'), get_option('acc_expense_deposit_to')) != ''){
+                $data['expense_default_account_warning'] = true;
+            }
+
+            // saving mapping setup posts nothing by itself; the pending panel below
+            // lets the user pick which old transactions to post with the current mapping
+            $data['pending_conversions'] = [];
+            foreach($this->accounting_model->get_conversion_registry() as $pending_type => $pending_entry){
+                $pending_count = $this->accounting_model->count_pending($pending_type);
+                if($pending_count > 0){
+                    $data['pending_conversions'][] = [
+                        'type' => $pending_type,
+                        'label' => $pending_entry['label'],
+                        'count' => $pending_count,
+                        'group' => $pending_entry['group'],
+                        'tab' => $pending_entry['tab'],
+                    ];
+                }
+            }
         }elseif ($data['group'] == 'account_type_details') {
             $data['account_types'] = $this->accounting_model->get_account_types();
             foreach ($data['account_types'] as $key => $value) {
@@ -1092,6 +1115,8 @@ class Accounting extends AdminController
         if($success == true){
             $message = _l('updated_successfully', _l('setting'));
             set_alert('success', $message);
+        }elseif($this->accounting_model->expense_mapping_error != ''){
+            set_alert('danger', _l($this->accounting_model->expense_mapping_error));
         }
         redirect(admin_url('accounting/setting?group=mapping_setup'));
     }
@@ -1212,7 +1237,9 @@ class Accounting extends AdminController
             $sIndexColumn = 'id';
             $sTable       = db_prefix() . 'acc_accounts';
             $join         = [];
-            $result       = $this->accounting_model->get_account_data_tables($aColumns, $sIndexColumn, $sTable, $join, $where, ['number', 'description', 'balance_as_of', $debit, $credit, 'default_account']);
+            // debit/credit sub-selects were unused (balances come from get_all_account_balances) and ran per row
+            $result       = $this->accounting_model->get_account_data_tables($aColumns, $sIndexColumn, $sTable, $join, $where, ['number', 'description', 'balance_as_of', 'default_account']);
+            $all_balances = $this->accounting_model->get_all_account_balances();
             $output  = $result['output'];
             $rResult = $result['rResult'];
 
@@ -1262,7 +1289,7 @@ class Accounting extends AdminController
                 $row[] = isset($account_type_name[$aRow['account_type_id']]) ? $account_type_name[$aRow['account_type_id']] : '';
                 $row[] = isset($detail_type_name[$aRow['account_detail_type_id']]) ? $detail_type_name[$aRow['account_detail_type_id']] : '';
                 
-                $balance = acc_get_account_balance($aRow['id']);
+                $balance = isset($all_balances[(int) $aRow['id']]) ? $all_balances[(int) $aRow['id']]['balance'] : 0;
                 $row[] = app_format_money($balance, $currency->name);
                 // if($aRow['account_type_id'] == 11 || $aRow['account_type_id'] == 12 || $aRow['account_type_id'] == 8 || $aRow['account_type_id'] == 9 || $aRow['account_type_id'] == 10 || $aRow['account_type_id'] == 7){
                 //     $row[] = app_format_money($aRow['credit'] - $aRow['debit'], $currency->name);
@@ -1272,7 +1299,7 @@ class Accounting extends AdminController
                 $row[] = '';
 
                 if ($acc_enable_secondary_currency == 1) {
-                    $row[] = acc_secondary_currency_cell_from_stored($this->accounting_model->get_account_sec_balance($aRow['id']));
+                    $row[] = acc_secondary_currency_cell_from_stored(isset($all_balances[(int) $aRow['id']]) ? $all_balances[(int) $aRow['id']]['sec'] : 0);
                 }
 
                 $checked = '';
@@ -1362,6 +1389,8 @@ class Accounting extends AdminController
             $can_edit   = has_permission('accounting_chart_of_accounts', '', 'edit');
             $can_delete = has_permission('accounting_chart_of_accounts', '', 'delete');
 
+            $all_balances = $this->accounting_model->get_all_account_balances();
+
             $nodes = [];
             foreach ($accounts as $value) {
                 $label = $value['name'] != '' ? $value['name'] : _l($value['key_name']);
@@ -1370,19 +1399,21 @@ class Accounting extends AdminController
                 }
 
                 // Already includes every sub-account below this one
-                $balance = acc_get_account_balance($value['id']);
+                $balance = isset($all_balances[(int) $value['id']]) ? $all_balances[(int) $value['id']]['balance'] : 0;
+                $sec_balance = isset($all_balances[(int) $value['id']]) ? $all_balances[(int) $value['id']]['sec'] : 0;
 
                 $node = [
                     'id'                => (int) $value['id'],
                     'parent_account'    => (int) $value['parent_account'],
                     'account_type_id'   => (int) $value['account_type_id'],
                     'name'              => $label,
+                    'number'            => (string) $value['number'],
                     'account_type_name' => isset($account_type_name[$value['account_type_id']]) ? $account_type_name[$value['account_type_id']] : '',
                     'detail_type_name'  => isset($detail_type_name[$value['account_detail_type_id']]) ? $detail_type_name[$value['account_detail_type_id']] : '',
                     'balance_raw'       => $balance,
                     'balance'           => app_format_money($balance, $currency->name),
-                    'sec_raw'           => $acc_enable_secondary_currency == 1 ? $this->accounting_model->get_account_sec_balance($value['id']) : 0,
-                    'secondary_amount'  => $acc_enable_secondary_currency == 1 ? acc_secondary_currency_cell_from_stored($this->accounting_model->get_account_sec_balance($value['id'])) : '',
+                    'sec_raw'           => $acc_enable_secondary_currency == 1 ? $sec_balance : 0,
+                    'secondary_amount'  => $acc_enable_secondary_currency == 1 ? acc_secondary_currency_cell_from_stored($sec_balance) : '',
                     'active'            => (int) $value['active'],
                     'default_account'   => (int) $value['default_account'],
                     'can_edit'          => $can_edit,
@@ -1393,16 +1424,84 @@ class Accounting extends AdminController
                 $nodes[$value['id']] = $node;
             }
 
-            // Nest sub-accounts under their parent account, keep the rest as type roots
+            // Nest sub-accounts under their parent account, keep the rest as type roots.
+            // Cycle-safe: a self-parent, a missing parent, or an A<->B (or longer)
+            // loop falls back to a type root, so no account ever disappears
+            // from the tree and json_encode never hits a recursive structure.
             $type_roots = [];
-            foreach ($nodes as $id => &$node) {
-                if ($node['parent_account'] != 0 && isset($nodes[$node['parent_account']])) {
-                    $nodes[$node['parent_account']]['children'][] = &$node;
-                } else {
-                    $type_roots[$node['account_type_id']][] = &$node;
+            $safe_parent = [];
+            foreach ($nodes as $id => $node) {
+                $pid = (int) $node['parent_account'];
+                $safe_parent[$id] = 0;
+                if ($pid !== 0 && $pid !== (int) $id && isset($nodes[$pid])) {
+                    $walk = $pid;
+                    $cycle = false;
+                    $guard = 0;
+                    while ($walk !== 0 && isset($nodes[$walk]) && $guard++ < 10000) {
+                        if ($walk === (int) $id) {
+                            $cycle = true;
+                            break;
+                        }
+                        $next = (int) $nodes[$walk]['parent_account'];
+                        if ($next === $walk) {
+                            $cycle = true;
+                            break;
+                        }
+                        $walk = $next;
+                    }
+                    if (!$cycle) {
+                        $safe_parent[$id] = $pid;
+                    }
                 }
             }
-            unset($node);
+
+            $children_map = [];
+            foreach ($nodes as $id => $node) {
+                if ($safe_parent[$id] !== 0) {
+                    $children_map[$safe_parent[$id]][] = $id;
+                }
+            }
+
+            // order siblings by account code (natural order), accounts without a code last
+            $sort_by_code = function ($a, $b) use ($nodes) {
+                $na = $nodes[$a]['number'];
+                $nb = $nodes[$b]['number'];
+                if ($na === '' && $nb !== '') {
+                    return 1;
+                }
+                if ($nb === '' && $na !== '') {
+                    return -1;
+                }
+                $cmp = strnatcmp($na, $nb);
+                return $cmp !== 0 ? $cmp : strnatcmp($nodes[$a]['name'], $nodes[$b]['name']);
+            };
+            foreach ($children_map as $pid => $ids) {
+                usort($ids, $sort_by_code);
+                $children_map[$pid] = $ids;
+            }
+
+            // Build nested copies (no PHP references) with a visited path so a
+            // residual bad link can never recurse forever.
+            $build_subtree = function ($id, $path) use (&$build_subtree, $nodes, $children_map) {
+                $node = $nodes[$id];
+                $node['children'] = [];
+                $path[$id] = true;
+                if (isset($children_map[$id])) {
+                    foreach ($children_map[$id] as $child_id) {
+                        if (isset($path[$child_id]) || !isset($nodes[$child_id])) {
+                            continue;
+                        }
+                        $node['children'][] = $build_subtree($child_id, $path);
+                    }
+                }
+                return $node;
+            };
+
+            foreach ($nodes as $id => $node) {
+                if ($safe_parent[$id] === 0) {
+                    $type_roots[$node['account_type_id']][] = $build_subtree($id, []);
+                }
+            }
 
             // Group account types under the five master classes, as on the balance sheet
             $class_of_type = [
@@ -1421,35 +1520,33 @@ class Accounting extends AdminController
                 'expenses'    => _l('acc_expenses'),
             ];
 
+            // Master class -> its top-level accounts directly (no extra account-type layer:
+            // an account such as "Current assets" must not appear inside a "Current assets" group)
             $class_children = [];
             $class_totals   = [];
             $class_sec_totals = [];
-            foreach ($account_types as $type) {
-                if (!isset($type_roots[$type['id']])) {
-                    continue;
+            $roots_all = [];
+            foreach ($type_roots as $type_id => $roots) {
+                foreach ($roots as $root) {
+                    $roots_all[] = $root;
                 }
-
-                $class = isset($class_of_type[$type['id']]) ? $class_of_type[$type['id']] : 'assets';
-
-                // Each root already carries its own sub-accounts, so summing the roots is enough
-                $type_total = 0;
-                $type_sec_total = 0;
-                foreach ($type_roots[$type['id']] as $root) {
-                    $type_total += $root['balance_raw'];
-                    $type_sec_total += $root['sec_raw'];
+            }
+            usort($roots_all, function ($a, $b) {
+                if ($a['number'] === '' && $b['number'] !== '') {
+                    return 1;
                 }
-
-                $class_children[$class][] = [
-                    'is_group'         => true,
-                    'name'             => $type['name'],
-                    'balance_raw'      => $type_total,
-                    'balance'          => app_format_money($type_total, $currency->name),
-                    'secondary_amount' => $acc_enable_secondary_currency == 1 ? acc_secondary_currency_cell_from_stored($type_sec_total) : '',
-                    'children'         => $type_roots[$type['id']],
-                ];
-
-                $class_totals[$class] = (isset($class_totals[$class]) ? $class_totals[$class] : 0) + $type_total;
-                $class_sec_totals[$class] = (isset($class_sec_totals[$class]) ? $class_sec_totals[$class] : 0) + $type_sec_total;
+                if ($b['number'] === '' && $a['number'] !== '') {
+                    return -1;
+                }
+                $cmp = strnatcmp($a['number'], $b['number']);
+                return $cmp !== 0 ? $cmp : strnatcmp($a['name'], $b['name']);
+            });
+            foreach ($roots_all as $root) {
+                $class = isset($class_of_type[$root['account_type_id']]) ? $class_of_type[$root['account_type_id']] : 'assets';
+                $class_children[$class][] = $root;
+                // each root already carries its own sub-accounts
+                $class_totals[$class] = (isset($class_totals[$class]) ? $class_totals[$class] : 0) + $root['balance_raw'];
+                $class_sec_totals[$class] = (isset($class_sec_totals[$class]) ? $class_sec_totals[$class] : 0) + $root['sec_raw'];
             }
 
             $tree = [];
@@ -1491,12 +1588,26 @@ class Accounting extends AdminController
             $data = $this->input->post();
             $data['description'] = $_POST['description'];
             $message = '';
+            // Parent-link failures come back as short error codes so the
+            // modal can tell the user exactly what to fix.
+            $parent_error_messages = [
+                'self_parent' => _l('acc_parent_account_self_error'),
+                'parent_not_found' => _l('acc_parent_account_not_found'),
+                'parent_cycle' => _l('acc_parent_account_cycle_error'),
+                'parent_type_mismatch' => _l('acc_parent_account_type_error'),
+                'number_taken' => _l('acc_account_number_taken'),
+                'number_required' => _l('acc_account_number_required'),
+                'number_class_mismatch' => _l('acc_account_number_class'),
+            ];
             if ($data['id'] == '') {
                 if (!has_permission('accounting_chart_of_accounts', '', 'create')) {
                     access_denied('accounting');
                 }
                 $success = $this->accounting_model->add_account($data);
-                if ($success) {
+                if (is_string($success) && isset($parent_error_messages[$success])) {
+                    $message = $parent_error_messages[$success];
+                    $success = false;
+                } elseif ($success) {
                     $message = _l('added_successfully', _l('acc_account'));
                 }else {
                     $message = _l('add_failure');
@@ -1508,7 +1619,10 @@ class Accounting extends AdminController
                 $id = $data['id'];
                 unset($data['id']);
                 $success = $this->accounting_model->update_account($data, $id);
-                if ($success) {
+                if (is_string($success) && isset($parent_error_messages[$success])) {
+                    $message = $parent_error_messages[$success];
+                    $success = false;
+                } elseif ($success) {
                     $message = _l('updated_successfully', _l('acc_account'));
                 }else {
                     $message = _l('updated_fail');
@@ -1518,6 +1632,67 @@ class Accounting extends AdminController
             echo json_encode(['success' => $success, 'message' => $message]);
             die();
         }
+    }
+
+    /**
+     * Suggest the next free hierarchical account code.
+     * A sub-account extends its parent code (parent 1 -> suggest 11, 12, ...).
+     * Otherwise the suggestion stays inside the group digit of the selected
+     * type (1 Assets, 2 Liabilities, 3 Equity, 4 Income, 5 Expenses), so a
+     * "1..." code is never proposed for another group.
+     * Only fills the empty number field in the account modal.
+     * @return json
+     */
+    public function suggest_account_number()
+    {
+        if (!has_permission('accounting_chart_of_accounts', '', 'view')) {
+            ajax_access_denied();
+        }
+
+        $parent_id = (int) $this->input->get_post('parent_account');
+        $account_type_id = (int) $this->input->get_post('account_type_id');
+        $suggestion = '';
+
+        // All taken codes for the uniqueness check
+        $taken = [];
+        $existing = $this->db->select('number')->get(db_prefix() . 'acc_accounts')->result_array();
+        foreach ($existing as $row) {
+            if (isset($row['number']) && trim((string) $row['number']) !== '') {
+                $taken[trim((string) $row['number'])] = true;
+            }
+        }
+
+        $parent_number = '';
+        if ($parent_id > 0) {
+            $this->db->where('id', $parent_id);
+            $parent = $this->db->get(db_prefix() . 'acc_accounts')->row();
+            $parent_number = ($parent && isset($parent->number)) ? trim((string) $parent->number) : '';
+        }
+
+        if ($parent_number !== '') {
+            for ($i = 1; $i <= 999; $i++) {
+                $candidate = $parent_number . $i;
+                if (!isset($taken[$candidate])) {
+                    $suggestion = $candidate;
+                    break;
+                }
+            }
+        } else {
+            // No usable parent code: first free code inside the group digit.
+            $digit = $this->accounting_model->account_class_digit(
+                $this->accounting_model->account_class_of_type($account_type_id)
+            );
+            for ($i = 0; $i <= 999; $i++) {
+                $candidate = ($i == 0) ? $digit : $digit . $i;
+                if (!isset($taken[$candidate])) {
+                    $suggestion = $candidate;
+                    break;
+                }
+            }
+        }
+
+        echo json_encode(['number' => $suggestion]);
+        die();
     }
 
     /**
@@ -3518,6 +3693,57 @@ class Accounting extends AdminController
     }
 
     /**
+     * pending rows of one conversion type (mapping setup "not posted yet" panel)
+     * @return json
+     */
+    public function pending_rows(){
+        if (!has_permission('accounting_setting', '', 'edit') && !is_admin()) {
+            access_denied('accounting_setting');
+        }
+        $type = $this->input->get('type');
+        $limit = (int)$this->input->get('limit');
+        $offset = (int)$this->input->get('offset');
+        if($limit <= 0 || $limit > 500){
+            $limit = 100;
+        }
+        if($offset < 0){
+            $offset = 0;
+        }
+
+        $rows = $this->accounting_model->get_pending_rows($type, $limit, $offset);
+        $total = $this->accounting_model->count_pending($type);
+
+        echo json_encode(['success' => true, 'rows' => $rows, 'total' => $total]);
+        die();
+    }
+
+    /**
+     * convert pending rows of one conversion type with the current mapping
+     * @return json
+     */
+    public function convert_pending(){
+        if (!has_permission('accounting_setting', '', 'edit') && !is_admin()) {
+            access_denied('accounting_setting');
+        }
+        $type = $this->input->post('type');
+        $ids = $this->input->post('ids');
+        if($this->input->post('all')){
+            $ids = $this->accounting_model->get_pending_ids($type);
+        }
+
+        $result = $this->accounting_model->convert_pending($type, $ids ? $ids : []);
+
+        echo json_encode([
+            'success' => true,
+            'posted' => count($result['posted']),
+            'posted_ids' => $result['posted'],
+            'no_mapping' => $result['no_mapping'],
+            'message' => _l('acc_pending_convert_result', [count($result['posted']), count($result['no_mapping'])]),
+        ]);
+        die();
+    }
+
+    /**
      * transfer
      * @return view
      */
@@ -3830,6 +4056,10 @@ class Accounting extends AdminController
                     set_alert('warning', _l('acc_rate_missing_block'));
                     redirect(admin_url('accounting/new_journal_entry'));
                 }
+                if ($success === 'parent_account') {
+                    set_alert('warning', _l('acc_journal_entry_parent_account_error'));
+                    redirect(admin_url('accounting/new_journal_entry'));
+                }
                 if ($success === 'close_the_book') {
                     $message = _l('has_closed_the_book');
                     set_alert('warning', _l('has_closed_the_book'));
@@ -3844,6 +4074,10 @@ class Accounting extends AdminController
                 $success = $this->accounting_model->update_journal_entry($data, $id);
                 if ($success === 'no_rate') {
                     set_alert('warning', _l('acc_rate_missing_block'));
+                    redirect(admin_url('accounting/new_journal_entry/' . $id));
+                }
+                if ($success === 'parent_account') {
+                    set_alert('warning', _l('acc_journal_entry_parent_account_error'));
                     redirect(admin_url('accounting/new_journal_entry/' . $id));
                 }
                 if ($success === 'close_the_book') {
@@ -3866,7 +4100,30 @@ class Accounting extends AdminController
         $data['currencies'] = $this->currencies_model->get();
         $data['next_number'] = $this->accounting_model->get_journal_entry_next_number();
         $data['title'] = _l('journal_entry');
-        $data['accounts'] = $this->accounting_model->get_accounts();
+        // Only leaf (postable) accounts: parent/header accounts aggregate
+        // their children, so they must not be selectable on a JE line.
+        // Existing entries that already use a parent account keep showing it.
+        $data['accounts'] = $this->accounting_model->get_leaf_accounts();
+        if (isset($data['journal_entry']) && isset($data['journal_entry']->details)) {
+            $leaf_ids = [];
+            foreach ($data['accounts'] as $leaf_account) {
+                $leaf_ids[$leaf_account['id']] = true;
+            }
+            $missing_ids = [];
+            foreach ($data['journal_entry']->details as $detail) {
+                if (!isset($leaf_ids[$detail['account']]) && !isset($missing_ids[$detail['account']])) {
+                    $missing_ids[$detail['account']] = true;
+                }
+            }
+                if (!empty($missing_ids)) {
+                    $this->db->where_in('id', array_keys($missing_ids));
+                    $missing = $this->db->get(db_prefix() . 'acc_accounts')->result_array();
+                    foreach ($missing as $missing_account) {
+                        $missing_account['name'] = $missing_account['name'] != '' ? $missing_account['name'] : _l($missing_account['key_name']);
+                        $data['accounts'][] = $missing_account;
+                    }
+                }
+            }
         $data['classes'] = $this->accounting_model->get_class();
 
         $this->load->view('journal_entry/journal_entry', $data);
@@ -3920,6 +4177,7 @@ class Accounting extends AdminController
         $data['to_date'] = date('Y-m-d');
         $data['accounting_method'] = get_option('acc_accounting_method');
         $data['currency'] = $this->currencies_model->get_base_currency();
+        $data['currencies'] = $this->currencies_model->get();
 
         $where_item = [];
         if(acc_get_status_modules('warehouse')){
@@ -3940,6 +4198,7 @@ class Accounting extends AdminController
         $data['from_date'] = date('Y-01-01');
         $data['to_date'] = date('Y-m-d');
         $data['currency'] = $this->currencies_model->get_base_currency();
+        $data['currencies'] = $this->currencies_model->get();
         $data['accounting_method'] = get_option('acc_accounting_method');
         $where_item = [];
         if(acc_get_status_modules('warehouse')){
@@ -3962,6 +4221,7 @@ class Accounting extends AdminController
         $data['to_date'] = date('Y-m-d');
         $data['accounting_method'] = get_option('acc_accounting_method');
         $data['currency'] = $this->currencies_model->get_base_currency();
+        $data['currencies'] = $this->currencies_model->get();
         $where_item = [];
         if(acc_get_status_modules('warehouse')){
             $where_item = 'active = 1';
@@ -3983,6 +4243,7 @@ class Accounting extends AdminController
         $data['to_date'] = date('Y-m-d');
         $data['accounting_method'] = get_option('acc_accounting_method');
         $data['currency'] = $this->currencies_model->get_base_currency();
+        $data['currencies'] = $this->currencies_model->get();
         $where_item = [];
         if(acc_get_status_modules('warehouse')){
             $where_item = 'active = 1';
@@ -4031,6 +4292,7 @@ class Accounting extends AdminController
         $data['to_date'] = date('Y-m-d');
         $data['accounting_method'] = get_option('acc_accounting_method');
         $data['currency'] = $this->currencies_model->get_base_currency();
+        $data['currencies'] = $this->currencies_model->get();
         $where_item = [];
         if(acc_get_status_modules('warehouse')){
             $where_item = 'active = 1';
@@ -4052,6 +4314,7 @@ class Accounting extends AdminController
         $data['to_date'] = date('Y-m-d');
         $data['accounting_method'] = get_option('acc_accounting_method');
         $data['currency'] = $this->currencies_model->get_base_currency();
+        $data['currencies'] = $this->currencies_model->get();
         $where_item = [];
         if(acc_get_status_modules('warehouse')){
             $where_item = 'active = 1';
@@ -4073,6 +4336,7 @@ class Accounting extends AdminController
         $data['to_date'] = date('Y-m-d');
         $data['accounting_method'] = get_option('acc_accounting_method');
         $data['currency'] = $this->currencies_model->get_base_currency();
+        $data['currencies'] = $this->currencies_model->get();
         $where_item = [];
         if(acc_get_status_modules('warehouse')){
             $where_item = 'active = 1';
@@ -4091,6 +4355,7 @@ class Accounting extends AdminController
         $this->load->model('currencies_model');
         $data['title'] = _l('profit_and_loss_year_to_date_comparison');
         $data['currency'] = $this->currencies_model->get_base_currency();
+        $data['currencies'] = $this->currencies_model->get();
         $data['from_date'] = date('Y-m-01');
         $data['to_date'] = date('Y-m-d');
         $data['accounting_method'] = get_option('acc_accounting_method');
@@ -4115,6 +4380,7 @@ class Accounting extends AdminController
         $data['to_date'] = date('Y-m-d');
         $data['accounting_method'] = get_option('acc_accounting_method');
         $data['currency'] = $this->currencies_model->get_base_currency();
+        $data['currencies'] = $this->currencies_model->get();
         $where_item = [];
         if(acc_get_status_modules('warehouse')){
             $where_item = 'active = 1';
@@ -4135,6 +4401,7 @@ class Accounting extends AdminController
         $data['from_date'] = date('Y-01-01');
         $data['to_date'] = date('Y-m-d');
         $data['currency'] = $this->currencies_model->get_base_currency();
+        $data['currencies'] = $this->currencies_model->get();
         $this->load->view('report/includes/statement_of_cash_flows', $data);
     }
 
@@ -4151,6 +4418,7 @@ class Accounting extends AdminController
         $data['year'] = (int) date('Y');
         $data['years'] = range((int) date('Y') + 1, (int) date('Y') - 10);
         $data['currency'] = $this->currencies_model->get_base_currency();
+        $data['currencies'] = $this->currencies_model->get();
         $this->load->view('report/includes/cashflow_monthly', $data);
     }
 
@@ -4166,7 +4434,7 @@ class Accounting extends AdminController
         if ($year < 1900) {
             $year = (int) date('Y');
         }
-        echo json_encode($this->accounting_model->get_data_cashflow_monthly($year));
+        echo json_encode($this->accounting_model->get_data_cashflow_monthly($year, $this->input->post('report_currency')));
         die();
     }
 
@@ -4174,14 +4442,14 @@ class Accounting extends AdminController
      * monthly cash flow excel export
      * @param  integer $year
      */
-    public function cashflow_monthly_export($year){
+    public function cashflow_monthly_export($year, $report_currency_id = null){
         if (!has_permission('accounting_report', '', 'view')) {
             access_denied('accounting_report');
         }
         $this->delete_error_file_day_before(1,ACCOUTING_EXPORT_XLSX);
 
         $year = (int) $year;
-        $report = $this->accounting_model->get_data_cashflow_monthly($year);
+        $report = $this->accounting_model->get_data_cashflow_monthly($year, $report_currency_id);
 
         if(!class_exists('XLSXWriter')){
             require_once(module_dir_path(ACCOUNTING_MODULE_NAME).'/assets/plugins/XLSXWriter/xlsxwriter.class.php');
@@ -4200,6 +4468,12 @@ class Accounting extends AdminController
         $writer = new XLSXWriter();
         $writer->writeSheetRow('Sheet1', [1 => get_option('companyname')]);
         $writer->writeSheetRow('Sheet1', [1 => _l('cashflow_monthly').' - '.$year]);
+        if (!empty($report['report_currency'])) {
+            $writer->writeSheetRow('Sheet1', [1 => _l('acc_report_currency').': '.$report['report_currency']['name']]);
+            if (!empty($report['missing_dates'])) {
+                $writer->writeSheetRow('Sheet1', [1 => sprintf(_l('acc_report_missing_rate_banner'), $report['report_currency']['base_name'], $report['report_currency']['name'], count($report['missing_dates']), $report['missing_dates'][0]).' '._l('acc_report_add_rate')]);
+            }
+        }
         $writer->writeSheetRow('Sheet1', []);
         $writer->writeSheetRow('Sheet1', $header, $style3);
 
@@ -4236,6 +4510,7 @@ class Accounting extends AdminController
         $data['to_date'] = date('Y-m-d');
         $data['accounting_method'] = get_option('acc_accounting_method');
         $data['currency'] = $this->currencies_model->get_base_currency();
+        $data['currencies'] = $this->currencies_model->get();
         $this->load->view('report/includes/statement_of_changes_in_equity', $data);
     }
 
@@ -4249,6 +4524,7 @@ class Accounting extends AdminController
         $data['from_date'] = date('Y-m-01');
         $data['to_date'] = date('Y-m-d');
         $data['currency'] = $this->currencies_model->get_base_currency();
+        $data['currencies'] = $this->currencies_model->get();
         $this->load->view('report/includes/deposit_detail', $data);
     }
 
@@ -4263,6 +4539,7 @@ class Accounting extends AdminController
         $data['to_date'] = date('Y-m-d');
         $data['accounting_method'] = get_option('acc_accounting_method');
         $data['currency'] = $this->currencies_model->get_base_currency();
+        $data['currencies'] = $this->currencies_model->get();
         $this->load->view('report/includes/income_by_customer_summary', $data);
     }
     
@@ -4276,6 +4553,7 @@ class Accounting extends AdminController
         $data['from_date'] = date('Y-01-01');
         $data['to_date'] = date('Y-m-d');
         $data['currency'] = $this->currencies_model->get_base_currency();
+        $data['currencies'] = $this->currencies_model->get();
         $this->load->view('report/includes/check_detail', $data);
     }
 
@@ -4289,6 +4567,7 @@ class Accounting extends AdminController
         $data['from_date'] = date('Y-01-01');
         $data['to_date'] = date('Y-m-d');
         $data['currency'] = $this->currencies_model->get_base_currency();
+        $data['currencies'] = $this->currencies_model->get();
         $this->load->view('report/includes/account_list', $data);
     }
 
@@ -4303,6 +4582,7 @@ class Accounting extends AdminController
         $data['from_date'] = date('Y-m-01');
         $data['to_date'] = date('Y-m-d');
         $data['currency'] = $this->currencies_model->get_base_currency();
+        $data['currencies'] = $this->currencies_model->get();
         $data['accounts'] = $this->accounting_model->get_accounts('', 'find_in_set(account_type_id, "2,3,4,5,7,8,9,10,16")');
         $this->load->view('report/includes/account_history', $data);
     }
@@ -4318,6 +4598,7 @@ class Accounting extends AdminController
         $data['to_date'] = date('Y-m-d');
         $data['accounting_method'] = get_option('acc_accounting_method');
         $data['currency'] = $this->currencies_model->get_base_currency();
+        $data['currencies'] = $this->currencies_model->get();
         $this->load->view('report/includes/general_ledger', $data);
     }
 
@@ -4331,6 +4612,7 @@ class Accounting extends AdminController
         $data['from_date'] = date('Y-m-01');
         $data['to_date'] = date('Y-m-d');
         $data['currency'] = $this->currencies_model->get_base_currency();
+        $data['currencies'] = $this->currencies_model->get();
         $this->load->view('report/includes/journal', $data);
     }
 
@@ -4344,6 +4626,7 @@ class Accounting extends AdminController
         $data['from_date'] = date('Y-m-01');
         $data['to_date'] = date('Y-m-d');
         $data['currency'] = $this->currencies_model->get_base_currency();
+        $data['currencies'] = $this->currencies_model->get();
         $this->load->view('report/includes/recent_transactions', $data);
     }
 
@@ -4358,6 +4641,7 @@ class Accounting extends AdminController
         $data['to_date'] = date('Y-m-d');
         $data['accounting_method'] = get_option('acc_accounting_method');
         $data['currency'] = $this->currencies_model->get_base_currency();
+        $data['currencies'] = $this->currencies_model->get();
         $this->load->view('report/includes/transaction_detail_by_account', $data);
     }
 
@@ -4371,6 +4655,7 @@ class Accounting extends AdminController
         $data['from_date'] = date('Y-m-01');
         $data['to_date'] = date('Y-m-d');
         $data['currency'] = $this->currencies_model->get_base_currency();
+        $data['currencies'] = $this->currencies_model->get();
         $this->load->view('report/includes/transaction_list_by_date', $data);
     }
 
@@ -4385,6 +4670,7 @@ class Accounting extends AdminController
         $data['to_date'] = date('Y-m-d');
         $data['accounting_method'] = get_option('acc_accounting_method');
         $data['currency'] = $this->currencies_model->get_base_currency();
+        $data['currencies'] = $this->currencies_model->get();
         $this->load->view('report/includes/trial_balance', $data);
     }
 
@@ -5218,6 +5504,14 @@ class Accounting extends AdminController
         $data['title'] = _l($data_filter['type']);
         $data['page'] = $data_filter['page'] ?? 1;
         $data['currency'] = $this->currencies_model->get_base_currency();
+        $report_currency_info = acc_resolve_report_currency(isset($data_filter['report_currency']) ? $data_filter['report_currency'] : null);
+        $data['report_currency_info'] = $report_currency_info;
+        if ($report_currency_info !== null) {
+            $report_currency = $this->currencies_model->get($report_currency_info['id']);
+            if ($report_currency) {
+                $data['currency'] = $report_currency;
+            }
+        }
 
         switch ($data_filter['type']) {
             case 'balance_sheet':
@@ -5378,6 +5672,8 @@ class Accounting extends AdminController
             default:
                 break;
         }
+
+        $data['missing_rate_dates'] = $this->accounting_model->missing_rate_dates;
 
         $this->load->view('report/details/'.$data_filter['type'], $data);
     }
@@ -6344,6 +6640,9 @@ class Accounting extends AdminController
             $success = $this->accounting_model->add_expense_category_mapping($data);
             if($success){
                 $message = _l('added_successfully', _l('expense_category_mapping'));
+            }elseif($this->accounting_model->expense_mapping_error != ''){
+                $message = _l($this->accounting_model->expense_mapping_error);
+                set_alert('danger', $message);
             }else {
                 $message = _l('add_failure');
             }
@@ -6357,6 +6656,9 @@ class Accounting extends AdminController
             $message = _l('fail');
             if ($success) {
                 $message = _l('updated_successfully', _l('expense_category_mapping'));
+            }elseif($this->accounting_model->expense_mapping_error != ''){
+                $message = _l($this->accounting_model->expense_mapping_error);
+                set_alert('danger', $message);
             }
         }
 
@@ -6398,6 +6700,7 @@ class Accounting extends AdminController
         $data['to_date'] = date('Y-m-d');
         $data['accounting_method'] = get_option('acc_accounting_method');
         $data['currency'] = $this->currencies_model->get_base_currency();
+        $data['currencies'] = $this->currencies_model->get();
         $this->load->view('report/includes/tax_detail_report', $data);
     }
 
@@ -6416,6 +6719,7 @@ class Accounting extends AdminController
         $data['from_date'] = date('Y-m-01');
         $data['accounting_method'] = get_option('acc_accounting_method');
         $data['to_date'] = date('Y-m-d');
+        $data['currencies'] = $this->currencies_model->get();
         $this->load->view('report/includes/tax_summary_report', $data);
     }
 
@@ -6434,6 +6738,7 @@ class Accounting extends AdminController
         $data['from_date'] = date('Y-m-01');
         $data['to_date'] = date('Y-m-d');
         $data['accounting_method'] = get_option('acc_accounting_method');
+        $data['currencies'] = $this->currencies_model->get();
         $this->load->view('report/includes/tax_liability_report', $data);
     }
 
@@ -6551,6 +6856,9 @@ class Accounting extends AdminController
             $success = $this->accounting_model->add_payment_mode_mapping($data);
             if($success){
                 $message = _l('added_successfully', _l('payment_mode_mapping'));
+            }elseif($this->accounting_model->expense_mapping_error != ''){
+                $message = _l($this->accounting_model->expense_mapping_error);
+                set_alert('danger', $message);
             }else {
                 $message = _l('add_failure');
             }
@@ -6564,6 +6872,9 @@ class Accounting extends AdminController
             $message = _l('fail');
             if ($success) {
                 $message = _l('updated_successfully', _l('payment_mode_mapping'));
+            }elseif($this->accounting_model->expense_mapping_error != ''){
+                $message = _l($this->accounting_model->expense_mapping_error);
+                set_alert('danger', $message);
             }
         }
 
@@ -8538,6 +8849,7 @@ class Accounting extends AdminController
         $data['customer_groups']    = $this->clients_model->get_groups();
         $data['accounting_method'] = get_option('acc_accounting_method');
         $data['currency'] = $this->currencies_model->get_base_currency();
+        $data['currencies'] = $this->currencies_model->get();
         $this->load->view('report/includes/accounts_receivable_ageing_detail', $data);
     }
 
@@ -8552,6 +8864,7 @@ class Accounting extends AdminController
         $data['to_date'] = date('Y-m-d');
         $data['accounting_method'] = get_option('acc_accounting_method');
         $data['currency'] = $this->currencies_model->get_base_currency();
+        $data['currencies'] = $this->currencies_model->get();
         $this->load->view('report/includes/accounts_payable_ageing_detail', $data);
     }
 
@@ -8568,6 +8881,7 @@ class Accounting extends AdminController
         $data['customer_groups']    = $this->clients_model->get_groups();
         $data['accounting_method'] = get_option('acc_accounting_method');
         $data['currency'] = $this->currencies_model->get_base_currency();
+        $data['currencies'] = $this->currencies_model->get();
         $this->load->view('report/includes/accounts_receivable_ageing_summary', $data);
     }
 
@@ -8582,6 +8896,7 @@ class Accounting extends AdminController
         $data['to_date'] = date('Y-m-d');
         $data['accounting_method'] = get_option('acc_accounting_method');
         $data['currency'] = $this->currencies_model->get_base_currency();
+        $data['currencies'] = $this->currencies_model->get();
         $this->load->view('report/includes/accounts_payable_ageing_summary', $data);
     }
 
@@ -8599,6 +8914,7 @@ class Accounting extends AdminController
 
         $data['accounting_method'] = get_option('acc_accounting_method');
         $data['currency'] = $this->currencies_model->get_base_currency();
+        $data['currencies'] = $this->currencies_model->get();
         $where_item = [];
         if(acc_get_status_modules('warehouse')){
             $where_item = 'active = 1';
@@ -8729,7 +9045,6 @@ class Accounting extends AdminController
                 // Make sure we have a filepath
                 if (!empty($tmpFilePath) && $tmpFilePath != '') {
                     $rows = [];
-                    $arr_insert = [];
 
                     $tmpDir = TEMP_FOLDER . '/' . time() . uniqid() . '/';
 
@@ -8749,6 +9064,7 @@ class Accounting extends AdminController
                         $accounts = $this->accounting_model->get_accounts();
 
                         $account_name = [];
+                        $account_code = [];
                         foreach($accounts as $account){
                             $_name = '';
                             if ($account['name'] == '') {
@@ -8757,6 +9073,11 @@ class Accounting extends AdminController
                                 $_name .= $account['name'];
                             }
                             $account_name[trim($_name)] = $account['id'];
+                            // Code map so "Sub Account of" can reference the
+                            // parent by its hierarchical code (1, 11, ...).
+                            if (isset($account['number']) && trim((string) $account['number']) != '') {
+                                $account_code[trim((string) $account['number'])] = $account['id'];
+                            }
                         }
 
 
@@ -8767,13 +9088,15 @@ class Accounting extends AdminController
                             _l('account_code') => 'string',
                             _l('account_name') => 'string',
                             _l('sub_account_of') => 'string',
+                            _l('opening_balance') => 'string',
+                            _l('balance_as_of') => 'string',
                             _l('error') => 'string',
                         );
 
                         $rowstyle[] = array('widths' => [10, 20, 30, 40]);
 
                         $writer = new XLSXWriter();
-                        $writer->writeSheetHeader('Sheet1', $writer_header, $col_options = ['widths' => [40, 40, 40, 40, 50, 50]]);
+                        $writer->writeSheetHeader('Sheet1', $writer_header, $col_options = ['widths' => [40, 40, 40, 40, 50, 40, 40, 50]]);
 
                         //Reader file
                         $xlsx = new XLSXReader_fin($newFilePath);
@@ -8787,19 +9110,46 @@ class Accounting extends AdminController
                         $arr_header['account_code'] = 2;
                         $arr_header['account_name'] = 3;
                         $arr_header['sub_account_of'] = 4;
+                        $arr_header['opening_balance'] = 5;
+                        $arr_header['balance_as_of'] = 6;
 
                         $total_rows = 0;
                         $total_row_false = 0;
+                        $total_row_created = 0;
+                        $total_row_updated = 0;
+                        $total_row_success = 0;
+                        $message = 'Not enought rows for importing';
 
                         $check_arr = [];
                         $check_arr_account_name = [];
+                        $check_arr_account_code = [];
+                        $check_name_set = [];
+                        $check_code_set = [];
+                        // large charts (thousands of rows) need more than the default limit
+                        @set_time_limit(0);
+                        $seen_account_keys = [];
+                        $valid_rows = [];
 
+                        // Every name/code in the sheet: a "Sub Account of"
+                        // value matching any of them (at any depth) refers to
+                        // that sheet row and is resolved once it is created.
+                        // Anything else must be an existing account.
                         for($row_check = 1; $row_check < count($data); $row_check++){
+                            $sheet_name = isset($data[$row_check][$arr_header['account_name']]) ? $data[$row_check][$arr_header['account_name']] : '';
+                            $sheet_code = isset($data[$row_check][$arr_header['account_code']]) ? trim((string) $data[$row_check][$arr_header['account_code']]) : '';
                             $sub_account_of = isset($data[$row_check][$arr_header['sub_account_of']]) ? $data[$row_check][$arr_header['sub_account_of']] : '';
+
+                            if((is_null($sheet_name) == false && $sheet_name != '')){
+                                $check_arr_account_name[] = $sheet_name;
+                                $check_name_set[(string) $sheet_name] = true;
+                            }
+                            if($sheet_code != ''){
+                                $check_arr_account_code[] = $sheet_code;
+                                $check_code_set[$sheet_code] = true;
+                            }
 
                             if((is_null($sub_account_of) == true || $sub_account_of == '') && isset($data[$row_check][$arr_header['account_name']])){
                                 $check_arr[] = $data[$row_check];
-                                $check_arr_account_name[] = $data[$row_check][$arr_header['account_name']];
                             }
                         }
 
@@ -8821,6 +9171,9 @@ class Accounting extends AdminController
                             $value_account_code = isset($data[$row][$arr_header['account_code']]) ? $data[$row][$arr_header['account_code']] : '';
                             $value_account_name = isset($data[$row][$arr_header['account_name']]) ? $data[$row][$arr_header['account_name']] : '';
                             $value_sub_account_of = isset($data[$row][$arr_header['sub_account_of']]) ? $data[$row][$arr_header['sub_account_of']] : '';
+                            $value_opening_balance = isset($data[$row][$arr_header['opening_balance']]) ? $data[$row][$arr_header['opening_balance']] : '';
+                            $value_balance_as_of = isset($data[$row][$arr_header['balance_as_of']]) ? $data[$row][$arr_header['balance_as_of']] : '';
+                            $raw_sub_account_of = $value_sub_account_of;
 
                             $reg_day = '/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/'; /*yyyy-mm-dd*/
 
@@ -8865,9 +9218,28 @@ class Accounting extends AdminController
                                 $flag = 1;
                             }
 
+                            // The account code is mandatory: it is the stable
+                            // identity uploads match on, so re-uploading never
+                            // duplicates an account.
+                            if (is_null($value_account_code) == true || trim((string) $value_account_code) == '') {
+                                if($string_error != ''){
+                                    $string_error .= ', ';
+                                }
+                                $string_error .= _l('acc_import_code_required');
+                                $flag = 1;
+                            }
+
                             if (is_null($value_sub_account_of) == false && $value_sub_account_of != '') {
-                                if(!in_array($value_sub_account_of, $check_arr_account_name)){
-                                    if(is_numeric($value_sub_account_of)){
+                                $parent_key = trim((string) $value_sub_account_of);
+                                if(!isset($check_name_set[(string) $value_sub_account_of]) && !isset($check_code_set[$parent_key])){
+                                    // The parent is not a row of this sheet: it must be an
+                                    // existing account, referenced by code, id, or name.
+                                    // Codes first: hierarchical schemes (Assets = 1,
+                                    // Current assets = 11) reference parents by code.
+                                    $code_parent_id = $this->accounting_model->get_account_id_by_number($parent_key);
+                                    if($code_parent_id !== false){
+                                        $value_sub_account_of = $code_parent_id;
+                                    }elseif(is_numeric($value_sub_account_of)){
                                         if(get_account_by_id($value_sub_account_of) == false){
                                             $string_error .= _l('sub_account_of') .' '. _l('invalid').'. ';
                                             $flag = 1;
@@ -8876,15 +9248,78 @@ class Accounting extends AdminController
                                         }
                                     }else{
                                         if(!array_key_exists(trim($value_sub_account_of), $account_name)){
-                                            if($string_error != ''){
-                                                $string_error .= ', ';
+                                            if(array_key_exists($parent_key, $account_code)){
+                                                $value_sub_account_of = $account_code[$parent_key];
+                                            }else{
+                                                if($string_error != ''){
+                                                    $string_error .= ', ';
+                                                }
+                                                $string_error .= _l('sub_account_of') .' '. _l('invalid');
+                                                $flag = 1;
                                             }
-                                            $string_error .= _l('sub_account_of') .' '. _l('invalid');
-                                            $flag = 1;
                                         }else{
                                             $value_sub_account_of = $account_name[trim($value_sub_account_of)];
                                         }
                                     }
+                                }
+                            }
+
+                            $balance_is_empty = (is_null($value_opening_balance) == true || trim((string)$value_opening_balance) == '');
+                            $value_balance_as_of_sql = date('Y-m-d');
+
+                            if ($balance_is_empty == false) {
+                                $balance_check = str_replace([' ', ','], '', trim((string)$value_opening_balance));
+                                if (is_numeric($balance_check) == false) {
+                                    if($string_error != ''){
+                                        $string_error .= ', ';
+                                    }
+                                    $string_error .= _l('acc_import_opening_balance_invalid');
+                                    $flag = 1;
+                                }
+
+                                if (is_null($value_balance_as_of) == false && trim((string)$value_balance_as_of) != '') {
+                                    $raw_as_of = trim((string)$value_balance_as_of);
+                                    $as_of_parsed = false;
+                                    // a real Excel date cell arrives as a serial number
+                                    if (is_numeric($raw_as_of) && $raw_as_of > 20000 && $raw_as_of < 80000) {
+                                        $raw_as_of = gmdate('Y-m-d', (int) (((float) $raw_as_of - 25569) * 86400));
+                                    }
+                                    if (preg_match('/^(\d{4})-(\d{1,2})-(\d{1,2})$/', $raw_as_of, $m_as_of) && checkdate((int)$m_as_of[2], (int)$m_as_of[3], (int)$m_as_of[1])) {
+                                        $value_balance_as_of_sql = sprintf('%04d-%02d-%02d', $m_as_of[1], $m_as_of[2], $m_as_of[3]);
+                                        $as_of_parsed = true;
+                                    } else {
+                                        $sql_as_of = to_sql_date($raw_as_of);
+                                        if (preg_match('/^(\d{4})-(\d{1,2})-(\d{1,2})$/', $sql_as_of, $m_sql) && checkdate((int)$m_sql[2], (int)$m_sql[3], (int)$m_sql[1])) {
+                                            $value_balance_as_of_sql = sprintf('%04d-%02d-%02d', $m_sql[1], $m_sql[2], $m_sql[3]);
+                                            $as_of_parsed = true;
+                                        }
+                                    }
+
+                                    if ($as_of_parsed == false) {
+                                        if($string_error != ''){
+                                            $string_error .= ', ';
+                                        }
+                                        $string_error .= _l('acc_import_balance_as_of_invalid');
+                                        $flag = 1;
+                                    }
+                                }
+                            }
+
+                            if ($flag == 0 && $flag2 == 0) {
+                                if (is_null($value_account_code) == false && trim((string)$value_account_code) != '') {
+                                    $duplicate_key = 'n:'.strtolower(trim((string)$value_account_code));
+                                } else {
+                                    $duplicate_key = 't:'.strtolower(trim((string)$value_account_name)).'|'.strtolower(trim((string)$raw_sub_account_of));
+                                }
+
+                                if (isset($seen_account_keys[$duplicate_key])) {
+                                    if($string_error != ''){
+                                        $string_error .= ', ';
+                                    }
+                                    $string_error .= _l('acc_import_duplicate_row');
+                                    $flag = 1;
+                                } else {
+                                    $seen_account_keys[$duplicate_key] = true;
                                 }
                             }
 
@@ -8895,7 +9330,9 @@ class Accounting extends AdminController
                                     $value_sub_type,
                                     $value_account_code,
                                     $value_account_name,
-                                    $value_sub_account_of,
+                                    $raw_sub_account_of,
+                                    $value_opening_balance,
+                                    $value_balance_as_of,
                                     $string_error,
                                 ]);
 
@@ -8910,22 +9347,203 @@ class Accounting extends AdminController
                                 $rd['number'] = $value_account_code;
                                 $rd['name'] = $value_account_name;
                                 $rd['parent_account'] = $value_sub_account_of;
-                                $rd['active'] = 1;
 
-                                $rows[] = $rd;
-                                array_push($arr_insert, $rd);
+                                $valid_rows[] = [
+                                    'rd' => $rd,
+                                    'raw_sub_account_of' => $raw_sub_account_of,
+                                    'opening_balance' => $value_opening_balance,
+                                    'balance_as_of' => $value_balance_as_of_sql,
+                                    'balance_is_empty' => $balance_is_empty,
+                                    'error_cells' => [
+                                        $value_type,
+                                        $value_sub_type,
+                                        $value_account_code,
+                                        $value_account_name,
+                                        $raw_sub_account_of,
+                                        $value_opening_balance,
+                                        $value_balance_as_of,
+                                    ],
+                                ];
 
                             }
 
                         }
 
-                        //insert batch
-                        if (count($arr_insert) > 0) {
-                            $this->accounting_model->insert_batch_account($arr_insert);
+                        // Order rows so parents exist before children, at any depth:
+                        // parentless rows and rows pointing at existing accounts
+                        // go first, then sheet children pass by pass (each pass
+                        // only releases rows whose sheet parent was created in
+                        // an earlier pass). Parents can be referenced by name
+                        // or by hierarchical code (Assets = 1, ...).
+                        $ordered_rows = [];
+                        // names/codes of rows already ordered: they will exist
+                        // by the time their children are created
+                        $released_names = [];
+                        $released_codes = [];
+                        $pending_rows = $valid_rows;
+                        $max_passes = count($valid_rows) + 1;
+                        for ($pass = 0; $pass < $max_passes && !empty($pending_rows); $pass++) {
+                            $progress = false;
+                            $remaining = [];
+                            foreach ($pending_rows as $valid_row) {
+                                $raw = $valid_row['raw_sub_account_of'];
+                                if (is_null($raw) == true || trim((string) $raw) == '') {
+                                    $ordered_rows[] = $valid_row;
+                                    $released_names[strtolower(trim((string) $valid_row['rd']['name']))] = true;
+                                    $released_codes[trim((string) $valid_row['rd']['number'])] = true;
+                                    $progress = true;
+                                    continue;
+                                }
+                                $raw_key = trim((string) $raw);
+                                $sheet_parent = isset($check_name_set[(string) $raw]) || isset($check_code_set[$raw_key]);
+                                if ($sheet_parent == false) {
+                                    // existing account, already resolved to an id in pass 1
+                                    $ordered_rows[] = $valid_row;
+                                    $released_names[strtolower(trim((string) $valid_row['rd']['name']))] = true;
+                                    $released_codes[trim((string) $valid_row['rd']['number'])] = true;
+                                    $progress = true;
+                                    continue;
+                                }
+                                if (array_key_exists($raw, $account_name) || array_key_exists($raw_key, $account_name) || array_key_exists($raw_key, $account_code)
+                                    || isset($released_names[strtolower($raw_key)]) || isset($released_codes[$raw_key])) {
+                                    $ordered_rows[] = $valid_row;
+                                    $released_names[strtolower(trim((string) $valid_row['rd']['name']))] = true;
+                                    $released_codes[trim((string) $valid_row['rd']['number'])] = true;
+                                    $progress = true;
+                                } else {
+                                    $remaining[] = $valid_row;
+                                }
+                            }
+                            $pending_rows = $remaining;
+                            if ($progress == false) {
+                                break;
+                            }
                         }
 
-                        $total_rows = $total_rows;
-                        $total_row_success = isset($rows) ? count($rows) : 0;
+                        // Anything left points at a sheet parent that never
+                        // materialized (e.g. the parent row itself failed).
+                        foreach ($pending_rows as $valid_row) {
+                            $writer->writeSheetRow('Sheet1', array_merge($valid_row['error_cells'], [_l('sub_account_of') .' '. _l('invalid')]));
+                            $total_row_false++;
+                        }
+
+                        // parent accounts roll up their children, they never carry an entered balance
+                        $sheet_parent_names = [];
+                        foreach ($valid_rows as $valid_row) {
+                            if (is_null($valid_row['raw_sub_account_of']) == false && trim((string)$valid_row['raw_sub_account_of']) != '') {
+                                $sheet_parent_names[strtolower(trim((string)$valid_row['raw_sub_account_of']))] = true;
+                            }
+                        }
+
+                        foreach ($ordered_rows as $valid_row) {
+                            $rd = $valid_row['rd'];
+                            $raw_sub_account_of = $valid_row['raw_sub_account_of'];
+                            $parent_resolved = true;
+
+                            if (is_null($raw_sub_account_of) == false && trim((string)$raw_sub_account_of) != '') {
+                                $raw_key = trim((string)$raw_sub_account_of);
+                                if (isset($check_name_set[(string) $raw_sub_account_of]) || isset($check_code_set[$raw_key])) {
+                                    // parent is another row of this sheet, created in an earlier pass
+                                    if (array_key_exists($raw_sub_account_of, $account_name)) {
+                                        $rd['parent_account'] = $account_name[$raw_sub_account_of];
+                                    } elseif (array_key_exists($raw_key, $account_name)) {
+                                        $rd['parent_account'] = $account_name[$raw_key];
+                                    } elseif (array_key_exists($raw_key, $account_code)) {
+                                        $rd['parent_account'] = $account_code[$raw_key];
+                                    } else {
+                                        $parent_resolved = false;
+                                    }
+                                }
+                                // otherwise the parent id was already resolved in pass 1
+                            }
+
+                            if ($parent_resolved == false) {
+                                $writer->writeSheetRow('Sheet1', array_merge($valid_row['error_cells'], [_l('sub_account_of') .' '. _l('invalid')]));
+                                $total_row_false++;
+                                continue;
+                            }
+
+                            $this->db->trans_start();
+
+                            $upsert = $this->accounting_model->upsert_account_from_import($rd);
+
+                            if (isset($upsert['action']) && $upsert['action'] == 'invalid') {
+                                $this->db->trans_rollback();
+                                $invalid_messages = [
+                                    'number_taken' => _l('acc_account_number_taken'),
+                                    'number_required' => _l('acc_import_code_required'),
+                                    'number_class_mismatch' => _l('acc_account_number_class'),
+                                ];
+                                $invalid_message = isset($upsert['error']) && isset($invalid_messages[$upsert['error']]) ? $invalid_messages[$upsert['error']] : _l('sub_account_of') .' '. _l('invalid');
+                                $writer->writeSheetRow('Sheet1', array_merge($valid_row['error_cells'], [$invalid_message]));
+                                $total_row_false++;
+                                continue;
+                            }
+
+                            $account_id = $upsert['id'];
+
+                            if (is_numeric($account_id) == false || $account_id <= 0) {
+                                $this->db->trans_rollback();
+                                $writer->writeSheetRow('Sheet1', array_merge($valid_row['error_cells'], [_l('sub_account_of') .' '. _l('invalid')]));
+                                $total_row_false++;
+                                continue;
+                            }
+                            $row_failed = false;
+                            $row_error = '';
+
+                            // an account that gains a child becomes a parent and rolls
+                            // up its children, so its own opening balance is cleared
+                            if (!empty($rd['parent_account']) && (int) $rd['parent_account'] > 0) {
+                                $this->db->where('id', (int) $rd['parent_account']);
+                                $parent_row = $this->db->get(db_prefix().'acc_accounts')->row();
+                                if ($parent_row && $parent_row->balance !== null && (float) $parent_row->balance != 0) {
+                                    $this->accounting_model->set_account_opening_balance((int) $parent_row->id, 0, date('Y-m-d'));
+                                }
+                            }
+
+                            if ($valid_row['balance_is_empty'] == false) {
+                                $is_sheet_parent = isset($sheet_parent_names[strtolower(trim((string)$rd['name']))]);
+                                if (is_null($rd['number']) == false && trim((string)$rd['number']) != '') {
+                                    $is_sheet_parent = $is_sheet_parent || isset($sheet_parent_names[strtolower(trim((string)$rd['number']))]);
+                                }
+
+                                $this->db->where('parent_account', $account_id);
+                                $has_children = $this->db->count_all_results(db_prefix().'acc_accounts') > 0;
+
+                                if ($is_sheet_parent || $has_children) {
+                                    $row_failed = true;
+                                    $row_error = _l('acc_import_parent_balance_error');
+                                } else {
+                                    $this->accounting_model->set_account_opening_balance($account_id, $valid_row['opening_balance'], $valid_row['balance_as_of']);
+                                }
+                            }
+
+                            if ($row_failed) {
+                                $this->db->trans_rollback();
+                                $writer->writeSheetRow('Sheet1', array_merge($valid_row['error_cells'], [$row_error]));
+                                $total_row_false++;
+                                continue;
+                            }
+
+                            $this->db->trans_complete();
+
+                            // keep the new account visible for the rows below,
+                            // by name and by hierarchical code
+                            $account_name[trim((string)$rd['name'])] = $account_id;
+                            if (isset($rd['number']) && trim((string) $rd['number']) != '') {
+                                $account_code[trim((string)$rd['number'])] = $account_id;
+                            }
+
+                            $rows[] = $rd;
+
+                            if ($upsert['action'] == 'created') {
+                                $total_row_created++;
+                            } else {
+                                $total_row_updated++;
+                            }
+                        }
+
+                        $total_row_success = $total_row_created + $total_row_updated;
                         $dataerror = '';
                         $message = 'Not enought rows for importing';
 
@@ -8946,6 +9564,8 @@ class Accounting extends AdminController
         echo json_encode([
             'message' => $message,
             'total_row_success' => $total_row_success,
+            'total_row_created' => $total_row_created,
+            'total_row_updated' => $total_row_updated,
             'total_row_false' => $total_row_false,
             'total_rows' => $total_rows,
             'site_url' => site_url(),

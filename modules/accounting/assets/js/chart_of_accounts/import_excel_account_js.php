@@ -8,9 +8,9 @@
       appValidateForm($('#import_form'),{file_csv:{required:true,extension: "xlsx"},source:'required',status:'required'});
       // function 
 
-      if('<?php echo new_html_entity_decode($active_language) ?>' == 'vietnamese')
+      if('<?php echo new_html_entity_decode($active_language) ?>' == 'arabic')
       {
-        $( "#dowload_file_sample" ).append( '<a href="'+ site_url+'modules/accounting/uploads/file_sample/Sample_import_account_file_vi.xlsx" class="btn btn-primary" ><?php echo _l('download_sample') ?></a><hr>' );
+        $( "#dowload_file_sample" ).append( '<a href="'+ site_url+'modules/accounting/uploads/file_sample/Sample_import_account_file_ar.xlsx" class="btn btn-primary" ><?php echo _l('download_sample') ?></a><hr>' );
 
       }else{
         $( "#dowload_file_sample" ).append( '<a href="'+ site_url+'modules/accounting/uploads/file_sample/Sample_import_account_file_en.xlsx" class="btn btn-primary" ><?php echo _l('download_sample') ?></a><hr>' );
@@ -62,6 +62,10 @@ function uploadfilecsv(){
         $( "#file_upload_response" ).append( "<h4><?php echo _l("_Result") ?></h4><h5><?php echo _l('import_line_number') ?> :"+response.total_rows+" </h5>" );
      
         $( "#file_upload_response" ).append( "<h5><?php echo _l('import_line_number_success') ?> :"+response.total_row_success+" </h5>" );
+
+        $( "#file_upload_response" ).append( "<h5><?php echo _l('import_line_number_created') ?> :"+response.total_row_created+" </h5>" );
+
+        $( "#file_upload_response" ).append( "<h5><?php echo _l('import_line_number_updated') ?> :"+response.total_row_updated+" </h5>" );
 
         $( "#file_upload_response" ).append( "<h5><?php echo _l('import_line_number_failed') ?> :"+response.total_row_false+" </h5>" );
 

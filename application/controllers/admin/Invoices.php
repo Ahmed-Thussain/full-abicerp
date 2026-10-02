@@ -626,7 +626,14 @@ class Invoices extends AdminController
         } else {
             set_alert('warning', _l('problem_deleting', _l('invoice_lowercase')));
         }
-        redirect(previous_url() ?: $_SERVER['HTTP_REFERER']);
+        $redirect_to = previous_url() ?: ($_SERVER['HTTP_REFERER'] ?? '');
+
+        // the page we came from may be the deleted invoice itself (admin or client link)
+        if ($success && ($redirect_to === '' || preg_match('#/(invoice|invoices|list_invoices)/' . (int) $id . '(/|\?|$)#', $redirect_to))) {
+            $redirect_to = admin_url('invoices/list_invoices');
+        }
+
+        redirect($redirect_to);
     }
 
     public function delete_attachment($id)

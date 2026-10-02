@@ -1,4 +1,5 @@
 <?php 
+$incomplete_mark = !empty($missing_rate_dates) ? _l('acc_report_incomplete_total') : '';
 $data_html = []; 
 $data_html[1] = '<tr>
           <td colspan="7">
@@ -32,7 +33,32 @@ $data_html[1] = '<tr>
           <td></td>
           <td></td>
           <td></td>
-        </tr>
+        </tr>';
+if (!empty($report_currency_info)) {
+  $data_html[1] .= '<tr>
+          <td colspan="7">
+            <p class="text-center">'. _l('acc_report_currency').': '. $currency->name.'</p>
+          </td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>';
+  if (!empty($missing_rate_dates)) {
+    $data_html[1] .= '<tr>
+          <td colspan="7">'. $this->load->view('report/includes/report_currency_bar', [], true).'</td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>';
+  }
+}
+$data_html[1] .= '
         <tr>
           <td></td>
           <td></td>
@@ -47,70 +73,70 @@ $data_html[1] = '<tr>
           <td width="15%" class="text-bold">'. _l('transaction_type').'</td>
           <td width="20%" class="text-bold">'. _l('customer').'</td>
           <td width="10%" class="text-bold">'. _l('description').'</td>
-          <td width="10%" class="text-bold">'. _l('split').'</td>
+          <td width="10%" class="text-bold">'. _l('acc_report_counter_account').'</td>
           <td width="15%" class="total_amount text-bold">'. _l('acc_amount').'</td>
           <td width="15%" class="total_amount text-bold">'. _l('balance').'</td>
         </tr>';
          $row_index = 0;
          $parent_index = 0;
 
-        $data = $this->accounting_model->get_html_transaction_detail_by_account($data_report['data']['accounts_receivable'], ['html' => $data_html, 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency);
+        $data = $this->accounting_model->get_html_transaction_detail_by_account($data_report['data']['accounts_receivable'], ['html' => $data_html, 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency, false, 1, $incomplete_mark);
         $row_index = $data['row_index'];
         // echo new_html_entity_decode($data['html']);
 
-        $data = $this->accounting_model->get_html_transaction_detail_by_account($data_report['data']['cash_and_cash_equivalents'], ['html' => $data['html'], 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency);
+        $data = $this->accounting_model->get_html_transaction_detail_by_account($data_report['data']['cash_and_cash_equivalents'], ['html' => $data['html'], 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency, false, 1, $incomplete_mark);
         $row_index = $data['row_index'];
         // echo new_html_entity_decode($data['html']);
 
-        $data = $this->accounting_model->get_html_transaction_detail_by_account($data_report['data']['current_assets'], ['html' => $data['html'], 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency);
+        $data = $this->accounting_model->get_html_transaction_detail_by_account($data_report['data']['current_assets'], ['html' => $data['html'], 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency, false, 1, $incomplete_mark);
         $row_index = $data['row_index'];
         // echo new_html_entity_decode($data['html']);
 
-        $data = $this->accounting_model->get_html_transaction_detail_by_account($data_report['data']['fixed_assets'], ['html' => $data['html'], 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency);
+        $data = $this->accounting_model->get_html_transaction_detail_by_account($data_report['data']['fixed_assets'], ['html' => $data['html'], 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency, false, 1, $incomplete_mark);
         $row_index = $data['row_index'];
         // echo new_html_entity_decode($data['html']);
 
-        $data = $this->accounting_model->get_html_transaction_detail_by_account($data_report['data']['non_current_assets'], ['html' => $data['html'], 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency);
+        $data = $this->accounting_model->get_html_transaction_detail_by_account($data_report['data']['non_current_assets'], ['html' => $data['html'], 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency, false, 1, $incomplete_mark);
         $row_index = $data['row_index'];
         // echo new_html_entity_decode($data['html']);
 
-        $data = $this->accounting_model->get_html_transaction_detail_by_account($data_report['data']['accounts_payable'], ['html' => $data['html'], 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency);
+        $data = $this->accounting_model->get_html_transaction_detail_by_account($data_report['data']['accounts_payable'], ['html' => $data['html'], 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency, false, 1, $incomplete_mark);
         $row_index = $data['row_index'];
         // echo new_html_entity_decode($data['html']);
 
-        $data = $this->accounting_model->get_html_transaction_detail_by_account($data_report['data']['credit_card'], ['html' => $data['html'], 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency);
+        $data = $this->accounting_model->get_html_transaction_detail_by_account($data_report['data']['credit_card'], ['html' => $data['html'], 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency, false, 1, $incomplete_mark);
         $row_index = $data['row_index'];
         // echo new_html_entity_decode($data['html']);
 
-        $data = $this->accounting_model->get_html_transaction_detail_by_account($data_report['data']['current_liabilities'], ['html' => $data['html'], 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency);
+        $data = $this->accounting_model->get_html_transaction_detail_by_account($data_report['data']['current_liabilities'], ['html' => $data['html'], 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency, false, 1, $incomplete_mark);
         $row_index = $data['row_index'];
         // echo new_html_entity_decode($data['html']);
 
-        $data = $this->accounting_model->get_html_transaction_detail_by_account($data_report['data']['non_current_liabilities'], ['html' => $data['html'], 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency);
+        $data = $this->accounting_model->get_html_transaction_detail_by_account($data_report['data']['non_current_liabilities'], ['html' => $data['html'], 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency, false, 1, $incomplete_mark);
         $row_index = $data['row_index'];
         // echo new_html_entity_decode($data['html']);
 
-        $data = $this->accounting_model->get_html_transaction_detail_by_account($data_report['data']['owner_equity'], ['html' => $data['html'], 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency);
+        $data = $this->accounting_model->get_html_transaction_detail_by_account($data_report['data']['owner_equity'], ['html' => $data['html'], 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency, false, 1, $incomplete_mark);
         $row_index = $data['row_index'];
         // echo new_html_entity_decode($data['html']);
 
-        $data = $this->accounting_model->get_html_transaction_detail_by_account($data_report['data']['income'], ['html' => $data['html'], 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency);
+        $data = $this->accounting_model->get_html_transaction_detail_by_account($data_report['data']['income'], ['html' => $data['html'], 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency, false, 1, $incomplete_mark);
         $row_index = $data['row_index'];
         // echo new_html_entity_decode($data['html']);
 
-        $data = $this->accounting_model->get_html_transaction_detail_by_account($data_report['data']['other_income'], ['html' => $data['html'], 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency);
+        $data = $this->accounting_model->get_html_transaction_detail_by_account($data_report['data']['other_income'], ['html' => $data['html'], 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency, false, 1, $incomplete_mark);
         $row_index = $data['row_index'];
         // echo new_html_entity_decode($data['html']);
 
-        $data = $this->accounting_model->get_html_transaction_detail_by_account($data_report['data']['cost_of_sales'], ['html' => $data['html'], 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency);
+        $data = $this->accounting_model->get_html_transaction_detail_by_account($data_report['data']['cost_of_sales'], ['html' => $data['html'], 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency, false, 1, $incomplete_mark);
         $row_index = $data['row_index'];
         // echo new_html_entity_decode($data['html']);
 
-        $data = $this->accounting_model->get_html_transaction_detail_by_account($data_report['data']['expenses'], ['html' => $data['html'], 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency);
+        $data = $this->accounting_model->get_html_transaction_detail_by_account($data_report['data']['expenses'], ['html' => $data['html'], 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency, false, 1, $incomplete_mark);
         $row_index = $data['row_index'];
         // echo new_html_entity_decode($data['html']);
 
-        $data = $this->accounting_model->get_html_transaction_detail_by_account($data_report['data']['other_expenses'], ['html' => $data['html'], 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency);
+        $data = $this->accounting_model->get_html_transaction_detail_by_account($data_report['data']['other_expenses'], ['html' => $data['html'], 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency, false, 1, $incomplete_mark);
         $row_index = $data['row_index'];
         // echo new_html_entity_decode($data['html']);
 

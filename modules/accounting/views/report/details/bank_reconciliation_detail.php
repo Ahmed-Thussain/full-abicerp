@@ -54,7 +54,7 @@
           <td width="10%" class="text-bold"><?php echo _l('invoice_payments_table_date_heading'); ?></td>
 
           <td width="20%" class="text-bold"><?php echo _l('name'); ?></td>
-          <td width="10%" class="text-bold"><?php echo _l('split'); ?></td>
+          <td width="10%" class="text-bold"><?php echo _l('acc_report_counter_account'); ?></td>
           <td width="10%" class="text-bold"><?php echo _l('description'); ?></td>
           <td width="15%" class="text-bold text-right"><?php echo _l('acc_amount'); ?></td>
           <td width="15%" class="text-bold text-right"><?php echo _l('balance'); ?></td>

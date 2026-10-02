@@ -21,6 +21,7 @@
                 <div class="col-md-3">
                   <?php echo render_date_input('to_date','to_date', _d($to_date)); ?>
                 </div>
+                <?php $this->load->view('report/includes/report_currency_bar'); ?>
                 <div class="col-md-2">
                   <?php echo form_hidden('type', 'account_history'); ?>
                   <button type="submit" class="btn btn-info btn-submit mtop25"><?php echo _l('filter'); ?></button>
@@ -66,3 +67,4 @@
 <?php init_tail(); ?>
 </body>
 </html>
+<?php require 'modules/accounting/assets/js/report/report_currency_js.php'; ?>

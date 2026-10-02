@@ -9,23 +9,24 @@
           <a href="<?php echo admin_url('accounting/report'); ?>"><?php echo _l('back_to_report_list'); ?></a>
           <hr />
           <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-9">
               <div class="row">
               <?php echo form_open(admin_url('accounting/view_report'),array('id'=>'filter-form')); ?>
-                <div class="col-md-5">
+                <div class="col-md-3">
                   <?php echo render_date_input('from_date','from_date', _d($from_date)); ?>
                 </div>
-                <div class="col-md-5">
+                <div class="col-md-3">
                   <?php echo render_date_input('to_date','to_date', _d($to_date)); ?>
                 </div>
-                <div class="col-md-2">
+                <?php $this->load->view('report/includes/report_currency_bar'); ?>
+                <div class="col-md-3">
                   <?php echo form_hidden('type', 'transaction_list_by_date'); ?>
                   <button type="submit" class="btn btn-info btn-submit mtop25"><?php echo _l('filter'); ?></button>
                 </div>
               <?php echo form_close(); ?>
               </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-3">
               <div class="btn-group pull-right mtop25">
                  <a href="#" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-print"></i><?php if(is_mobile()){echo ' PDF';} ?> <span class="caret"></span></a>
                  <ul class="dropdown-menu dropdown-menu-right">
@@ -63,3 +64,4 @@
 <?php init_tail(); ?>
 </body>
 </html>
+<?php require 'modules/accounting/assets/js/report/report_currency_js.php'; ?>

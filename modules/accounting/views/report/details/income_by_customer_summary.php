@@ -1,4 +1,5 @@
 <?php 
+$incomplete_mark = !empty($missing_rate_dates) ? _l('acc_report_incomplete_total') : '';
 $data_html = []; 
 $data_html[1] = '<tr>
           <td colspan="4">
@@ -23,7 +24,26 @@ $data_html[1] = '<tr>
           <td></td>
           <td></td>
           <td></td>
-        </tr>
+        </tr>';
+if (!empty($report_currency_info)) {
+  $data_html[1] .= '<tr>
+          <td colspan="4">
+            <p class="text-center">'. _l('acc_report_currency').': '. $currency->name.'</p>
+          </td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>';
+  if (!empty($missing_rate_dates)) {
+    $data_html[1] .= '<tr>
+          <td colspan="4">'. $this->load->view('report/includes/report_currency_bar', [], true).'</td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>';
+  }
+}
+$data_html[1] .= '
         <tr>
           <td></td>
           <td></td>
@@ -77,9 +97,9 @@ $data_html[1] = '<tr>
             }
         $data_html[floor($_page)] .= '<tr data-node-id="'. new_html_entity_decode($row_index).'"  class="parent-node expanded tr_total">
             <td class="parent">'. _l('total').'</td>
-            <td class="total_amount">'. app_format_money($total_income, $currency->name).' </td>
-            <td class="total_amount">'. app_format_money($total_expenses, $currency->name).' </td>
-            <td class="total_amount">'. app_format_money($total_net_income, $currency->name).' </td>
+            <td class="total_amount">'. app_format_money($total_income, $currency->name).$incomplete_mark.' </td>
+            <td class="total_amount">'. app_format_money($total_expenses, $currency->name).$incomplete_mark.' </td>
+            <td class="total_amount">'. app_format_money($total_net_income, $currency->name).$incomplete_mark.' </td>
           </tr>';
 
 if(isset($data_html[$page])){

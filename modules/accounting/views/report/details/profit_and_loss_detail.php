@@ -1,4 +1,5 @@
 <?php 
+$incomplete_mark = !empty($missing_rate_dates) ? _l('acc_report_incomplete_total') : '';
 $data_html = []; 
 $data_html[1] = '<tr>
           <td colspan="5">
@@ -29,7 +30,30 @@ $data_html[1] = '<tr>
           <td></td>
           <td></td>
           <td></td>
-        </tr>
+        </tr>';
+if (!empty($report_currency_info)) {
+  $data_html[1] .= '<tr>
+          <td colspan="5">
+            <p class="text-center">'. _l('acc_report_currency').': '. $currency->name.'</p>
+          </td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>';
+  if (!empty($missing_rate_dates)) {
+    $data_html[1] .= '<tr>
+          <td colspan="5">'. $this->load->view('report/includes/report_currency_bar', [], true).'</td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>';
+  }
+}
+$data_html[1] .= '
         <tr>
           <td></td>
           <td></td>
@@ -42,7 +66,7 @@ $data_html[1] = '<tr>
           <td width="20%" class="text-bold">'. _l('invoice_payments_table_date_heading').'</td>
           <td width="15%" class="text-bold">'. _l('transaction_type').'</td>
           <td width="30%" class="text-bold">'. _l('description').'</td>
-          <td width="10%" class="text-bold">'. _l('split').'</td>
+          <td width="10%" class="text-bold">'. _l('acc_report_counter_account').'</td>
           <td width="10%" class="total_amount text-bold">'. _l('acc_amount').'</td>
           <td width="15%" class="total_amount text-bold">'. _l('balance').'</td>
         </tr>
@@ -66,7 +90,7 @@ $data_html[1] = '<tr>
           <td></td>
         </tr>';
         $total_income = 0;
-        $data = $this->accounting_model->get_html_profit_and_loss_detail($data_report['data']['income'], ['html' => $data_html, 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency);
+        $data = $this->accounting_model->get_html_profit_and_loss_detail($data_report['data']['income'], ['html' => $data_html, 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency, false, 1, $incomplete_mark);
             $row_index = $data['row_index'];
             // echo new_html_entity_decode($data['html']);
             $total_income = $data['total_amount'];
@@ -81,7 +105,7 @@ $data_html[1] = '<tr>
             <td></td>
             <td></td>
             <td></td>
-            <td class="total_amount">'. app_format_money($total_income, $currency->name).' </td>
+            <td class="total_amount">'. app_format_money($total_income, $currency->name).$incomplete_mark.' </td>
             <td></td>
           </tr>';
 
@@ -99,7 +123,7 @@ $data_html[1] = '<tr>
           <td></td>
           <td></td>
         </tr>';
-          $data = $this->accounting_model->get_html_profit_and_loss_detail($data_report['data']['cost_of_sales'], ['html' => $data['html'], 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency);
+          $data = $this->accounting_model->get_html_profit_and_loss_detail($data_report['data']['cost_of_sales'], ['html' => $data['html'], 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency, false, 1, $incomplete_mark);
             $row_index = $data['row_index'];
             // echo new_html_entity_decode($data['html']);
             $total_cost_of_sales = $data['total_amount'];
@@ -113,7 +137,7 @@ $data_html[1] = '<tr>
             <td></td>
             <td></td>
             <td></td>
-            <td class="total_amount">'. app_format_money($total_cost_of_sales, $currency->name).' </td>
+            <td class="total_amount">'. app_format_money($total_cost_of_sales, $currency->name).$incomplete_mark.' </td>
             <td></td>
           </tr>';
         $row_index += 1;
@@ -126,7 +150,7 @@ $data_html[1] = '<tr>
           <td></td>
           <td></td>
           <td></td>
-          <td class="total_amount">'. app_format_money($total_income - $total_cost_of_sales, $currency->name).'</td>
+          <td class="total_amount">'. app_format_money($total_income - $total_cost_of_sales, $currency->name).$incomplete_mark.'</td>
           <td></td>
         </tr>';
          $row_index += 1;
@@ -143,7 +167,7 @@ $data_html[1] = '<tr>
           <td></td>
           <td></td>
         </tr>';
-        $data = $this->accounting_model->get_html_profit_and_loss_detail($data_report['data']['other_income'], ['html' => $data['html'], 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency);
+        $data = $this->accounting_model->get_html_profit_and_loss_detail($data_report['data']['other_income'], ['html' => $data['html'], 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency, false, 1, $incomplete_mark);
             $row_index = $data['row_index'];
             // echo new_html_entity_decode($data['html']);
             $total_other_income = $data['total_amount'];
@@ -158,7 +182,7 @@ $data_html[1] = '<tr>
             <td></td>
             <td></td>
             <td></td>
-            <td class="total_amount">'. app_format_money($total_other_income, $currency->name).' </td>
+            <td class="total_amount">'. app_format_money($total_other_income, $currency->name).$incomplete_mark.' </td>
             <td></td>
           </tr>';
          $row_index += 1;
@@ -175,7 +199,7 @@ $data_html[1] = '<tr>
           <td></td>
           <td></td>
         </tr>';
-        $data = $this->accounting_model->get_html_profit_and_loss_detail($data_report['data']['expenses'], ['html' => $data['html'], 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency);
+        $data = $this->accounting_model->get_html_profit_and_loss_detail($data_report['data']['expenses'], ['html' => $data['html'], 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency, false, 1, $incomplete_mark);
             $row_index = $data['row_index'];
             // echo new_html_entity_decode($data['html']);
             $total_expenses = $data['total_amount'];
@@ -189,7 +213,7 @@ $data_html[1] = '<tr>
             <td></td>
             <td></td>
             <td></td>
-            <td class="total_amount">'. app_format_money($total_expenses, $currency->name).' </td>
+            <td class="total_amount">'. app_format_money($total_expenses, $currency->name).$incomplete_mark.' </td>
             <td></td>
           </tr>';
          $row_index += 1;
@@ -206,7 +230,7 @@ $data_html[1] = '<tr>
           <td></td>
           <td></td>
         </tr>';
-        $data = $this->accounting_model->get_html_profit_and_loss_detail($data_report['data']['other_expenses'], ['html' => $data['html'], 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency);
+        $data = $this->accounting_model->get_html_profit_and_loss_detail($data_report['data']['other_expenses'], ['html' => $data['html'], 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency, false, 1, $incomplete_mark);
             $row_index = $data['row_index'];
             // echo new_html_entity_decode($data['html']);
             $total_other_expenses = $data['total_amount'];
@@ -220,7 +244,7 @@ $data_html[1] = '<tr>
             <td></td>
             <td></td>
             <td></td>
-            <td class="total_amount">'. app_format_money($total_other_expenses, $currency->name).' </td>
+            <td class="total_amount">'. app_format_money($total_other_expenses, $currency->name).$incomplete_mark.' </td>
             <td></td>
           </tr>';
            $row_index += 1;
@@ -233,7 +257,7 @@ $data_html[1] = '<tr>
           <td></td>
           <td></td>
           <td></td>
-          <td class="total_amount">'. app_format_money(($total_income + $total_other_income) - ($total_cost_of_sales + $total_expenses + $total_other_expenses), $currency->name).'</td>
+          <td class="total_amount">'. app_format_money(($total_income + $total_other_income) - ($total_cost_of_sales + $total_expenses + $total_other_expenses), $currency->name).$incomplete_mark.'</td>
           <td></td>
         </tr>';
      

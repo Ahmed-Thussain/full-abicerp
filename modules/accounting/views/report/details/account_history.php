@@ -1,5 +1,6 @@
 <div id="accordion">
   <div class="card">
+    <?php $this->load->view('report/includes/report_currency_bar'); ?>
     <table class="tree">
       <tbody>
         <tr>
@@ -35,6 +36,19 @@
           <td></td>
           <td></td>
         </tr>
+        <?php if (!empty($report_currency_info)) { ?>
+        <tr>
+          <td colspan="7">
+            <p class="text-center"><?php echo _l('acc_report_currency') . ': ' . $currency->name; ?></p>
+          </td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+        <?php } ?>
         <tr>
           <td></td>
           <td></td>
@@ -48,7 +62,7 @@
         <tr class="tr_header">
           <td  width="15%" class="text-bold"><?php echo _l('invoice_payments_table_date_heading'); ?></td>
           <td width="15%" class="text-bold"><?php echo _l('transaction_type'); ?></td>
-          <td width="20%" class="text-bold"><?php echo _l('split'); ?></td>
+          <td width="20%" class="text-bold"><?php echo _l('acc_report_counter_account'); ?></td>
           <td width="10%" class="text-bold"><?php echo _l('description'); ?></td>
           <?php if($data_report['account_type'] == 3){ ?>
             <td width="15%" class="total_amount text-bold"><?php echo _l('acc_payment'); ?></td>
@@ -57,8 +71,8 @@
             <td width="15%" class="total_amount text-bold"><?php echo _l('charge'); ?></td>
             <td width="15%" class="total_amount text-bold"><?php echo _l('acc_payment'); ?></td>
           <?php }else{ ?>
-            <td width="15%" class="total_amount text-bold"><?php echo _l('decrease'); ?></td>
-            <td width="15%" class="total_amount text-bold"><?php echo _l('increase'); ?></td>
+            <td width="15%" class="total_amount text-bold"><?php echo _l('acc_report_debit'); ?></td>
+            <td width="15%" class="total_amount text-bold"><?php echo _l('acc_report_credit'); ?></td>
           <?php } ?>
           <td width="10%" class="total_amount text-bold"><?php echo _l('balance'); ?></td>
         </tr>
@@ -83,14 +97,23 @@
               <td>
               <?php echo new_html_entity_decode($val['description']); ?> 
               </td>
+              <?php if($data_report['account_type'] == 3 || $data_report['account_type'] == 7 || $data_report['account_type'] == 1){ ?>
               <td class="total_amount">
-              <?php echo app_format_money($val['decrease'], $currency->name); ?> 
+              <?php echo $val['decrease'] === null ? '' : app_format_money($val['decrease'], $currency->name); ?> 
               </td>
               <td class="total_amount">
-              <?php echo app_format_money($val['increase'], $currency->name); ?> 
+              <?php echo $val['increase'] === null ? '' : app_format_money($val['increase'], $currency->name); ?> 
+              </td>
+              <?php }else{ ?>
+              <td class="total_amount">
+              <?php echo $val['debit'] === null ? '' : app_format_money($val['debit'], $currency->name); ?> 
               </td>
               <td class="total_amount">
-              <?php echo app_format_money($val['balance'], $currency->name); ?> 
+              <?php echo $val['credit'] === null ? '' : app_format_money($val['credit'], $currency->name); ?> 
+              </td>
+              <?php } ?>
+              <td class="total_amount">
+              <?php echo $val['balance'] === null ? '' : app_format_money($val['balance'], $currency->name); ?> 
               </td>
             </tr>
           <?php }

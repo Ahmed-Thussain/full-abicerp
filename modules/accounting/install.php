@@ -9,8 +9,8 @@ add_option('acc_close_the_books', 0);
 add_option('acc_allow_changes_after_viewing', 'allow_changes_after_viewing_a_warning');
 add_option('acc_close_book_password');
 add_option('acc_close_book_passwordr');
-add_option('acc_enable_account_numbers', 0);
-add_option('acc_show_account_numbers', 0);
+add_option('acc_enable_account_numbers', 1);
+add_option('acc_show_account_numbers', 1);
 add_option('acc_closing_date');
 
 add_option('acc_add_default_account', 0);

@@ -1,4 +1,5 @@
 <?php 
+$incomplete_mark = !empty($missing_rate_dates) ? _l('acc_report_incomplete_total') : '';
 $data_html = []; 
 $data_html[1] = '<tr>
           <td colspan="6">
@@ -29,7 +30,30 @@ $data_html[1] = '<tr>
           <td></td>
           <td></td>
           <td></td>
-        </tr>
+        </tr>';
+if (!empty($report_currency_info)) {
+  $data_html[1] .= '<tr>
+          <td colspan="6">
+            <p class="text-center">'._l('acc_report_currency').': '. $currency->name.'</p>
+          </td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>';
+  if (!empty($missing_rate_dates)) {
+    $data_html[1] .= '<tr>
+          <td colspan="6">'. $this->load->view('report/includes/report_currency_bar', [], true).'</td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>';
+  }
+}
+$data_html[1] .= '
         <tr>
           <td></td>
           <td></td>
@@ -89,7 +113,7 @@ $data_html[1] = '<tr>
               '._d($val['duedate']).' 
               </td>
               <td class="total_amount">
-              '.app_format_money($val['amount'], $currency->name).' 
+              '.($val['amount'] === null ? '' : app_format_money($val['amount'], $currency->name)).' 
               </td>
             </tr>';
           }
@@ -106,7 +130,7 @@ $data_html[1] = '<tr>
             <td></td>
             <td></td>
             <td></td>
-            <td class="total_amount">'.app_format_money($total, $currency->name).'</td>
+            <td class="total_amount">'.app_format_money($total, $currency->name).$incomplete_mark.'</td>
           </tr>';
 
          $row_index++; 
@@ -150,7 +174,7 @@ $data_html[1] = '<tr>
               '._d($val['duedate']).' 
               </td>
               <td class="total_amount">
-              '.app_format_money($val['amount'], $currency->name).' 
+              '.($val['amount'] === null ? '' : app_format_money($val['amount'], $currency->name)).' 
               </td>
             </tr>';
            }
@@ -167,7 +191,7 @@ $data_html[1] = '<tr>
             <td></td>
             <td></td>
             <td></td>
-            <td class="total_amount">'.app_format_money($total, $currency->name).'</td>
+            <td class="total_amount">'.app_format_money($total, $currency->name).$incomplete_mark.'</td>
           </tr>';
 
 
@@ -212,7 +236,7 @@ $data_html[1] = '<tr>
               '._d($val['duedate']).' 
               </td>
               <td class="total_amount">
-              '.app_format_money($val['amount'], $currency->name).' 
+              '.($val['amount'] === null ? '' : app_format_money($val['amount'], $currency->name)).' 
               </td>
             </tr>';
           }
@@ -229,7 +253,7 @@ $data_html[1] = '<tr>
             <td></td>
             <td></td>
             <td></td>
-            <td class="total_amount">'.app_format_money($total, $currency->name).'</td>
+            <td class="total_amount">'.app_format_money($total, $currency->name).$incomplete_mark.'</td>
           </tr>';
           $row_index += 1; 
            $total = 0;
@@ -271,7 +295,7 @@ $data_html[1] = '<tr>
               '._d($val['duedate']).' 
               </td>
               <td class="total_amount">
-              '.app_format_money($val['amount'], $currency->name).' 
+              '.($val['amount'] === null ? '' : app_format_money($val['amount'], $currency->name)).' 
               </td>
             </tr>';
           }
@@ -288,7 +312,7 @@ $data_html[1] = '<tr>
             <td></td>
             <td></td>
             <td></td>
-            <td class="total_amount">'.app_format_money($total, $currency->name).'</td>
+            <td class="total_amount">'.app_format_money($total, $currency->name).$incomplete_mark.'</td>
           </tr>';
 
 
@@ -333,7 +357,7 @@ $data_html[1] = '<tr>
               '._d($val['duedate']).' 
               </td>
               <td class="total_amount">
-              '.app_format_money($val['amount'], $currency->name).' 
+              '.($val['amount'] === null ? '' : app_format_money($val['amount'], $currency->name)).' 
               </td>
             </tr>';
            }
@@ -350,7 +374,7 @@ $data_html[1] = '<tr>
             <td></td>
             <td></td>
             <td></td>
-            <td class="total_amount">'.app_format_money($total, $currency->name).'</td>
+            <td class="total_amount">'.app_format_money($total, $currency->name).$incomplete_mark.'</td>
           </tr>';
      
 

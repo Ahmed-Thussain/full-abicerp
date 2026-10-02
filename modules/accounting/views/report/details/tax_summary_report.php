@@ -1,5 +1,7 @@
 <div id="accordion">
   <div class="card">
+    <?php $this->load->view('report/includes/report_currency_bar'); ?>
+    <?php $incomplete_mark = !empty($missing_rate_dates) ? _l('acc_report_incomplete_total') : ''; ?>
     <table class="tree">
       <tbody>
         <tr>
@@ -20,6 +22,14 @@
           </td>
           <td></td>
         </tr>
+        <?php if (!empty($report_currency_info)) { ?>
+        <tr>
+          <td colspan="2">
+            <p class="text-center"><?php echo _l('acc_report_currency') . ': ' . $currency->name; ?></p>
+          </td>
+          <td></td>
+        </tr>
+        <?php } ?>
         <tr>
           <td>
           </td>
@@ -37,7 +47,7 @@
               <?php echo _l('total_taxable_sales_in_period_before_tax'); ?> 
             </td>
             <td class="total_amount">
-              <?php echo app_format_money($data_report['data']['total_taxable_sales_in_period_before_tax'], $currency->name); ?> 
+              <?php echo app_format_money($data_report['data']['total_taxable_sales_in_period_before_tax'], $currency->name); ?><?php echo $incomplete_mark; ?> 
             </td>
           </tr>
           <?php $row_index += 1; ?>
@@ -46,7 +56,7 @@
               <?php echo _l('tax_collected_on_sales'); ?> 
             </td>
             <td class="total_amount">
-              <?php echo app_format_money($data_report['data']['tax_collected_on_sales'], $currency->name); ?> 
+              <?php echo app_format_money($data_report['data']['tax_collected_on_sales'], $currency->name); ?><?php echo $incomplete_mark; ?> 
             </td>
           </tr>
           <?php $row_index += 1; ?>
@@ -64,7 +74,7 @@
               <?php echo _l('subtotal_of_tax_on_sales_uppercase'); ?> 
             </td>
             <td class="total_amount">
-              <?php echo app_format_money($data_report['data']['tax_collected_on_sales']+$data_report['data']['adjustments_to_tax_on_sales'], $currency->name); ?> 
+              <?php echo app_format_money($data_report['data']['tax_collected_on_sales']+$data_report['data']['adjustments_to_tax_on_sales'], $currency->name); ?><?php echo $incomplete_mark; ?> 
             </td>
           </tr>
           <?php $row_index += 1; ?>
@@ -73,7 +83,7 @@
               <?php echo _l('total_taxable_purchases_in_period_before_tax'); ?> 
             </td>
             <td class="total_amount">
-              <?php echo app_format_money($data_report['data']['total_taxable_purchases_in_period_before_tax'], $currency->name); ?> 
+              <?php echo app_format_money($data_report['data']['total_taxable_purchases_in_period_before_tax'], $currency->name); ?><?php echo $incomplete_mark; ?> 
             </td>
           </tr>
           <?php $row_index += 1; ?>
@@ -82,7 +92,7 @@
               <?php echo _l('tax_reclaimable_on_purchases'); ?> 
             </td>
             <td class="total_amount">
-              <?php echo app_format_money($data_report['data']['tax_reclaimable_on_purchases'], $currency->name); ?> 
+              <?php echo app_format_money($data_report['data']['tax_reclaimable_on_purchases'], $currency->name); ?><?php echo $incomplete_mark; ?> 
             </td>
           </tr>
           <?php $row_index += 1; ?>
@@ -100,7 +110,7 @@
               <?php echo _l('subtotal_of_tax_on_purchases_uppercase'); ?> 
             </td>
             <td class="total_amount">
-              <?php echo app_format_money($data_report['data']['adjustments_to_reclaimable_tax_on_purchases'] + $data_report['data']['tax_reclaimable_on_purchases'], $currency->name); ?> 
+              <?php echo app_format_money($data_report['data']['adjustments_to_reclaimable_tax_on_purchases'] + $data_report['data']['tax_reclaimable_on_purchases'], $currency->name); ?><?php echo $incomplete_mark; ?> 
             </td>
           </tr>
           <?php $row_index += 1; ?>
@@ -109,7 +119,7 @@
               <?php echo _l('balance_owing_for_period_uppercase'); ?> 
             </td>
             <td class="total_amount">
-              <?php echo app_format_money(($data_report['data']['tax_collected_on_sales']+$data_report['data']['adjustments_to_tax_on_sales']) - ($data_report['data']['adjustments_to_reclaimable_tax_on_purchases'] + $data_report['data']['tax_reclaimable_on_purchases']), $currency->name); ?> 
+              <?php echo app_format_money(($data_report['data']['tax_collected_on_sales']+$data_report['data']['adjustments_to_tax_on_sales']) - ($data_report['data']['adjustments_to_reclaimable_tax_on_purchases'] + $data_report['data']['tax_reclaimable_on_purchases']), $currency->name); ?><?php echo $incomplete_mark; ?> 
             </td>
           </tr>
           <?php $row_index += 1; ?>
@@ -127,7 +137,7 @@
               <?php echo _l('current_balance_owing_for_period_uppercase'); ?> 
             </td>
             <td class="total_amount">
-              <?php echo app_format_money((($data_report['data']['tax_collected_on_sales']+$data_report['data']['adjustments_to_tax_on_sales']) - ($data_report['data']['adjustments_to_reclaimable_tax_on_purchases'] + $data_report['data']['tax_reclaimable_on_purchases'])) + $data_report['data']['other_adjustments'], $currency->name); ?> 
+              <?php echo app_format_money((($data_report['data']['tax_collected_on_sales']+$data_report['data']['adjustments_to_tax_on_sales']) - ($data_report['data']['adjustments_to_reclaimable_tax_on_purchases'] + $data_report['data']['tax_reclaimable_on_purchases'])) + $data_report['data']['other_adjustments'], $currency->name); ?><?php echo $incomplete_mark; ?> 
             </td>
           </tr>
           <?php $row_index += 1; ?>
@@ -154,7 +164,7 @@
               <?php echo _l('total_amount_due_uppercase'); ?> 
             </td>
             <td class="total_amount">
-              <?php echo app_format_money((($data_report['data']['tax_collected_on_sales']+$data_report['data']['adjustments_to_tax_on_sales']) - ($data_report['data']['adjustments_to_reclaimable_tax_on_purchases'] + $data_report['data']['tax_reclaimable_on_purchases'])) + $data_report['data']['other_adjustments'] + $data_report['data']['tax_due_or_credit_from_previous_periods'] + $data_report['data']['tax_payments_made_this_period'], $currency->name); ?> 
+              <?php echo app_format_money((($data_report['data']['tax_collected_on_sales']+$data_report['data']['adjustments_to_tax_on_sales']) - ($data_report['data']['adjustments_to_reclaimable_tax_on_purchases'] + $data_report['data']['tax_reclaimable_on_purchases'])) + $data_report['data']['other_adjustments'] + $data_report['data']['tax_due_or_credit_from_previous_periods'] + $data_report['data']['tax_payments_made_this_period'], $currency->name); ?><?php echo $incomplete_mark; ?> 
             </td>
           </tr>
           <?php $row_index += 1; ?>

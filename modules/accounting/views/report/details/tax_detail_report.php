@@ -1,4 +1,5 @@
 <?php 
+$incomplete_mark = !empty($missing_rate_dates) ? _l('acc_report_incomplete_total') : '';
 $data_html = []; 
 $data_html[1] = '<tr>
           <td colspan="8">
@@ -35,7 +36,34 @@ $data_html[1] = '<tr>
           <td></td>
           <td></td>
           <td></td>
-        </tr>
+        </tr>';
+if (!empty($report_currency_info)) {
+  $data_html[1] .= '<tr>
+          <td colspan="8">
+            <p class="text-center">'._l('acc_report_currency').': '. $currency->name.'</p>
+          </td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>';
+  if (!empty($missing_rate_dates)) {
+    $data_html[1] .= '<tr>
+          <td colspan="8">'. $this->load->view('report/includes/report_currency_bar', [], true).'</td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>';
+  }
+}
+$data_html[1] .= '
         <tr>
           <td></td>
           <td></td>
@@ -98,10 +126,10 @@ $data_html[1] .= '<tr data-node-id="10000" class="parent-node expanded">
               '.new_html_entity_decode($val['tax_rate']).'%
               </td>
               <td class="total_amount">
-              '.app_format_money($val['amount'], $currency->name).' 
+              '.($val['amount'] === null ? '' : app_format_money($val['amount'], $currency->name)).' 
               </td>
               <td class="total_amount">
-              '.app_format_money($total, $currency->name).' 
+              '.($val['amount'] === null ? '' : app_format_money($total, $currency->name)).' 
               </td>
             </tr>';
           }
@@ -119,7 +147,7 @@ $data_html[1] .= '<tr data-node-id="10000" class="parent-node expanded">
             <td></td>
             <td></td>
             <td></td>
-            <td class="total_amount">'.app_format_money($total, $currency->name).'</td>
+            <td class="total_amount">'.app_format_money($total, $currency->name).$incomplete_mark.'</td>
             <td class="total_amount"></td>
           </tr>';
 
@@ -165,10 +193,10 @@ $data_html[1] .= '<tr data-node-id="10000" class="parent-node expanded">
               <td>
               </td>
               <td class="total_amount">
-              '.app_format_money($val['amount'], $currency->name).' 
+              '.($val['amount'] === null ? '' : app_format_money($val['amount'], $currency->name)).' 
               </td>
               <td class="total_amount">
-              '.app_format_money($total, $currency->name).' 
+              '.($val['amount'] === null ? '' : app_format_money($total, $currency->name)).' 
               </td>
             </tr>';
            }
@@ -185,7 +213,7 @@ $data_html[1] .= '<tr data-node-id="10000" class="parent-node expanded">
             <td></td>
             <td></td>
             <td></td>
-            <td class="total_amount">'.app_format_money($total, $currency->name).'</td>
+            <td class="total_amount">'.app_format_money($total, $currency->name).$incomplete_mark.'</td>
             <td class="total_amount"></td>
           </tr>';
           $row_index += 1; 
@@ -233,10 +261,10 @@ $data_html[1] .= '<tr data-node-id="10000" class="parent-node expanded">
               '.new_html_entity_decode($val['tax_rate']).'%
               </td>
               <td class="total_amount">
-              '.app_format_money($val['amount'], $currency->name).' 
+              '.($val['amount'] === null ? '' : app_format_money($val['amount'], $currency->name)).' 
               </td>
               <td class="total_amount">
-              '.app_format_money($total, $currency->name).' 
+              '.($val['amount'] === null ? '' : app_format_money($total, $currency->name)).' 
               </td>
             </tr>';
           }
@@ -253,7 +281,7 @@ $data_html[1] .= '<tr data-node-id="10000" class="parent-node expanded">
             <td></td>
             <td></td>
             <td></td>
-            <td class="total_amount">'.app_format_money($total, $currency->name).'</td>
+            <td class="total_amount">'.app_format_money($total, $currency->name).$incomplete_mark.'</td>
             <td class="total_amount"></td>
           </tr>';
           $row_index += 1; 
@@ -301,10 +329,10 @@ $data_html[1] .= '<tr data-node-id="10000" class="parent-node expanded">
               
               </td>
               <td class="total_amount">
-              '.app_format_money($val['amount'], $currency->name).' 
+              '.($val['amount'] === null ? '' : app_format_money($val['amount'], $currency->name)).' 
               </td>
               <td class="total_amount">
-              '.app_format_money($total, $currency->name).' 
+              '.($val['amount'] === null ? '' : app_format_money($total, $currency->name)).' 
               </td>
             </tr>';
            }
@@ -321,7 +349,7 @@ $data_html[1] .= '<tr data-node-id="10000" class="parent-node expanded">
             <td></td>
             <td></td>
             <td></td>
-            <td class="total_amount">'.app_format_money($total, $currency->name).'</td>
+            <td class="total_amount">'.app_format_money($total, $currency->name).$incomplete_mark.'</td>
             <td class="total_amount"></td>
           </tr>';
   

@@ -1,5 +1,7 @@
+<?php $incomplete_mark = !empty($missing_rate_dates) ? _l('acc_report_incomplete_total') : ''; ?>
 <div id="accordion">
     <div class="card">
+      <?php $this->load->view('report/includes/report_currency_bar'); ?>
       <table class="tree">
         <tbody>
           <tr>
@@ -24,6 +26,14 @@
             </td>
             <td></td>
           </tr>
+          <?php if (!empty($report_currency_info)) { ?>
+          <tr>
+            <td colspan="2">
+              <p class="text-center"><?php echo _l('acc_report_currency') . ': ' . $currency->name; ?></p>
+            </td>
+            <td></td>
+          </tr>
+          <?php } ?>
           <tr>
             <td>
             </td>
@@ -53,17 +63,17 @@
             $row_index += 1;
             ?>
             <?php 
-              $data = $this->accounting_model->get_html_balance_sheet_summary($data_report['data']['accounts_receivable'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency);
+              $data = $this->accounting_model->get_html_balance_sheet_summary($data_report['data']['accounts_receivable'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency, false, 1, $incomplete_mark);
               $row_index = $data['row_index'];
               echo new_html_entity_decode($data['html']);
               $total_current_assets += $data['total_amount'];
 
-              $data = $this->accounting_model->get_html_balance_sheet_summary($data_report['data']['cash_and_cash_equivalents'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency);
+              $data = $this->accounting_model->get_html_balance_sheet_summary($data_report['data']['cash_and_cash_equivalents'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency, false, 1, $incomplete_mark);
               $row_index = $data['row_index'];
               echo new_html_entity_decode($data['html']);
               $total_current_assets += $data['total_amount'];
 
-              $data = $this->accounting_model->get_html_balance_sheet_summary($data_report['data']['current_assets'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency);
+              $data = $this->accounting_model->get_html_balance_sheet_summary($data_report['data']['current_assets'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency, false, 1, $incomplete_mark);
               $row_index = $data['row_index'];
               echo new_html_entity_decode($data['html']);
               $total_current_assets += $data['total_amount'];
@@ -72,7 +82,7 @@
             <?php $row_index += 1; ?>
             <tr data-node-id="<?php echo new_html_entity_decode($row_index); ?>" data-node-pid="1000000" class="parent-node expanded tr_total">
               <td class="parent"><?php echo _l('total_current_assets'); ?></td>
-              <td class="total_amount"><?php echo app_format_money($total_current_assets, $currency->name); ?> </td>
+              <td class="total_amount"><?php echo app_format_money($total_current_assets, $currency->name) . $incomplete_mark; ?> </td>
             </tr>
             <?php 
               $row_index += 1;
@@ -84,12 +94,12 @@
               <td></td>
             </tr>
             <?php 
-              $data = $this->accounting_model->get_html_balance_sheet_summary($data_report['data']['fixed_assets'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency);
+              $data = $this->accounting_model->get_html_balance_sheet_summary($data_report['data']['fixed_assets'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency, false, 1, $incomplete_mark);
               $row_index = $data['row_index'];
               echo new_html_entity_decode($data['html']);
               $total_long_term_assets += $data['total_amount'];
 
-              $data = $this->accounting_model->get_html_balance_sheet_summary($data_report['data']['non_current_assets'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency);
+              $data = $this->accounting_model->get_html_balance_sheet_summary($data_report['data']['non_current_assets'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency, false, 1, $incomplete_mark);
               $row_index = $data['row_index'];
               echo new_html_entity_decode($data['html']);
               $total_long_term_assets += $data['total_amount'];
@@ -97,14 +107,14 @@
             <?php $row_index += 1; ?>
             <tr data-node-id="<?php echo new_html_entity_decode($row_index); ?>" data-node-pid="1000000" class="parent-node expanded tr_total">
               <td class="parent"><?php echo _l('total_long_term_assets'); ?></td>
-              <td class="total_amount"><?php echo app_format_money($total_long_term_assets, $currency->name); ?> </td>
+              <td class="total_amount"><?php echo app_format_money($total_long_term_assets, $currency->name) . $incomplete_mark; ?> </td>
             </tr>
             <?php 
               $row_index += 1;
               ?>
             <tr data-node-id="<?php echo new_html_entity_decode($row_index); ?>" class="tr_total">
               <td class="parent"><?php echo _l('total_assets'); ?></td>
-              <td class="total_amount"><?php echo app_format_money($total_long_term_assets + $total_current_assets, $currency->name); ?> </td>
+              <td class="total_amount"><?php echo app_format_money($total_long_term_assets + $total_current_assets, $currency->name) . $incomplete_mark; ?> </td>
             </tr>
             <?php 
               $row_index += 1;
@@ -123,17 +133,17 @@
                 <td></td>
               </tr>
               <?php 
-                $data = $this->accounting_model->get_html_balance_sheet_summary($data_report['data']['accounts_payable'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency);
+                $data = $this->accounting_model->get_html_balance_sheet_summary($data_report['data']['accounts_payable'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency, false, 1, $incomplete_mark);
                 $row_index = $data['row_index'];
                 echo new_html_entity_decode($data['html']);
                 $total_current_liabilities += $data['total_amount'];
 
-                $data = $this->accounting_model->get_html_balance_sheet_summary($data_report['data']['credit_card'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency);
+                $data = $this->accounting_model->get_html_balance_sheet_summary($data_report['data']['credit_card'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency, false, 1, $incomplete_mark);
                 $row_index = $data['row_index'];
                 echo new_html_entity_decode($data['html']);
                 $total_current_liabilities += $data['total_amount'];
 
-                $data = $this->accounting_model->get_html_balance_sheet_summary($data_report['data']['current_liabilities'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency);
+                $data = $this->accounting_model->get_html_balance_sheet_summary($data_report['data']['current_liabilities'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency, false, 1, $incomplete_mark);
                 $row_index = $data['row_index'];
                 echo new_html_entity_decode($data['html']);
                 $total_current_liabilities += $data['total_amount'];
@@ -142,7 +152,7 @@
               <?php $row_index += 1; ?>
               <tr data-node-id="<?php echo new_html_entity_decode($row_index); ?>" data-node-pid="1000001" class="tr_total">
                 <td class="parent"><?php echo _l('total_current_liabilities'); ?></td>
-                <td class="total_amount"><?php echo app_format_money($total_current_liabilities, $currency->name); ?> </td>
+                <td class="total_amount"><?php echo app_format_money($total_current_liabilities, $currency->name) . $incomplete_mark; ?> </td>
               </tr>
               <?php $row_index += 1; ?>
               <?php
@@ -155,7 +165,7 @@
                 <td></td>
               </tr>
               <?php 
-              $data = $this->accounting_model->get_html_balance_sheet_summary($data_report['data']['non_current_liabilities'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency);
+              $data = $this->accounting_model->get_html_balance_sheet_summary($data_report['data']['non_current_liabilities'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency, false, 1, $incomplete_mark);
                 $row_index = $data['row_index'];
                 echo new_html_entity_decode($data['html']);
                 $total_non_current_liabilities += $data['total_amount'];
@@ -163,7 +173,7 @@
               <?php $row_index += 1; ?>
               <tr data-node-id="<?php echo new_html_entity_decode($row_index); ?>" data-node-pid="1000001" class="tr_total">
                 <td class="parent"><?php echo _l('total_non_current_liabilities'); ?></td>
-                <td class="total_amount"><?php echo app_format_money($total_non_current_liabilities, $currency->name); ?> </td>
+                <td class="total_amount"><?php echo app_format_money($total_non_current_liabilities, $currency->name) . $incomplete_mark; ?> </td>
               </tr>
               <?php $row_index += 1; ?>
               <?php
@@ -176,7 +186,7 @@
                 <td></td>
               </tr>
               <?php 
-              $data = $this->accounting_model->get_html_balance_sheet_summary($data_report['data']['owner_equity'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency);
+              $data = $this->accounting_model->get_html_balance_sheet_summary($data_report['data']['owner_equity'], ['html' => '', 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency, false, 1, $incomplete_mark);
                 $row_index = $data['row_index'];
                 echo new_html_entity_decode($data['html']);
                 $total_shareholders_equity += $data['total_amount'];
@@ -187,18 +197,18 @@
                   <?php echo _l('other_shareholder_equity'); ?> 
                 </td>
                 <td class="total_amount">
-                  <?php echo app_format_money($data_report['net_income'], $currency->name); ?> 
+                  <?php echo $data_report['net_income'] === null ? '' : app_format_money($data_report['net_income'], $currency->name) . $incomplete_mark; ?> 
                 </td>
               </tr>
               <?php $row_index += 1; ?>
               <tr data-node-id="<?php echo new_html_entity_decode($row_index); ?>" data-node-pid="1000001" class="tr_total">
                 <td class="parent"><?php echo _l('total_shareholders_equity'); ?></td>
-                <td class="total_amount"><?php echo app_format_money($total_shareholders_equity, $currency->name); ?> </td>
+                <td class="total_amount"><?php echo app_format_money($total_shareholders_equity, $currency->name) . $incomplete_mark; ?> </td>
               </tr>
               <?php $row_index += 1; ?>
               <tr data-node-id="<?php echo new_html_entity_decode($row_index); ?>" class="tr_total">
                 <td class="parent"><?php echo _l('total_liabilities_and_equity'); ?></td>
-                <td class="total_amount"><?php echo app_format_money($total_current_liabilities + $total_non_current_liabilities + $total_shareholders_equity, $currency->name); ?> </td>
+                <td class="total_amount"><?php echo app_format_money($total_current_liabilities + $total_non_current_liabilities + $total_shareholders_equity, $currency->name) . $incomplete_mark; ?> </td>
               </tr>
               <?php $row_index += 1; ?>
           </tbody>

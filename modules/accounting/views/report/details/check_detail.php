@@ -1,5 +1,6 @@
 <div id="accordion">
   <div class="card">
+    <?php $this->load->view('report/includes/report_currency_bar'); ?>
     <table class="tree">
       <tbody>
         <tr>
@@ -29,6 +30,17 @@
             <td></td>
             <td></td>
           </tr>
+          <?php if (!empty($report_currency_info)) { ?>
+          <tr>
+            <td colspan="5">
+              <p class="text-center"><?php echo _l('acc_report_currency') . ': ' . $currency->name; ?></p>
+            </td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <?php } ?>
           <tr>
             <td></td>
             <td></td>
@@ -81,7 +93,7 @@
               <?php echo new_html_entity_decode($val['description']); ?> 
               </td>
               <td>
-              <?php echo app_format_money($val['debit'] - $val['credit'], $currency->name); ?> 
+              <?php echo ($val['debit'] === null && $val['credit'] === null) ? '' : app_format_money($val['debit'] - $val['credit'], $currency->name); ?> 
               </td>
             </tr>
           <?php }

@@ -1,4 +1,5 @@
 <?php 
+$incomplete_mark = !empty($missing_rate_dates) ? _l('acc_report_incomplete_total') : '';
 $data_html = []; 
 $data_html[1] = '<tr>
     <td colspan="8">
@@ -52,40 +53,66 @@ $data_html[1] = '<tr>
     <td width="10%" class="text-bold">'. _l('transaction_type').'</td>
     <td width="15%" class="text-bold">'. _l('customer_vendor').'</td>
     <td width="15%" class="text-bold">'. _l('description').'&nbsp;&nbsp;&nbsp;'.'</td>
-    <td width="12%" class="text-bold">'. _l('split').'</td>
+    <td width="12%" class="text-bold">'. _l('acc_report_counter_account').'</td>
     <td width="10%" class="total_amount text-bold">'. _l('acc_amount').'</td>
     <td width="15%" class="total_amount text-bold">'. _l('balance').'</td>
   </tr>';
+if (!empty($report_currency_info)) {
+  $data_html[1] .= '<tr>
+    <td colspan="8">
+      <p class="text-center">'. _l('acc_report_currency').': '. $currency->name.'</p>
+    </td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>';
+  if (!empty($missing_rate_dates)) {
+    $data_html[1] .= '<tr>
+    <td colspan="8">'. $this->load->view('report/includes/report_currency_bar', [], true).'</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>';
+  }
+}
    $row_index = 0;
    $parent_index = 0;
    $total = 0;
 
-  $data = $this->accounting_model->get_html_general_ledger($data_report['data']['current_assets'], ['html' => $data_html, 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency);
+  $data = $this->accounting_model->get_html_general_ledger($data_report['data']['current_assets'], ['html' => $data_html, 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency, false, 1, true, $incomplete_mark);
   $row_index = $data['row_index'];
   // echo html_entity_decode($data['html']);
   $total += $data['total_amount'];
 
-  $data = $this->accounting_model->get_html_general_ledger($data_report['data']['credit_card'], ['html' => $data['html'], 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency);
+  $data = $this->accounting_model->get_html_general_ledger($data_report['data']['credit_card'], ['html' => $data['html'], 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency, false, 1, true, $incomplete_mark);
   $row_index = $data['row_index'];
   // echo html_entity_decode($data['html']);
   $total += $data['total_amount'];
 
-  $data = $this->accounting_model->get_html_general_ledger($data_report['data']['current_liabilities'], ['html' => $data['html'], 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency);
+  $data = $this->accounting_model->get_html_general_ledger($data_report['data']['current_liabilities'], ['html' => $data['html'], 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency, false, 1, true, $incomplete_mark);
   $row_index = $data['row_index'];
   // echo html_entity_decode($data['html']);
   $total += $data['total_amount'];
   
-  $data = $this->accounting_model->get_html_general_ledger($data_report['data']['owner_equity'], ['html' => $data['html'], 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency);
+  $data = $this->accounting_model->get_html_general_ledger($data_report['data']['owner_equity'], ['html' => $data['html'], 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency, false, 1, true, $incomplete_mark);
   $row_index = $data['row_index'];
   // echo html_entity_decode($data['html']);
   $total += $data['total_amount'];
 
-  $data = $this->accounting_model->get_html_general_ledger($data_report['data']['income'], ['html' => $data['html'], 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency);
+  $data = $this->accounting_model->get_html_general_ledger($data_report['data']['income'], ['html' => $data['html'], 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency, false, 1, true, $incomplete_mark);
   $row_index = $data['row_index'];
   // echo html_entity_decode($data['html']);
   $total += $data['total_amount'];
   
-  $data = $this->accounting_model->get_html_general_ledger($data_report['data']['expenses'], ['html' => $data['html'], 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency);
+  $data = $this->accounting_model->get_html_general_ledger($data_report['data']['expenses'], ['html' => $data['html'], 'row_index' => $row_index + 1, 'total_amount' => 0, 'total_py_amount' => 0], $parent_index, $currency, false, 1, true, $incomplete_mark);
   $row_index = $data['row_index'];
   // echo html_entity_decode($data['html']);
   $total += $data['total_amount'];

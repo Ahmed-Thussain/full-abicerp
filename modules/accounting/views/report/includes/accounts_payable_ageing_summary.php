@@ -10,16 +10,17 @@
         <br>
         <hr />
         <div class="row">
-          <div class="col-md-6">
+          <div class="col-md-9">
             <div class="row ">
               <?php echo form_open(admin_url('accounting/view_report'),array('id'=>'filter-form')); ?>
               <div class="col-md-5 hide">
                 <?php echo render_date_input('from_date','from_date', _d($from_date)); ?>
               </div>
-              <div class="col-md-4">
+              <div class="col-md-3">
                 <?php echo render_date_input('to_date','invoice_payments_table_date_heading', _d($to_date)); ?>
               </div>
-              <div class="col-md-4">
+              <?php $this->load->view('report/includes/report_currency_bar'); ?>
+              <div class="col-md-3">
                 <?php echo form_hidden('type', 'accounts_payable_ageing_summary'); ?>
                 <?php echo form_hidden('page', 1); ?>
                   <a href="javascript:void(0);" onclick="report_load();" class="btn btn-info btn-submit mtop25"><?php echo _l('filter'); ?></a>
@@ -27,7 +28,7 @@
               <?php echo form_close(); ?>
             </div>
           </div>
-          <div class="col-md-6">
+          <div class="col-md-3">
             <div class="btn-group pull-right mtop25">
              <a href="#" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-print"></i><?php if(is_mobile()){echo ' PDF';} ?> <span class="caret"></span></a>
              <ul class="dropdown-menu dropdown-menu-right">
@@ -74,3 +75,4 @@
 <?php init_tail(); ?>
 </body>
 </html>
+<?php require 'modules/accounting/assets/js/report/report_currency_js.php'; ?>

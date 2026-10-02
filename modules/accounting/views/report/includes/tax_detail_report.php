@@ -27,6 +27,7 @@
                   echo render_select('accounting_method', $method, array('id', 'name'),'accounting_method', $accounting_method, array(), array(), '', '', false);
                   ?>
                 </div>
+                <?php $this->load->view('report/includes/report_currency_bar'); ?>
                 <div class="col-md-3">
                   <?php echo form_hidden('type', 'tax_detail_report'); ?>
                   <?php echo form_hidden('page', 1); ?>
@@ -81,3 +82,4 @@
 <?php init_tail(); ?>
 </body>
 </html>
+<?php require 'modules/accounting/assets/js/report/report_currency_js.php'; ?>

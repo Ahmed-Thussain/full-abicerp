@@ -1,4 +1,5 @@
 <?php 
+$incomplete_mark = !empty($missing_rate_dates) ? _l('acc_report_incomplete_total') : '';
 $data_html = []; 
 $data_html[1] = '<tr>
           <td colspan="7">
@@ -32,7 +33,32 @@ $data_html[1] = '<tr>
           <td></td>
           <td></td>
           <td></td>
-        </tr>
+        </tr>';
+if (!empty($report_currency_info)) {
+  $data_html[1] .= '<tr>
+          <td colspan="7">
+            <p class="text-center">'. _l('acc_report_currency').': '. $currency->name.'</p>
+          </td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>';
+  if (!empty($missing_rate_dates)) {
+    $data_html[1] .= '<tr>
+          <td colspan="7">'. $this->load->view('report/includes/report_currency_bar', [], true).'</td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>';
+  }
+}
+$data_html[1] .= '
         <tr>
           <td></td>
           <td></td>
@@ -84,10 +110,10 @@ $data_html[1] = '<tr>
               '. new_html_entity_decode($val['name']).' 
               </td>
               <td class="total_amount">
-              '. app_format_money($val['debit'], $currency->name).' 
+              '. ($val['debit'] === null ? '' : app_format_money($val['debit'], $currency->name)).' 
               </td>
               <td class="total_amount">
-              '. app_format_money($val['credit'], $currency->name).' 
+              '. ($val['credit'] === null ? '' : app_format_money($val['credit'], $currency->name)).' 
               </td>
             </tr>';
            }
@@ -104,8 +130,8 @@ $data_html[1] = '<tr>
             <td></td>
             <td></td>
             <td></td>
-            <td class="total_amount">'. app_format_money($total_debit, $currency->name).' </td>
-            <td class="total_amount">'. app_format_money($total_credit, $currency->name).' </td>
+            <td class="total_amount">'. app_format_money($total_debit, $currency->name).$incomplete_mark.' </td>
+            <td class="total_amount">'. app_format_money($total_credit, $currency->name).$incomplete_mark.' </td>
           </tr>';
 
           if(isset($data_html[$page])){
