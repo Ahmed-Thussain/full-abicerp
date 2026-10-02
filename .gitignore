@@ -16,3 +16,5 @@ application/logs/*
 # Uploads and dependencies
 uploads/
 node_modules/
+specs/
+ABICERP.zip
