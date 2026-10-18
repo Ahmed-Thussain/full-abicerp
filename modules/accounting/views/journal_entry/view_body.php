@@ -33,7 +33,12 @@ $to_data_uri = function ($path) {
       <td style="border:none;"><b><?php echo _l('journal_date'); ?>:</b> <?php echo _d($je->journal_date); ?></td>
       <td style="border:none;"><b><?php echo _l('reference'); ?>:</b> <?php echo html_escape($je->reference); ?></td>
       <td style="border:none;"><?php if ($class_name != '') { ?><b><?php echo _l('acc_class'); ?>:</b> <?php echo html_escape($pdf_text($class_name)); ?><?php } ?></td></tr>
-  <?php if (isset($je->doc_currency)) { ?>
+  <?php
+    // the exchange rate only means something for a foreign-currency entry
+    $je_base_currency = get_base_currency();
+    $je_is_foreign = isset($je->doc_currency) && $je->doc_currency != '' && $je_base_currency && strtoupper($je->doc_currency) != strtoupper($je_base_currency->name);
+  ?>
+  <?php if ($je_is_foreign) { ?>
   <tr><td style="border:none;"><b><?php echo _l('currency'); ?>:</b> <?php echo html_escape($je->doc_currency); ?></td>
       <td style="border:none;" colspan="2"><?php if (isset($je->doc_rate)) { ?><b><?php echo _l('acc_rate'); ?>:</b> <?php echo html_escape($je->doc_rate); ?><?php } ?></td></tr>
   <?php } ?>

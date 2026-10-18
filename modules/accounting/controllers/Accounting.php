@@ -4173,7 +4173,7 @@ class Accounting extends AdminController
     public function rp_balance_sheet(){
         $this->load->model('currencies_model');
         $data['title'] = _l('balance_sheet');
-        $data['from_date'] = date('Y-m-01');
+        $data['from_date'] = date('Y-01-01');
         $data['to_date'] = date('Y-m-d');
         $data['accounting_method'] = get_option('acc_accounting_method');
         $data['currency'] = $this->currencies_model->get_base_currency();
@@ -4217,7 +4217,7 @@ class Accounting extends AdminController
     public function rp_balance_sheet_detail(){
         $this->load->model('currencies_model');
         $data['title'] = _l('balance_sheet_detail');
-        $data['from_date'] = date('Y-m-01');
+        $data['from_date'] = date('Y-01-01');
         $data['to_date'] = date('Y-m-d');
         $data['accounting_method'] = get_option('acc_accounting_method');
         $data['currency'] = $this->currencies_model->get_base_currency();
@@ -4239,7 +4239,7 @@ class Accounting extends AdminController
     public function rp_balance_sheet_summary(){
         $this->load->model('currencies_model');
         $data['title'] = _l('balance_sheet_summary');
-        $data['from_date'] = date('Y-m-01');
+        $data['from_date'] = date('Y-01-01');
         $data['to_date'] = date('Y-m-d');
         $data['accounting_method'] = get_option('acc_accounting_method');
         $data['currency'] = $this->currencies_model->get_base_currency();
@@ -4332,7 +4332,7 @@ class Accounting extends AdminController
     public function rp_profit_and_loss_detail(){
         $this->load->model('currencies_model');
         $data['title'] = _l('profit_and_loss_detail');
-        $data['from_date'] = date('Y-m-01');
+        $data['from_date'] = date('Y-01-01');
         $data['to_date'] = date('Y-m-d');
         $data['accounting_method'] = get_option('acc_accounting_method');
         $data['currency'] = $this->currencies_model->get_base_currency();
@@ -4356,7 +4356,7 @@ class Accounting extends AdminController
         $data['title'] = _l('profit_and_loss_year_to_date_comparison');
         $data['currency'] = $this->currencies_model->get_base_currency();
         $data['currencies'] = $this->currencies_model->get();
-        $data['from_date'] = date('Y-m-01');
+        $data['from_date'] = date('Y-01-01');
         $data['to_date'] = date('Y-m-d');
         $data['accounting_method'] = get_option('acc_accounting_method');
         $where_item = [];
@@ -4521,7 +4521,7 @@ class Accounting extends AdminController
     public function rp_deposit_detail(){
         $this->load->model('currencies_model');
         $data['title'] = _l('deposit_detail');
-        $data['from_date'] = date('Y-m-01');
+        $data['from_date'] = date('Y-01-01');
         $data['to_date'] = date('Y-m-d');
         $data['currency'] = $this->currencies_model->get_base_currency();
         $data['currencies'] = $this->currencies_model->get();
@@ -4579,11 +4579,12 @@ class Accounting extends AdminController
         $this->load->model('currencies_model');
         $data['title'] = _l('account_history');
         $data['account'] = $this->input->get('account');
-        $data['from_date'] = date('Y-m-01');
+        $data['from_date'] = date('Y-01-01');
         $data['to_date'] = date('Y-m-d');
         $data['currency'] = $this->currencies_model->get_base_currency();
         $data['currencies'] = $this->currencies_model->get();
-        $data['accounts'] = $this->accounting_model->get_accounts('', 'find_in_set(account_type_id, "2,3,4,5,7,8,9,10,16")');
+        // every account type, so the history button works from any account (income, expenses, A/R, A/P too)
+        $data['accounts'] = $this->accounting_model->get_accounts();
         $this->load->view('report/includes/account_history', $data);
     }
     
@@ -4594,7 +4595,7 @@ class Accounting extends AdminController
     public function rp_general_ledger(){
         $this->load->model('currencies_model');
         $data['title'] = _l('general_ledger');
-        $data['from_date'] = date('Y-m-01');
+        $data['from_date'] = date('Y-01-01');
         $data['to_date'] = date('Y-m-d');
         $data['accounting_method'] = get_option('acc_accounting_method');
         $data['currency'] = $this->currencies_model->get_base_currency();
@@ -4609,7 +4610,7 @@ class Accounting extends AdminController
     public function rp_journal(){
         $this->load->model('currencies_model');
         $data['title'] = _l('journal');
-        $data['from_date'] = date('Y-m-01');
+        $data['from_date'] = date('Y-01-01');
         $data['to_date'] = date('Y-m-d');
         $data['currency'] = $this->currencies_model->get_base_currency();
         $data['currencies'] = $this->currencies_model->get();
@@ -4623,7 +4624,7 @@ class Accounting extends AdminController
     public function rp_recent_transactions(){
         $this->load->model('currencies_model');
         $data['title'] = _l('recent_transactions');
-        $data['from_date'] = date('Y-m-01');
+        $data['from_date'] = date('Y-01-01');
         $data['to_date'] = date('Y-m-d');
         $data['currency'] = $this->currencies_model->get_base_currency();
         $data['currencies'] = $this->currencies_model->get();
@@ -4637,7 +4638,7 @@ class Accounting extends AdminController
     public function rp_transaction_detail_by_account(){
         $this->load->model('currencies_model');
         $data['title'] = _l('transaction_detail_by_account');
-        $data['from_date'] = date('Y-m-01');
+        $data['from_date'] = date('Y-01-01');
         $data['to_date'] = date('Y-m-d');
         $data['accounting_method'] = get_option('acc_accounting_method');
         $data['currency'] = $this->currencies_model->get_base_currency();
@@ -4652,7 +4653,7 @@ class Accounting extends AdminController
     public function rp_transaction_list_by_date(){
         $this->load->model('currencies_model');
         $data['title'] = _l('transaction_list_by_date');
-        $data['from_date'] = date('Y-m-01');
+        $data['from_date'] = date('Y-01-01');
         $data['to_date'] = date('Y-m-d');
         $data['currency'] = $this->currencies_model->get_base_currency();
         $data['currencies'] = $this->currencies_model->get();
@@ -4666,7 +4667,7 @@ class Accounting extends AdminController
     public function rp_trial_balance(){
         $this->load->model('currencies_model');
         $data['title'] = _l('trial_balance');
-        $data['from_date'] = date('Y-m-01');
+        $data['from_date'] = date('Y-01-01');
         $data['to_date'] = date('Y-m-d');
         $data['accounting_method'] = get_option('acc_accounting_method');
         $data['currency'] = $this->currencies_model->get_base_currency();
@@ -6696,7 +6697,7 @@ class Accounting extends AdminController
     public function rp_tax_detail_report(){
         $this->load->model('currencies_model');
         $data['title'] = _l('tax_detail_report');
-        $data['from_date'] = date('Y-m-01');
+        $data['from_date'] = date('Y-01-01');
         $data['to_date'] = date('Y-m-d');
         $data['accounting_method'] = get_option('acc_accounting_method');
         $data['currency'] = $this->currencies_model->get_base_currency();
@@ -6716,7 +6717,7 @@ class Accounting extends AdminController
         $data['taxes'] = $this->taxes_model->get();
 
         $data['title'] = _l('tax_summary_report');
-        $data['from_date'] = date('Y-m-01');
+        $data['from_date'] = date('Y-01-01');
         $data['accounting_method'] = get_option('acc_accounting_method');
         $data['to_date'] = date('Y-m-d');
         $data['currencies'] = $this->currencies_model->get();
@@ -6735,7 +6736,7 @@ class Accounting extends AdminController
         $data['taxes'] = $this->taxes_model->get();
 
         $data['title'] = _l('tax_liability_report');
-        $data['from_date'] = date('Y-m-01');
+        $data['from_date'] = date('Y-01-01');
         $data['to_date'] = date('Y-m-d');
         $data['accounting_method'] = get_option('acc_accounting_method');
         $data['currencies'] = $this->currencies_model->get();
@@ -8843,7 +8844,7 @@ class Accounting extends AdminController
     public function rp_accounts_receivable_ageing_detail() {
         $this->load->model('currencies_model');
         $data['title'] = _l('accounts_receivable_ageing_detail');
-        $data['from_date'] = date('Y-m-01');
+        $data['from_date'] = date('Y-01-01');
         $data['to_date'] = date('Y-m-d');
         $data['customers']    = $this->clients_model->get();
         $data['customer_groups']    = $this->clients_model->get_groups();
@@ -8860,7 +8861,7 @@ class Accounting extends AdminController
     public function rp_accounts_payable_ageing_detail() {
         $this->load->model('currencies_model');
         $data['title'] = _l('accounts_payable_ageing_detail');
-        $data['from_date'] = date('Y-m-01');
+        $data['from_date'] = date('Y-01-01');
         $data['to_date'] = date('Y-m-d');
         $data['accounting_method'] = get_option('acc_accounting_method');
         $data['currency'] = $this->currencies_model->get_base_currency();
@@ -8875,7 +8876,7 @@ class Accounting extends AdminController
     public function rp_accounts_receivable_ageing_summary() {
         $this->load->model('currencies_model');
         $data['title'] = _l('accounts_receivable_ageing_summary');
-        $data['from_date'] = date('Y-m-01');
+        $data['from_date'] = date('Y-01-01');
         $data['to_date'] = date('Y-m-d');
         $data['customers']    = $this->clients_model->get();
         $data['customer_groups']    = $this->clients_model->get_groups();
@@ -8892,7 +8893,7 @@ class Accounting extends AdminController
     public function rp_accounts_payable_ageing_summary() {
         $this->load->model('currencies_model');
         $data['title'] = _l('accounts_payable_ageing_summary');
-        $data['from_date'] = date('Y-m-01');
+        $data['from_date'] = date('Y-01-01');
         $data['to_date'] = date('Y-m-d');
         $data['accounting_method'] = get_option('acc_accounting_method');
         $data['currency'] = $this->currencies_model->get_base_currency();
@@ -9571,6 +9572,235 @@ class Accounting extends AdminController
             'site_url' => site_url(),
             'staff_id' => get_staff_user_id(),
             'filename' => ACCOUTING_IMPORT_ITEM_ERROR . $filename,
+        ]);
+    }
+
+    /**
+     * { journal entry import page }
+     */
+    public function journal_entry_import(){
+        if (!has_permission('accounting_journal_entry', '', 'create')) {
+            access_denied('accounting_journal_entry');
+        }
+
+        $this->load->model('staff_model');
+        $data_staff = $this->staff_model->get(get_staff_user_id());
+
+        /*get language active*/
+        if ($data_staff) {
+            if ($data_staff->default_language != '') {
+                $data['active_language'] = $data_staff->default_language;
+
+            } else {
+
+                $data['active_language'] = get_option('active_language');
+            }
+
+        } else {
+            $data['active_language'] = get_option('active_language');
+        }
+        $data['title'] = _l('acc_ji_import_journal_entry');
+
+        $this->load->view('journal_entry/import_excel', $data);
+    }
+
+    /**
+     * import file xlsx journal entries (preview or import)
+     * @return json
+     */
+    public function import_file_xlsx_journal_entry() {
+        if (!has_permission('accounting_journal_entry', '', 'create')) {
+            access_denied('accounting_journal_entry');
+        }
+
+        if (!class_exists('XLSXReader_fin')) {
+            require_once module_dir_path(ACCOUNTING_MODULE_NAME) . 'assets/plugins/XLSXReader/XLSXReader.php';
+        }
+        require_once module_dir_path(ACCOUNTING_MODULE_NAME) . 'assets/plugins/XLSXWriter/xlsxwriter.class.php';
+
+        $mode = $this->input->post('mode') == 'import' ? 'import' : 'preview';
+        $filename = '';
+        $newFilePath = '';
+        $message = _l('acc_ji_select_file');
+        $total_entries = 0;
+        $total_lines = 0;
+        $total_debit = 0;
+        $total_credit = 0;
+        $count_ok = 0;
+        $count_error = 0;
+        $count_duplicate = 0;
+        $count_posted = 0;
+        $count_failed = 0;
+        $out_entries = [];
+        $new_classes = [];
+
+        // large files (thousands of lines) need more than the default limit
+        @set_time_limit(0);
+
+        if ($this->input->post() && isset($_FILES['file_csv']['name']) && $_FILES['file_csv']['name'] != '') {
+            // Get the temp file path
+            $tmpFilePath = $_FILES['file_csv']['tmp_name'];
+            // Make sure we have a filepath
+            if (!empty($tmpFilePath) && $tmpFilePath != '') {
+                $tmpDir = TEMP_FOLDER . '/' . time() . uniqid() . '/';
+
+                if (!file_exists(TEMP_FOLDER)) {
+                    mkdir(TEMP_FOLDER, 0755);
+                }
+
+                if (!file_exists($tmpDir)) {
+                    mkdir($tmpDir, 0755);
+                }
+
+                // Setup our new file path
+                $newFilePath = $tmpDir . $_FILES['file_csv']['name'];
+
+                if (move_uploaded_file($tmpFilePath, $newFilePath)) {
+                    //Reader file
+                    $xlsx = new XLSXReader_fin($newFilePath);
+                    $sheetNames = $xlsx->getSheetNames();
+                    $data = $xlsx->getSheetData(array_shift($sheetNames));
+
+                    $parsed = $this->accounting_model->journal_import_parse_rows($data);
+                    $message = $parsed['error'];
+
+                    if ($message == '') {
+                        $entries = $parsed['entries'];
+                        $this->accounting_model->journal_import_validate($entries);
+
+                        $total_entries = count($entries);
+                        foreach ($entries as $entry) {
+                            $total_lines += count($entry['lines']);
+                            $total_debit += $entry['total_debit'];
+                            $total_credit += $entry['total_credit'];
+                            if ($entry['status'] == 'ok') {
+                                $count_ok++;
+                                // voucher types with no class yet: created when the entry is posted
+                                if ($entry['acc_class'] == 0 && $entry['class_name'] != '') {
+                                    $new_classes[$entry['class_name']] = true;
+                                }
+                            }
+                        }
+
+                        if ($mode == 'import') {
+                            $save_errors = [
+                                'close_the_book' => _l('has_closed_the_book'),
+                                'parent_account' => _l('acc_journal_entry_parent_account_error'),
+                                'no_rate' => _l('acc_rate_missing_block'),
+                            ];
+
+                            foreach ($entries as $index => $entry) {
+                                if ($entry['status'] != 'ok') {
+                                    continue;
+                                }
+
+                                $result = $this->accounting_model->journal_import_post_entry($entry);
+                                if (is_numeric($result) && (int) $result > 0) {
+                                    $count_posted++;
+                                } else {
+                                    $count_failed++;
+                                    $entries[$index]['status'] = 'error';
+                                    $entries[$index]['errors'][] = (is_string($result) && isset($save_errors[$result])) ? $save_errors[$result] : _l('acc_ji_save_failed');
+                                }
+                            }
+                        }
+
+                        //Error file: every line of every entry that is in error
+                        $writer = null;
+                        foreach ($entries as $entry) {
+                            if ($entry['status'] == 'error') {
+                                $count_error++;
+                            } elseif ($entry['status'] == 'duplicate') {
+                                $count_duplicate++;
+                            }
+
+                            if ($entry['status'] != 'error') {
+                                continue;
+                            }
+
+                            if ($writer === null) {
+                                $this->delete_error_file_day_before(1, ACCOUTING_IMPORT_ITEM_ERROR);
+
+                                $writer_header = array(
+                                    'مدين جنيه' => 'string',
+                                    'دائن جنيه' => 'string',
+                                    'من الحساب' => 'string',
+                                    'الى الحساب' => 'string',
+                                    'البيان' => 'string',
+                                    'المستند' => 'string',
+                                    'الوثيقة' => 'string',
+                                    'التاريخ' => 'string',
+                                    _l('acc_ji_reason') => 'string',
+                                );
+
+                                $writer = new XLSXWriter();
+                                $writer->writeSheetHeader('Sheet1', $writer_header, $col_options = ['widths' => [20, 20, 40, 40, 50, 20, 30, 20, 60]]);
+                            }
+
+                            $reason = implode(' | ', $entry['errors']);
+                            foreach ($entry['lines'] as $line) {
+                                $cells = [];
+                                for ($c = 0; $c < 8; $c++) {
+                                    $cells[] = isset($line['raw'][$c]) ? (string) $line['raw'][$c] : '';
+                                }
+                                // Excel stores dates as serial numbers: show the parsed date instead
+                                if (!empty($line['date'])) {
+                                    $cells[7] = $line['date'];
+                                }
+                                $cells[] = $reason;
+                                $writer->writeSheetRow('Sheet1', $cells);
+                            }
+                        }
+
+                        if ($writer !== null) {
+                            $filename = 'Import_journal_entry_error_' . get_staff_user_id() . '_' . time() . '.xlsx';
+                            $writer->writeToFile(ACCOUTING_IMPORT_ITEM_ERROR . $filename);
+                        }
+
+                        // only entries that need the user's attention are returned
+                        foreach ($entries as $entry) {
+                            if ($entry['status'] == 'ok' && empty($entry['warnings'])) {
+                                continue;
+                            }
+
+                            $out_entries[] = [
+                                'number' => $entry['number'],
+                                'date' => $entry['date'],
+                                'reference' => $entry['reference'],
+                                'class' => $entry['class_name'],
+                                'lines' => count($entry['lines']),
+                                'debit' => round($entry['total_debit'], 2),
+                                'credit' => round($entry['total_credit'], 2),
+                                'status' => $entry['status'],
+                                'errors' => $entry['errors'],
+                                'warnings' => $entry['warnings'],
+                            ];
+                        }
+                    }
+                }
+            }
+        }
+
+        if ($newFilePath != '' && file_exists($newFilePath)) {
+            @unlink($newFilePath);
+        }
+
+        echo json_encode([
+            'mode' => $mode,
+            'message' => $message,
+            'total_entries' => $total_entries,
+            'total_lines' => $total_lines,
+            'total_debit' => round($total_debit, 2),
+            'total_credit' => round($total_credit, 2),
+            'count_ok' => $count_ok,
+            'count_error' => $count_error,
+            'count_duplicate' => $count_duplicate,
+            'count_posted' => $count_posted,
+            'count_failed' => $count_failed,
+            'entries' => $out_entries,
+            'new_classes' => array_keys($new_classes),
+            'site_url' => site_url(),
+            'filename' => $filename != '' ? ACCOUTING_IMPORT_ITEM_ERROR . $filename : '',
         ]);
     }
 

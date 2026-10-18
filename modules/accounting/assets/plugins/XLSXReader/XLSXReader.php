@@ -83,10 +83,10 @@ class XLSXReader_fin {
 				foreach($workbookRelationsXML->Relationship as $wrel) {
 					switch($wrel['Type']) {
 						case self::SCHEMA_WORKSHEETRELATION:
-							$sheets[(string)$wrel['Id']]['path'] = $workbookDir . (string)$wrel['Target'];
+							$sheets[(string)$wrel['Id']]['path'] = self::resolveTarget($workbookDir, (string)$wrel['Target']);
 							break;
 						case self::SCHEMA_SHAREDSTRINGS:
-							$xml_target_ss = $this->getEntryData($workbookDir . (string)$wrel['Target']);
+							$xml_target_ss = $this->getEntryData(self::resolveTarget($workbookDir, (string)$wrel['Target']));
 							$xml_target_ss = str_replace('</x:', '</',str_replace('<x:', '<', $xml_target_ss));
 							$sharedStringsXML = simplexml_load_string($xml_target_ss);
 							foreach($sharedStringsXML->si as $val) {
@@ -110,6 +110,15 @@ class XLSXReader_fin {
 			);
 		}
 
+	}
+
+	// relationship targets are relative to the workbook folder, or absolute from
+	// the package root when they start with "/" (openpyxl and other tools)
+	protected static function resolveTarget($workbookDir, $target) {
+		if (substr($target, 0, 1) === '/') {
+			return ltrim($target, '/');
+		}
+		return $workbookDir . $target;
 	}
 
 	// returns an array of sheet names, indexed by sheetId

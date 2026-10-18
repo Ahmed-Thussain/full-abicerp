@@ -9,6 +9,7 @@
           <hr />
           <div>
             <a href="<?php echo admin_url('accounting/new_journal_entry'); ?>" class="btn btn-info mbot15"><?php echo _l('add'); ?></a>
+            <?php if (has_permission('accounting_journal_entry', '', 'create')) { ?><a href="<?php echo admin_url('accounting/journal_entry_import'); ?>" class="btn btn-success mbot15"><?php echo _l('acc_ji_import_journal_entry'); ?></a><?php } ?>
           </div>
           <div class="row">
 

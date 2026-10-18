@@ -12837,7 +12837,7 @@ class Accounting_model extends App_Model
      * @return array 
      */
     public function get_data_account_history($data_filter){
-        $from_date = date('Y-m-01');
+        $from_date = date('Y-01-01');
         $to_date = date('Y-m-d');
         $account = 0;
 
@@ -12853,9 +12853,39 @@ class Accounting_model extends App_Model
             $account = $data_filter['account'];
         }
 
+        // dates entered the wrong way round
+        if (strtotime($from_date) > strtotime($to_date)) {
+            $swap = $from_date;
+            $from_date = $to_date;
+            $to_date = $swap;
+        }
+
+        $class_filter = (isset($data_filter['class_filter']) && $data_filter['class_filter'] != '') ? $data_filter['class_filter'] : '';
+
         $report_currency = acc_resolve_report_currency(isset($data_filter['report_currency']) ? $data_filter['report_currency'] : null);
         $this->missing_rate_dates = [];
         $amount_sql = null;
+        $begin_missing_dates = [];
+        $begin_debit = 0;
+        $begin_credit = 0;
+        $before_from = date('Y-m-d', strtotime($from_date . ' -1 day'));
+
+        // beginning balance: everything posted to the account before the start date
+        if ($account != '') {
+            $begin_amount_sql = $report_currency !== null ? $this->report_amount_sql($report_currency, null, $before_from) : ['debit' => 'h.debit', 'credit' => 'h.credit'];
+            $begin_missing_dates = $this->missing_rate_dates;
+            $this->db->select('SUM(' . $begin_amount_sql['debit'] . ') as debit, SUM(' . $begin_amount_sql['credit'] . ') as credit', false);
+            $this->db->from(db_prefix() . 'acc_account_history h');
+            $this->db->where('account', $account);
+            $this->db->where('DATE(date) <', $from_date);
+            if ($class_filter != '') {
+                $this->db->where('h.class', $class_filter);
+            }
+            $begin = $this->db->get()->row();
+            $begin_debit = $begin ? (float) $begin->debit : 0;
+            $begin_credit = $begin ? (float) $begin->credit : 0;
+        }
+
         if ($report_currency !== null) {
             $amount_sql = $this->report_amount_sql($report_currency, $from_date, $to_date);
         }
@@ -12894,12 +12924,41 @@ class Accounting_model extends App_Model
             if($account != ''){
                 $this->db->where('account', $account);
             }
+            if ($class_filter != '') {
+                $this->db->where('class', $class_filter);
+            }
             $this->db->order_by('date', 'asc');
             
             $account_history = $this->db->get(db_prefix().'acc_account_history')->result_array();
         }
         $balance = 0;
         $amount = 0;
+
+        // opening row, with the same sign rule as the lines below
+        if ($account != '' && $info_account) {
+            // credit-normal: A/P, credit card, liabilities, equity, income, other income
+            $credit_normal = in_array((int) $info_account->account_type_id, [6, 7, 8, 9, 10, 11, 12]);
+            if ($credit_normal) {
+                $balance = $begin_credit - $begin_debit;
+            } else {
+                $balance = $begin_debit - $begin_credit;
+            }
+            $data_report[] = [
+                'date' => $from_date,
+                'split' => '',
+                'type' => _l('beginning_balance'),
+                'name' => '',
+                'description' => '',
+                'customer' => '',
+                'decrease' => null,
+                'increase' => null,
+                'debit' => null,
+                'credit' => null,
+                'balance' => $balance,
+                'rel_id' => 0,
+                'rel_type' => '',
+            ];
+        }
         foreach ($account_history as $v) {
             $line_debit = $v['debit'];
             $line_credit = $v['credit'];
@@ -12918,7 +12977,7 @@ class Accounting_model extends App_Model
             if($line_missing){
                 $decrease = null;
                 $increase = null;
-            }elseif($info_account->account_type_id == 7 || $info_account->account_type_id == 8){
+            }elseif(in_array((int) $info_account->account_type_id, [6, 7, 8, 9, 10, 11, 12])){
                 $increase = $line_credit;
                 $decrease = $line_debit;
                 $balance += ($line_credit - $line_debit);
@@ -12949,7 +13008,10 @@ class Accounting_model extends App_Model
                         ];
         }
                 
-        return ['data' => $data_report, 'from_date' => $from_date, 'to_date' => $to_date, 'account_type' => $info_account->account_type_id, 'report_currency' => $report_currency, 'missing_dates' => $this->missing_rate_dates];
+        $missing_dates = array_values(array_unique(array_merge($begin_missing_dates, $this->missing_rate_dates)));
+        sort($missing_dates);
+
+        return ['data' => $data_report, 'from_date' => $from_date, 'to_date' => $to_date, 'account_type' => $info_account ? $info_account->account_type_id : 0, 'report_currency' => $report_currency, 'missing_dates' => $missing_dates];
     }
 
     /**
@@ -16108,6 +16170,463 @@ class Accounting_model extends App_Model
         }
 
         return 1;
+    }
+
+    /**
+     * journal import: parse a date cell (Excel serial number, Y-m-d or d/m/Y)
+     * @param  mixed $value
+     * @return string|boolean  Y-m-d or false
+     */
+    public function journal_import_parse_date($value)
+    {
+        if (!class_exists('XLSXReader_fin')) {
+            require_once module_dir_path(ACCOUNTING_MODULE_NAME) . 'assets/plugins/XLSXReader/XLSXReader.php';
+        }
+
+        if (is_string($value)) {
+            $value = trim($value);
+        }
+
+        if ($value === null || $value === '') {
+            return false;
+        }
+
+        if (is_numeric($value)) {
+            if ($value <= 0) {
+                return false;
+            }
+            return gmdate('Y-m-d', (int) round(XLSXReader_fin::toUnixTimeStamp($value)));
+        }
+
+        if (!is_string($value)) {
+            return false;
+        }
+
+        if (preg_match('/^(\d{4})-(\d{1,2})-(\d{1,2})/', $value, $m)) {
+            if (checkdate((int) $m[2], (int) $m[3], (int) $m[1])) {
+                return sprintf('%04d-%02d-%02d', $m[1], $m[2], $m[3]);
+            }
+            return false;
+        }
+
+        if (preg_match('#^(\d{1,2})/(\d{1,2})/(\d{4})$#', $value, $m)) {
+            if (checkdate((int) $m[2], (int) $m[1], (int) $m[3])) {
+                return sprintf('%04d-%02d-%02d', $m[3], $m[2], $m[1]);
+            }
+        }
+
+        // browser-based editors save dates as text: "Tue Jan 13 2026 02:00:00 GMT+0200 (...)"
+        if (preg_match('/^[A-Za-z]{3} ([A-Za-z]{3}) (\d{1,2}) (\d{4})\b/', $value, $m)) {
+            $date = DateTime::createFromFormat('!M j Y', $m[1] . ' ' . $m[2] . ' ' . $m[3]);
+            if ($date && $date->format('M j Y') === $m[1] . ' ' . (int) $m[2] . ' ' . $m[3]) {
+                return $date->format('Y-m-d');
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * journal import: true when a cell is missing, null or blank
+     * @param  mixed $value
+     * @return boolean
+     */
+    private function journal_import_is_empty($value)
+    {
+        return $value === null || trim((string) $value) === '';
+    }
+
+    /**
+     * journal import: read an amount cell
+     * @param  mixed $value
+     * @return float|null  null when the cell is not a number
+     */
+    private function journal_import_parse_amount($value)
+    {
+        if ($this->journal_import_is_empty($value)) {
+            return 0.0;
+        }
+
+        if (is_numeric($value)) {
+            return (float) $value;
+        }
+
+        $clean = preg_replace('/[\s,\x{00A0}]+/u', '', (string) $value);
+        if ($clean !== null && is_numeric($clean)) {
+            return (float) $clean;
+        }
+
+        return null;
+    }
+
+    /**
+     * journal import: parse the sheet rows into journal entries (nothing is saved)
+     * @param  array $data rows of cells from XLSXReader_fin::getSheetData
+     * @return array       ['error' => string, 'entries' => array]
+     */
+    public function journal_import_parse_rows($data)
+    {
+        $result = ['error' => '', 'entries' => []];
+
+        // 1. header row
+        $header_index = -1;
+        foreach ($data as $index => $row) {
+            $first = isset($row[0]) ? trim((string) $row[0]) : '';
+            if ($first !== '' && (mb_strpos($first, 'مدين') === 0 || stripos($first, 'debit') === 0)) {
+                $header_index = $index;
+                break;
+            }
+        }
+
+        if ($header_index < 0) {
+            $result['error'] = _l('acc_ji_header_not_found');
+            return $result;
+        }
+
+        // 2. group the lines by entry number (first appearance order)
+        $groups = [];
+        foreach ($data as $index => $row) {
+            if ($index <= $header_index) {
+                continue;
+            }
+
+            $row_no = $index + 1;
+            $cell = [];
+            for ($c = 0; $c < 8; $c++) {
+                $cell[$c] = isset($row[$c]) ? $row[$c] : '';
+            }
+
+            $number_empty = $this->journal_import_is_empty($cell[5]);
+            if ($number_empty
+                && $this->journal_import_is_empty($cell[0])
+                && $this->journal_import_is_empty($cell[1])
+                && $this->journal_import_is_empty($cell[2])
+                && $this->journal_import_is_empty($cell[3])) {
+                continue;
+            }
+
+            if ($number_empty && (trim((string) $cell[4]) === 'المجموع' || ($this->journal_import_is_empty($cell[2]) && $this->journal_import_is_empty($cell[3])))) {
+                continue;
+            }
+
+            $line = [
+                'row_no' => $row_no,
+                'side' => '',
+                'debit' => 0.0,
+                'credit' => 0.0,
+                'account_code' => '',
+                'account_name_file' => '',
+                'account_id' => 0,
+                'description' => trim((string) $cell[4]),
+                'date' => false,
+                'reference' => trim((string) $cell[6]),
+                'raw' => array_map(function ($v) {
+                    return $v === null ? '' : $v;
+                }, $cell),
+                'errors' => [],
+            ];
+
+            if ($number_empty) {
+                $key = 'row-' . $row_no;
+                $number = '';
+                $line['errors'][] = _l('acc_ji_missing_entry_number');
+            } else {
+                $number = trim((string) $cell[5]);
+                if (is_numeric($number)) {
+                    $number = (string) (0 + $number);
+                }
+                $key = $number;
+            }
+
+            // 3. amounts, side and account
+            $debit = $this->journal_import_parse_amount($cell[0]);
+            $credit = $this->journal_import_parse_amount($cell[1]);
+            if ($debit === null || $credit === null) {
+                $line['errors'][] = _l('acc_ji_amount_invalid');
+            } else {
+                $line['debit'] = $debit;
+                $line['credit'] = $credit;
+
+                $account_text = '';
+                if ($debit > 0 && $credit == 0) {
+                    $line['side'] = 'debit';
+                    $account_text = trim((string) $cell[2]);
+                } elseif ($credit > 0 && $debit == 0) {
+                    $line['side'] = 'credit';
+                    $account_text = trim((string) $cell[3]);
+                } else {
+                    $line['errors'][] = _l('acc_ji_line_side_invalid');
+                }
+
+                if ($line['side'] !== '') {
+                    if (preg_match('/^\s*(\d+)/u', $account_text, $m)) {
+                        $line['account_code'] = $m[1];
+                        $line['account_name_file'] = trim(substr($account_text, strlen($m[0])));
+                    } else {
+                        $line['errors'][] = _l('acc_ji_account_code_missing');
+                    }
+                }
+            }
+
+            $line['date'] = $this->journal_import_parse_date($cell[7]);
+            if ($line['date'] === false) {
+                $line['errors'][] = _l('acc_ji_date_invalid');
+            }
+
+            if (!isset($groups[$key])) {
+                $groups[$key] = ['number' => $number, 'lines' => []];
+            }
+            $groups[$key]['lines'][] = $line;
+        }
+
+        // 4. build the entries
+        foreach ($groups as $group) {
+            $first = $group['lines'][0];
+            $total_debit = 0;
+            $total_credit = 0;
+            foreach ($group['lines'] as $line) {
+                $total_debit += $line['debit'];
+                $total_credit += $line['credit'];
+            }
+
+            $result['entries'][] = [
+                'number' => $group['number'],
+                'reference' => $first['reference'],
+                'date' => $first['date'] === false ? '' : $first['date'],
+                'description' => $first['description'],
+                // voucher type = the reference without its trailing number: "ص.ن 2405" -> "ص.ن"
+                'class_name' => trim(preg_replace('/[\s\d\/\-]+$/u', '', $first['reference'])),
+                'acc_class' => 0,
+                'lines' => $group['lines'],
+                'total_debit' => round($total_debit, 2),
+                'total_credit' => round($total_credit, 2),
+                'status' => 'ok',
+                'errors' => [],
+                'warnings' => [],
+            ];
+        }
+
+        return $result;
+    }
+
+    /**
+     * journal import: validate parsed entries against the chart of accounts,
+     * the existing journal entries and the closed books (writes nothing)
+     * @param  array &$entries entries from journal_import_parse_rows
+     */
+    public function journal_import_validate(&$entries)
+    {
+        // accounts by code (first wins), codes that appear twice
+        $by_code = [];
+        $duplicate_codes = [];
+        $accounts = $this->db->select('id, number, name, key_name, active')->get(db_prefix() . 'acc_accounts')->result_array();
+        foreach ($accounts as $account) {
+            $code = trim((string) $account['number']);
+            if ($code === '') {
+                continue;
+            }
+            if (isset($by_code[$code])) {
+                $duplicate_codes[$code] = true;
+            } else {
+                $by_code[$code] = $account;
+            }
+        }
+
+        // parent (header) accounts cannot be posted to
+        $parent_ids = [];
+        $parents = $this->db->query('SELECT DISTINCT parent_account FROM ' . db_prefix() . 'acc_accounts WHERE parent_account > 0')->result_array();
+        foreach ($parents as $parent) {
+            $parent_ids[(int) $parent['parent_account']] = true;
+        }
+
+        // entries already in the system: number|reference|date
+        $existing = [];
+        $journals = $this->db->select('number, reference, journal_date')->get(db_prefix() . 'acc_journal_entries')->result_array();
+        foreach ($journals as $journal) {
+            $existing[trim((string) $journal['number']) . '|' . trim((string) $journal['reference']) . '|' . substr((string) $journal['journal_date'], 0, 10)] = true;
+        }
+
+        $books_closed = get_option('acc_close_the_books') == 1;
+
+        // classes by English or Arabic name; a missing one is created when posting
+        $classes = $this->journal_import_class_map();
+        $closing_date = get_option('acc_closing_date');
+
+        foreach ($entries as &$entry) {
+            $errors = [];
+            $warnings = [];
+
+            // 1. line errors
+            foreach ($entry['lines'] as $line) {
+                foreach ($line['errors'] as $message) {
+                    $errors[] = _l('acc_ji_row', [$line['row_no']]) . $message;
+                }
+            }
+
+            // 2. one date and one reference per entry
+            $dates = [];
+            $references = [];
+            foreach ($entry['lines'] as $line) {
+                if ($line['date'] !== false) {
+                    $dates[$line['date']] = true;
+                }
+                $references[$line['reference']] = true;
+            }
+            if (count($dates) > 1) {
+                $errors[] = _l('acc_ji_multiple_dates');
+            }
+            if (count($references) > 1) {
+                $warnings[] = _l('acc_ji_multiple_references');
+            }
+
+            // 3. balance
+            if (abs($entry['total_debit'] - $entry['total_credit']) > 0.005) {
+                $errors[] = _l('acc_ji_unbalanced', [number_format($entry['total_debit'], 2), number_format($entry['total_credit'], 2)]);
+            }
+
+            // 4. accounts
+            foreach ($entry['lines'] as $key => $line) {
+                $code = $line['account_code'];
+                if ($code === '') {
+                    continue;
+                }
+                $prefix = _l('acc_ji_row', [$line['row_no']]);
+
+                if (!isset($by_code[$code])) {
+                    $errors[] = $prefix . _l('acc_ji_account_not_found', [$code, $line['account_name_file']]);
+                    continue;
+                }
+
+                $account = $by_code[$code];
+                if (isset($parent_ids[(int) $account['id']])) {
+                    $errors[] = $prefix . _l('acc_ji_account_is_parent', [$code]);
+                } elseif ($account['active'] != 1) {
+                    $errors[] = $prefix . _l('acc_ji_account_inactive', [$code]);
+                } else {
+                    $entry['lines'][$key]['account_id'] = (int) $account['id'];
+                }
+
+                $system_name = trim($account['name'] != '' ? $account['name'] : _l($account['key_name']));
+                if ($line['account_name_file'] !== '' && $system_name !== $line['account_name_file']) {
+                    $warnings[] = _l('acc_ji_account_name_differs', [$code, $line['account_name_file'], $system_name]);
+                }
+                if (isset($duplicate_codes[$code])) {
+                    $warnings[] = _l('acc_ji_account_code_duplicate', [$code]);
+                }
+            }
+
+            // 5. closed books
+            if ($books_closed && $entry['date'] !== '') {
+                if (strtotime($entry['date']) <= strtotime($closing_date) && strtotime(date('Y-m-d')) > strtotime($closing_date)) {
+                    $errors[] = _l('acc_ji_closed_period');
+                }
+            }
+
+            $entry['errors'] = array_values(array_unique($errors));
+            $entry['warnings'] = array_values(array_unique($warnings));
+
+            $class_key = mb_strtolower($entry['class_name']);
+            $entry['acc_class'] = ($class_key !== '' && isset($classes[$class_key])) ? $classes[$class_key] : 0;
+
+            // 6. status
+            if (!empty($entry['errors'])) {
+                $entry['status'] = 'error';
+            } elseif (isset($existing[trim($entry['number']) . '|' . trim($entry['reference']) . '|' . $entry['date']])) {
+                $entry['status'] = 'duplicate';
+            } else {
+                $entry['status'] = 'ok';
+            }
+        }
+        unset($entry);
+    }
+
+    /**
+     * journal import: existing classes as lower-case name => id (English and Arabic names)
+     * @return array
+     */
+    public function journal_import_class_map()
+    {
+        $map = [];
+        foreach ($this->db->get(db_prefix() . 'acc_class')->result_array() as $class) {
+            foreach (['name', 'name_ar'] as $field) {
+                $name = isset($class[$field]) ? mb_strtolower(trim((string) $class[$field])) : '';
+                if ($name !== '' && !isset($map[$name])) {
+                    $map[$name] = (int) $class['id'];
+                }
+            }
+        }
+
+        return $map;
+    }
+
+    /**
+     * journal import: id of the class with this name, created when it does not exist yet
+     * @param  string $name voucher type, e.g. "ص.ن"
+     * @return integer      0 when the name is empty
+     */
+    public function journal_import_class_id($name)
+    {
+        $name = trim((string) $name);
+        if ($name === '') {
+            return 0;
+        }
+
+        $classes = $this->journal_import_class_map();
+        if (isset($classes[mb_strtolower($name)])) {
+            return $classes[mb_strtolower($name)];
+        }
+
+        $class = [
+            'name' => $name,
+            'description' => '',
+            'addedfrom' => get_staff_user_id(),
+            'dateadded' => date('Y-m-d H:i:s'),
+        ];
+        if ($this->db->field_exists('name_ar', db_prefix() . 'acc_class')) {
+            $class['name_ar'] = $name;
+        }
+        $this->db->insert(db_prefix() . 'acc_class', $class);
+
+        return (int) $this->db->insert_id();
+    }
+
+    /**
+     * journal import: save one validated entry in its own transaction
+     * @param  array $entry
+     * @return integer|string|boolean  new id, or the add_journal_entry failure code
+     */
+    public function journal_import_post_entry($entry)
+    {
+        $data = [
+            'number' => $entry['number'],
+            'journal_date' => $entry['date'],
+            'reference' => $entry['reference'],
+            'description' => $entry['description'],
+            'doc_currency' => '',
+            'acc_class' => $this->journal_import_class_id($entry['class_name']),
+            'account' => [],
+            'debit_amount' => [],
+            'credit_amount' => [],
+            'description_detail' => [],
+        ];
+
+        foreach ($entry['lines'] as $line) {
+            $data['account'][] = $line['account_id'];
+            $data['debit_amount'][] = $line['debit'];
+            $data['credit_amount'][] = $line['credit'];
+            $data['description_detail'][] = $line['description'];
+        }
+
+        $this->db->trans_start();
+        $result = $this->add_journal_entry($data);
+
+        if (!is_numeric($result) || (int) $result <= 0) {
+            $this->db->trans_rollback();
+            return $result ? $result : false;
+        }
+
+        $this->db->trans_complete();
+        return (int) $result;
     }
 
     /**

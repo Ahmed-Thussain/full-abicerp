@@ -285,7 +285,7 @@ function accounting_add_head_component() {
 		echo '<link href="' . module_dir_url(ACCOUNTING_MODULE_NAME, 'assets/css/box_loading.css') . '?v=' . ACCOUNTING_REVISION . '"  rel="stylesheet" type="text/css" />';
 	}
 
-	if (!(strpos($viewuri, 'admin/accounting/accounts_import') === false) || !(strpos($viewuri, 'admin/accounting/report') === false)) {
+	if (!(strpos($viewuri, 'admin/accounting/accounts_import') === false) || !(strpos($viewuri, 'admin/accounting/report') === false) || !(strpos($viewuri, 'admin/accounting/journal_entry_import') === false)) {
 		echo '<link href="' . module_dir_url(ACCOUNTING_MODULE_NAME, 'assets/css/box_loading.css') . '?v=' . ACCOUNTING_REVISION . '"  rel="stylesheet" type="text/css" />';
 	}
 
