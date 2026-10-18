@@ -17028,6 +17028,10 @@ class Accounting_model extends App_Model
             $this->db->limit(intval($CI->input->post('length')), intval($CI->input->post('start')));
         }
 
+        if (!$CI->input->post('order')) {
+            $this->db->order_by('number', 'ASC');
+        }
+
         if ($CI->input->post('order')) {
             foreach ($CI->input->post('order') as $key => $val) {
                 $columnName = $aColumns[intval($__post['order'][$key]['column'])];
@@ -17038,6 +17042,10 @@ class Accounting_model extends App_Model
                     $dir = 'ASC';
                 }
 
+                if ($columnName === 'id' || $columnName === '1') {
+                    $columnName = 'number';
+                    $dir = 'ASC';
+                }
             }
 
             $this->db->order_by($columnName, $dir);
@@ -38038,15 +38046,16 @@ class Accounting_model extends App_Model
         }
 
         $credit_nature = [6, 7, 8, 9, 10, 11, 12];
-        $own = [];
+        $own_raw = [];
         $children = [];
         foreach ($accounts as $account) {
             $id = (int) $account['id'];
             $s = isset($sums[$id]) ? $sums[$id] : ['credit' => 0, 'debit' => 0, 'sec_credit' => 0, 'sec_debit' => 0];
-            $credit_side = in_array((int) $account['account_type_id'], $credit_nature);
-            $own[$id] = [
-                'balance' => $credit_side ? ($s['credit'] - $s['debit']) : ($s['debit'] - $s['credit']),
-                'sec' => $credit_side ? ($s['sec_credit'] - $s['sec_debit']) : ($s['sec_debit'] - $s['sec_credit']),
+            $own_raw[$id] = [
+                'd'  => (float) $s['debit'],
+                'c'  => (float) $s['credit'],
+                'sd' => (float) $s['sec_debit'],
+                'sc' => (float) $s['sec_credit'],
             ];
             $parent = (int) $account['parent_account'];
             if ($parent !== 0 && $parent !== $id) {
@@ -38054,13 +38063,13 @@ class Accounting_model extends App_Model
             }
         }
 
-        $result = [];
+        $totals = [];
         $visiting = [];
-        $roll_up = function ($id) use (&$roll_up, &$result, &$visiting, $own, $children) {
-            if (isset($result[$id])) {
-                return $result[$id];
+        $roll_up = function ($id) use (&$roll_up, &$totals, &$visiting, $own_raw, $children) {
+            if (isset($totals[$id])) {
+                return $totals[$id];
             }
-            $total = $own[$id];
+            $total = $own_raw[$id];
             if (isset($visiting[$id])) {
                 return $total; // cycle guard
             }
@@ -38068,15 +38077,28 @@ class Accounting_model extends App_Model
             if (isset($children[$id])) {
                 foreach ($children[$id] as $child_id) {
                     $child = $roll_up($child_id);
-                    $total['balance'] += $child['balance'];
-                    $total['sec'] += $child['sec'];
+                    $total['d'] += $child['d'];
+                    $total['c'] += $child['c'];
+                    $total['sd'] += $child['sd'];
+                    $total['sc'] += $child['sc'];
                 }
             }
             unset($visiting[$id]);
-            return $result[$id] = $total;
+            return $totals[$id] = $total;
         };
-        foreach ($own as $id => $unused) {
+        foreach ($own_raw as $id => $unused) {
             $roll_up($id);
+        }
+
+        $result = [];
+        foreach ($accounts as $account) {
+            $id = (int) $account['id'];
+            $t = $totals[$id];
+            $credit_side = in_array((int) $account['account_type_id'], $credit_nature);
+            $result[$id] = [
+                'balance' => $credit_side ? ($t['c'] - $t['d']) : ($t['d'] - $t['c']),
+                'sec'     => $credit_side ? ($t['sc'] - $t['sd']) : ($t['sd'] - $t['sc']),
+            ];
         }
 
         return $result;

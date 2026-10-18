@@ -7,6 +7,8 @@
 		status: '<?php echo _l('staff_dt_active'); ?>',
 		no_records: '<?php echo _l('acc_no_accounts_found'); ?>',
 		self_parent: '<?php echo _l('acc_parent_account_self_error'); ?>',
+		loading: '<?php echo _l('acc_tree_loading'); ?>',
+		load_failed: '<?php echo _l('acc_tree_load_failed'); ?>',
 	};
 	(function($) {
 		"use strict";
@@ -455,7 +457,7 @@ function accounts_tree_filter_params() {
 function load_accounts_tree() {
   "use strict";
   var $root = $('#accounts-tree-root');
-  $root.html('<li class="text-muted">' + acc_tree_lang.no_records + '</li>');
+  $root.html('<li class="text-muted">' + acc_tree_lang.loading + '</li>');
 
   $.post(admin_url + 'accounting/accounts_tree', accounts_tree_filter_params(), function(response) {
     var data = typeof response === 'string' ? JSON.parse(response) : response;
@@ -467,9 +469,14 @@ function load_accounts_tree() {
     }
 
     $root.html(render_accounts_tree_nodes(tree, data.acc_enable_secondary_currency == 1, 0));
-    // Open on the master classes only; everything below starts collapsed
-    set_tree_node_collapsed($root.find('.tree-node'), true);
-  });
+    // For ungrouped tree (code roots: first node has no is_group), keep top-level nodes open
+    if (tree[0] && !tree[0].is_group) {
+      set_tree_node_collapsed($root.find('.tree-node').not($root.children('.tree-node')), true);
+    } else {
+      // Open on the master classes only; everything below starts collapsed
+      set_tree_node_collapsed($root.find('.tree-node'), true);
+    }
+  }).fail(function() { $root.html('<li class="text-danger">' + acc_tree_lang.load_failed + '</li>'); });
 }
 
 function set_tree_node_collapsed($nodes, collapsed) {
