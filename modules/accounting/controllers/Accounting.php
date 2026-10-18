@@ -1218,8 +1218,6 @@ class Accounting extends AdminController
                 if($menu_type == 'bank_accounts'){
                     array_push($where, 'AND account_detail_type_id = 14');
                 }
-            }else{
-                array_push($where, 'AND account_detail_type_id != 14');
             }
 
 
@@ -1350,8 +1348,6 @@ class Accounting extends AdminController
             $this->load->model('currencies_model');
             $currency = $this->currencies_model->get_base_currency();
 
-            $this->db->where('account_detail_type_id !=', 14);
-
             $ft_active = $this->input->post('ft_active');
             if ($ft_active == 'yes') {
                 $this->db->where('active', 1);
@@ -1472,7 +1468,7 @@ class Accounting extends AdminController
                 if ($nb === '' && $na !== '') {
                     return -1;
                 }
-                $cmp = strnatcmp($na, $nb);
+                $cmp = strcmp($na, $nb);
                 return $cmp !== 0 ? $cmp : strnatcmp($nodes[$a]['name'], $nodes[$b]['name']);
             };
             foreach ($children_map as $pid => $ids) {
@@ -1538,9 +1534,30 @@ class Accounting extends AdminController
                 if ($b['number'] === '' && $a['number'] !== '') {
                     return -1;
                 }
-                $cmp = strnatcmp($a['number'], $b['number']);
+                $cmp = strcmp($a['number'], $b['number']);
                 return $cmp !== 0 ? $cmp : strnatcmp($a['name'], $b['name']);
             });
+
+            // Code-roots company (e.g. National: 1,2,3,4): every coded root is a
+            // single digit, so the code tree itself is the top level and the
+            // fixed Assets/Liabilities/... class labels would only add noise.
+            $numbered_roots = 0;
+            $single_char_roots = true;
+            foreach ($roots_all as $root) {
+                $root_number = trim((string) $root['number']);
+                if ($root_number === '') {
+                    continue;
+                }
+                $numbered_roots++;
+                if (strlen($root_number) !== 1) {
+                    $single_char_roots = false;
+                }
+            }
+            if ($numbered_roots > 0 && $single_char_roots) {
+                echo json_encode(['acc_enable_secondary_currency' => $acc_enable_secondary_currency, 'tree' => $roots_all]);
+                die();
+            }
+
             foreach ($roots_all as $root) {
                 $class = isset($class_of_type[$root['account_type_id']]) ? $class_of_type[$root['account_type_id']] : 'assets';
                 $class_children[$class][] = $root;
