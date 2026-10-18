@@ -10487,6 +10487,191 @@ class Accounting_model extends App_Model
     }
 
     /**
+     * Build the code-tree trial balance from raw opening and movement amounts.
+     * @param  array $data_filter
+     * @return array
+     */
+    public function get_data_trial_balance_tree($data_filter){
+        $from_date = !empty($data_filter['from_date']) ? to_sql_date($data_filter['from_date']) : date('Y-01-01');
+        $to_date = !empty($data_filter['to_date']) ? to_sql_date($data_filter['to_date']) : date('Y-m-d');
+        $accounting_method = $data_filter['accounting_method'] ?? get_option('acc_accounting_method');
+        $hide_zero = isset($data_filter['hide_zero']) && (string) $data_filter['hide_zero'] === '1';
+        $this->missing_rate_dates = [];
+
+        $secondary = null;
+        $secondary_id = get_option('acc_secondary_currency_id');
+        $history_table = db_prefix().'acc_account_history';
+        if (get_option('acc_enable_secondary_currency') == 1 && $secondary_id != '' && $this->db->field_exists('sec_debit', $history_table)) {
+            $this->load->model('currencies_model');
+            $cur = $this->currencies_model->get($secondary_id);
+            if ($cur) {
+                $secondary = ['id' => $cur->id, 'name' => $cur->name];
+            }
+        }
+
+        $accounts = $this->db->select('id, number, name, key_name, parent_account, account_type_id')
+            ->where('active', 1)->get(db_prefix().'acc_accounts')->result_array();
+        $nodes = [];
+        $raw_keys = ['od', 'oc', 'md', 'mc'];
+        $amount_keys = ['open_dr', 'open_cr', 'mov_dr', 'mov_cr', 'close_dr', 'close_cr'];
+        if ($secondary !== null) {
+            $raw_keys = array_merge($raw_keys, ['sod', 'soc', 'smd', 'smc']);
+            $amount_keys = array_merge($amount_keys, ['s_open_dr', 's_open_cr', 's_mov_dr', 's_mov_cr', 's_close_dr', 's_close_cr']);
+        }
+        $zero = array_fill_keys($raw_keys, 0.0);
+        $own = [];
+        foreach ($accounts as $account) {
+            $id = (int) $account['id'];
+            $account['number'] = trim((string) $account['number']);
+            $account['name'] = $account['name'] != '' ? $account['name'] : _l($account['key_name']);
+            $nodes[$id] = $account;
+            $own[$id] = $zero;
+        }
+
+        $from_sql = $this->db->escape($from_date);
+        $to_sql = $this->db->escape($to_date);
+        $is_opening = '(date < '.$from_sql.' OR (date = '.$from_sql.' AND rel_type = "deposit" AND rel_id = 0))';
+        $cash_filter = $accounting_method === 'cash' ? ' AND ((rel_type = "invoice" AND paid = 1) OR rel_type != "invoice")' : '';
+        $select = 'account, SUM(debit) d, SUM(credit) c';
+        if ($secondary !== null) {
+            $select .= ', SUM(sec_debit) sd, SUM(sec_credit) sc';
+        }
+        $opening = $this->db->query('SELECT '.$select.' FROM '.$history_table.' WHERE '.$is_opening.$cash_filter.' GROUP BY account')->result_array();
+        $movement = $this->db->query('SELECT '.$select.' FROM '.$history_table.' WHERE date >= '.$from_sql.' AND date <= '.$to_sql.' AND NOT '.$is_opening.$cash_filter.' GROUP BY account')->result_array();
+        foreach (['o' => $opening, 'm' => $movement] as $period => $balances) {
+            foreach ($balances as $balance) {
+                $id = (int) $balance['account'];
+                if (!isset($own[$id])) {
+                    continue;
+                }
+                $own[$id][$period.'d'] = (float) $balance['d'];
+                $own[$id][$period.'c'] = (float) $balance['c'];
+                if ($secondary !== null) {
+                    $own[$id]['s'.$period.'d'] = (float) $balance['sd'];
+                    $own[$id]['s'.$period.'c'] = (float) $balance['sc'];
+                }
+            }
+        }
+
+        // Invalid or cyclic parent chains fall back to roots.
+        $safe_parent = [];
+        foreach ($nodes as $id => $node) {
+            $pid = (int) $node['parent_account'];
+            $safe_parent[$id] = 0;
+            if ($pid === 0 || $pid === $id || !isset($nodes[$pid])) {
+                continue;
+            }
+            $seen = [$id => true];
+            $walk = $pid;
+            while ($walk !== 0 && isset($nodes[$walk]) && !isset($seen[$walk])) {
+                $seen[$walk] = true;
+                $walk = (int) $nodes[$walk]['parent_account'];
+            }
+            if ($walk === 0 || !isset($nodes[$walk])) {
+                $safe_parent[$id] = $pid;
+            }
+        }
+        $children = [];
+        $roots = [];
+        foreach ($nodes as $id => $node) {
+            if ($safe_parent[$id] === 0) {
+                $roots[] = $id;
+            } else {
+                $children[$safe_parent[$id]][] = $id;
+            }
+        }
+        $sort_by_code = function ($a, $b) use ($nodes) {
+            $na = $nodes[$a]['number'];
+            $nb = $nodes[$b]['number'];
+            if (($na === '') !== ($nb === '')) {
+                return $na === '' ? 1 : -1;
+            }
+            $cmp = strcmp($na, $nb);
+            return $cmp !== 0 ? $cmp : strcmp($nodes[$a]['name'], $nodes[$b]['name']);
+        };
+        usort($roots, $sort_by_code);
+        foreach ($children as &$siblings) {
+            usort($siblings, $sort_by_code);
+        }
+        unset($siblings);
+
+        $tot = [];
+        $visiting = [];
+        $roll_up = function ($id) use (&$roll_up, &$tot, &$visiting, $own, $children, $raw_keys, $zero) {
+            if (isset($tot[$id])) {
+                return $tot[$id];
+            }
+            if (isset($visiting[$id])) {
+                return $zero;
+            }
+            $visiting[$id] = true;
+            $sum = $own[$id];
+            foreach ($children[$id] ?? [] as $child_id) {
+                $child_sum = $roll_up($child_id);
+                foreach ($raw_keys as $key) {
+                    $sum[$key] += $child_sum[$key];
+                }
+            }
+            unset($visiting[$id]);
+            return $tot[$id] = $sum;
+        };
+        foreach ($roots as $id) {
+            $roll_up($id);
+        }
+
+        $rows = [];
+        $total = array_fill_keys($amount_keys, 0.0);
+        $visited = [];
+        $append_row = function ($id, $level) use (&$append_row, &$rows, &$total, &$visited, $nodes, $children, $tot, $amount_keys, $secondary, $hide_zero) {
+            if (isset($visited[$id])) {
+                return;
+            }
+            $visited[$id] = true;
+            $row = [
+                'id' => $id, 'number' => $nodes[$id]['number'], 'name' => $nodes[$id]['name'],
+                'level' => $level, 'has_children' => !empty($children[$id]),
+            ];
+            foreach ($secondary !== null ? ['', 's'] : [''] as $prefix) {
+                $out = $prefix === '' ? '' : 's_';
+                $net_o = $tot[$id][$prefix.'od'] - $tot[$id][$prefix.'oc'];
+                $net_c = ($tot[$id][$prefix.'od'] + $tot[$id][$prefix.'md']) - ($tot[$id][$prefix.'oc'] + $tot[$id][$prefix.'mc']);
+                $row[$out.'open_dr'] = round(max($net_o, 0), 2);
+                $row[$out.'open_cr'] = round(max(-$net_o, 0), 2);
+                $row[$out.'mov_dr'] = round($tot[$id][$prefix.'md'], 2);
+                $row[$out.'mov_cr'] = round($tot[$id][$prefix.'mc'], 2);
+                $row[$out.'close_dr'] = round(max($net_c, 0), 2);
+                $row[$out.'close_cr'] = round(max(-$net_c, 0), 2);
+            }
+            $is_zero = true;
+            foreach ($amount_keys as $key) {
+                if ($row[$key] != 0) {
+                    $is_zero = false;
+                    break;
+                }
+            }
+            if ($is_zero && ($hide_zero || $row['number'] === '')) {
+                return;
+            }
+            $rows[] = $row;
+            if ($level === 0) {
+                foreach ($amount_keys as $key) {
+                    $total[$key] += $row[$key];
+                }
+            }
+            foreach ($children[$id] ?? [] as $child_id) {
+                $append_row($child_id, $level + 1);
+            }
+        };
+        foreach ($roots as $id) {
+            $append_row($id, 0);
+        }
+        foreach ($amount_keys as $key) {
+            $total[$key] = round($total[$key], 2);
+        }
+        return ['rows' => $rows, 'total' => $total, 'from_date' => $from_date, 'to_date' => $to_date, 'secondary' => $secondary];
+    }
+
+    /**
      * import xlsx banking
      * @param  array $data
      * @return integer or boolean      

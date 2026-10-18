@@ -4500,6 +4500,83 @@ class Accounting extends AdminController
     }
 
     /**
+     * Trial balance Excel export in base and optional secondary currency.
+     */
+    public function trial_balance_export(){
+        if (!has_permission('accounting_report', '', 'view')) {
+            access_denied('accounting_report');
+        }
+        $this->delete_error_file_day_before(1,ACCOUTING_EXPORT_XLSX);
+        $report = $this->accounting_model->get_data_trial_balance_tree($this->input->get());
+
+        if(!class_exists('XLSXWriter')){
+            require_once(module_dir_path(ACCOUNTING_MODULE_NAME).'/assets/plugins/XLSXWriter/xlsxwriter.class.php');
+        }
+
+        $style3 = array('fill' => '#C65911', 'height'=>25, 'font-style'=>'bold', 'color' => '#FFFFFF', 'border'=>'left,right,top,bottom', 'border-color' => '#FFFFFF', 'font-size' => 15, 'font' => 'Calibri');
+        $style1 = array('fill' => '#F8CBAD', 'height'=>25, 'border'=>'left,right,top,bottom', 'border-color' => '#FFFFFF', 'font-size' => 15, 'font' => 'Calibri', 'color' => '#000000');
+        $style2 = array('fill' => '#FCE4D6', 'height'=>25, 'border'=>'left,right,top,bottom', 'border-color' => '#FFFFFF', 'font-size' => 15, 'font' => 'Calibri', 'color' => '#000000');
+
+        $types = ['A' => 'string', 'B' => 'string', 'C' => 'price', 'D' => 'price', 'E' => 'price', 'F' => 'price', 'G' => 'price', 'H' => 'price'];
+        $widths = [14, 45, 16, 16, 16, 16, 16, 16];
+        $amount_keys = ['open_dr', 'open_cr', 'mov_dr', 'mov_cr', 'close_dr', 'close_cr'];
+        $header1 = [_l('acc_tb_code'), _l('acc_account'), _l('acc_tb_opening'), '', _l('acc_tb_movement'), '', _l('acc_tb_closing'), ''];
+        $header2 = ['', '', _l('debit'), _l('credit'), _l('debit'), _l('credit'), _l('debit'), _l('credit')];
+        if ($report['secondary'] !== null) {
+            foreach (['I', 'J', 'K', 'L', 'M', 'N'] as $column) {
+                $types[$column] = 'price';
+                $widths[] = 16;
+            }
+            $amount_keys = array_merge($amount_keys, ['s_open_dr', 's_open_cr', 's_mov_dr', 's_mov_cr', 's_close_dr', 's_close_cr']);
+            $header1 = array_merge($header1, [$report['secondary']['name'], '', '', '', '', '']);
+            foreach (['acc_tb_opening', 'acc_tb_movement', 'acc_tb_closing'] as $label) {
+                $header2[] = _l($label).' '._l('debit');
+                $header2[] = _l($label).' '._l('credit');
+            }
+        }
+
+        // This writer forces price columns to numeric, even for header labels.
+        $writer = new class extends XLSXWriter {
+            protected function writeCell(XLSXWriter_BuffererWriter &$file, $row_number, $column_number, $value, $num_format_type, $cell_style_idx){
+                if ($num_format_type === 'n_numeric' && is_string($value) && !is_numeric($value)) {
+                    $num_format_type = 'n_string';
+                }
+                parent::writeCell($file, $row_number, $column_number, $value, $num_format_type, $cell_style_idx);
+            }
+        };
+        $writer->setRightToLeft(true);
+        $writer->writeSheetHeader('Sheet1', $types, ['suppress_row' => true, 'widths' => $widths]);
+        $writer->writeSheetRow('Sheet1', [get_option('companyname')]);
+        $writer->writeSheetRow('Sheet1', [_l('trial_balance')]);
+        $writer->writeSheetRow('Sheet1', [_d($report['from_date']).' - '._d($report['to_date'])]);
+        $writer->writeSheetRow('Sheet1', []);
+        $writer->writeSheetRow('Sheet1', $header1, $style3);
+        $writer->writeSheetRow('Sheet1', $header2, $style3);
+
+        foreach ($report['rows'] as $k => $row) {
+            $line = [$row['number'], str_repeat('  ', $row['level']).$row['name']];
+            foreach ($amount_keys as $key) {
+                $line[] = (float) $row[$key];
+            }
+            $style = ($k % 2) == 0 ? $style1 : $style2;
+            if ($row['has_children']) {
+                $style['font-style'] = 'bold';
+            }
+            $writer->writeSheetRow('Sheet1', $line, $style);
+        }
+        $line = [_l('total'), ''];
+        foreach ($amount_keys as $key) {
+            $line[] = (float) $report['total'][$key];
+        }
+        $writer->writeSheetRow('Sheet1', $line, $style3);
+
+        $filename = 'trial_balance_'.time().'.xlsx';
+        $writer->writeToFile(str_replace($filename, ACCOUTING_EXPORT_XLSX.$filename, $filename));
+        $this->download_xlsx_file(ACCOUTING_EXPORT_XLSX.$filename);
+        die();
+    }
+
+    /**
      * report statement of changes in equity description
      * @return view
      */
@@ -5617,7 +5694,12 @@ class Accounting extends AdminController
                     $data['data_report'] = $this->accounting_model->get_data_transaction_list_by_date($data_filter);
                 break;
             case 'trial_balance':
+                if ($report_currency_info === null) {
+                    $data['data_report'] = $this->accounting_model->get_data_trial_balance_tree($data_filter);
+                    $data_filter['type'] = 'trial_balance_tree';
+                } else {
                     $data['data_report'] = $this->accounting_model->get_data_trial_balance($data_filter);
+                }
                 break;
             case 'account_history':
                     $data['data_report'] = $this->accounting_model->get_data_account_history($data_filter);

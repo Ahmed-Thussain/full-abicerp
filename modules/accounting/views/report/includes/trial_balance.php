@@ -30,6 +30,10 @@
                 <?php $this->load->view('report/includes/report_currency_bar'); ?>
                 <div class="col-md-3">
                   <?php echo form_hidden('type', 'trial_balance'); ?>
+                  <div class="checkbox">
+                    <input type="checkbox" id="hide_zero" name="hide_zero" value="1">
+                    <label for="hide_zero"><?php echo _l('acc_tb_hide_zero'); ?></label>
+                  </div>
                   <button type="submit" class="btn btn-info btn-submit mtop25"><?php echo _l('filter'); ?></button>
                 </div>
               <?php echo form_close(); ?>
@@ -45,7 +49,7 @@
                        </a>
                     </li>
                     <li>
-                       <a href="#" onclick="printExcel(); return false;">
+                       <a href="#" onclick="acc_trial_balance_export(); return false;">
                        <?php echo _l('export_to_excel'); ?>
                        </a>
                     </li>

@@ -210,3 +210,13 @@ function report_load() {
   $('input[name="page"]').val(1);
   $('#filter-form').submit();
 }
+function acc_trial_balance_export() {
+  "use strict";
+  var params = {
+    from_date: $('input[name="from_date"]').val(),
+    to_date: $('input[name="to_date"]').val(),
+    accounting_method: $('select[name="accounting_method"]').val(),
+    hide_zero: $('input[name="hide_zero"]').is(':checked') ? 1 : ''
+  };
+  window.location.href = admin_url + 'accounting/trial_balance_export?' + $.param(params);
+}
