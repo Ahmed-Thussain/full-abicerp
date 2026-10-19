@@ -267,4 +267,9 @@ span.tree-icon.margin-left-100 {
 }
 
 
+.acc-tb-tree { font-size: 8px; }
+.acc-tb-tree td { padding: 1px 2px; white-space: nowrap; }
+.acc-tb-tree .th_total { width: auto; }
+.acc-tb-tree .tr_header { font-size: 8px; height: auto; }
+
 </style>

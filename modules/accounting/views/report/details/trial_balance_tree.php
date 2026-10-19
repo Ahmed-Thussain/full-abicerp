@@ -6,10 +6,19 @@ $amount_keys = ['open_dr', 'open_cr', 'mov_dr', 'mov_cr', 'close_dr', 'close_cr'
 $node_id_of = [];
 $account_at_level = [];
 ?>
+<?php /* screen styles stay outside #accordion: printDiv() sends only its inner HTML to the PDF */ ?>
+<style>
+  /* 8 columns (14 with the secondary currency) need an A4 landscape page */
+  #DivIdToPrint.page { width: 1123px; max-width: 100%; }
+  .acc-tb-tree { width: 100%; font-size: 11px; }
+  .acc-tb-tree td { padding: 2px 4px !important; white-space: nowrap; }
+  .acc-tb-tree td h3, .acc-tb-tree td h4, .acc-tb-tree td p { white-space: normal; }
+</style>
 <div id="accordion">
   <div class="card">
     <?php $this->load->view('report/includes/report_currency_bar'); ?>
-    <table class="tree">
+    <div style="overflow-x: auto;">
+    <table class="tree acc-tb-tree">
       <tbody>
         <tr>
           <td colspan="<?php echo $column_count; ?>">
@@ -23,37 +32,37 @@ $account_at_level = [];
         </tr>
         <tr>
           <td colspan="<?php echo $column_count; ?>">
-            <p class="text-center"><?php echo _d($data_report['from_date']).' - '._d($data_report['to_date']); ?></p>
+            <p class="text-center"><span dir="ltr"><?php echo _d($data_report['from_date']).' - '._d($data_report['to_date']); ?></span></p>
           </td>
         </tr>
-        <?php if (!empty($report_currency_info)) { ?>
         <tr>
           <td colspan="<?php echo $column_count; ?>">
             <p class="text-center"><?php echo _l('acc_report_currency').': '.html_escape($currency->name); ?></p>
           </td>
         </tr>
-        <?php } ?>
-        <tr class="tr_header text-bold">
+        <tr class="tr_header text-bold" style="text-align: center;">
           <td><?php echo _l('acc_tb_code'); ?></td>
           <td><?php echo _l('acc_account'); ?></td>
-          <td colspan="2" class="th_total"><?php echo _l('acc_tb_opening'); ?></td>
-          <td colspan="2" class="th_total"><?php echo _l('acc_tb_movement'); ?></td>
-          <td colspan="2" class="th_total"><?php echo _l('acc_tb_closing'); ?></td>
+          <td colspan="2" class="th_total text-center"><?php echo _l('acc_tb_opening'); ?></td>
+          <td colspan="2" class="th_total text-center"><?php echo _l('acc_tb_movement'); ?></td>
+          <td colspan="2" class="th_total text-center"><?php echo _l('acc_tb_closing'); ?></td>
           <?php if ($secondary !== null) { ?>
-          <td colspan="6" class="th_total"><?php echo html_escape($secondary['name']); ?></td>
+          <?php foreach (['acc_tb_opening', 'acc_tb_movement', 'acc_tb_closing'] as $label) { ?>
+          <td colspan="2" class="th_total text-center"><?php echo _l($label).' ('.html_escape($secondary['name']).')'; ?></td>
+          <?php } ?>
           <?php } ?>
         </tr>
-        <tr class="tr_header text-bold">
+        <tr class="tr_header text-bold" style="text-align: center;">
           <td></td>
           <td></td>
           <?php for ($pair = 0; $pair < 3; $pair++) { ?>
-          <td class="th_total"><?php echo _l('debit'); ?></td>
-          <td class="th_total"><?php echo _l('credit'); ?></td>
+          <td class="th_total text-center"><?php echo _l('debit'); ?></td>
+          <td class="th_total text-center"><?php echo _l('credit'); ?></td>
           <?php } ?>
           <?php if ($secondary !== null) { ?>
-          <?php foreach (['acc_tb_opening', 'acc_tb_movement', 'acc_tb_closing'] as $label) { ?>
-          <td class="th_total"><?php echo _l($label).' '._l('debit'); ?></td>
-          <td class="th_total"><?php echo _l($label).' '._l('credit'); ?></td>
+          <?php for ($pair = 0; $pair < 3; $pair++) { ?>
+          <td class="th_total text-center"><?php echo _l('debit'); ?></td>
+          <td class="th_total text-center"><?php echo _l('credit'); ?></td>
           <?php } ?>
           <?php } ?>
         </tr>
@@ -68,11 +77,11 @@ $account_at_level = [];
           <td><?php echo html_escape($row['number']); ?></td>
           <td><?php echo str_repeat('&nbsp;', $row['level'] * 4); ?><a href="<?php echo html_escape($register_url); ?>"><?php echo html_escape($row['name']); ?></a></td>
           <?php foreach ($amount_keys as $key) { ?>
-          <td class="total_amount"><?php echo $row[$key] != 0 ? app_format_money($row[$key], $currency->name) : ''; ?></td>
+          <td class="total_amount"><?php echo $row[$key] != 0 ? app_format_number($row[$key]) : ''; ?></td>
           <?php } ?>
           <?php if ($secondary !== null) { ?>
           <?php foreach ($amount_keys as $key) { ?>
-          <td class="total_amount"><?php echo $row['s_'.$key] != 0 ? app_format_money($row['s_'.$key], $secondary['name']) : ''; ?></td>
+          <td class="total_amount"><?php echo $row['s_'.$key] != 0 ? app_format_number($row['s_'.$key]) : ''; ?></td>
           <?php } ?>
           <?php } ?>
         </tr>
@@ -80,15 +89,16 @@ $account_at_level = [];
         <tr class="tr_total">
           <td colspan="2"><?php echo _l('total'); ?></td>
           <?php foreach ($amount_keys as $key) { ?>
-          <td class="total_amount"><?php echo app_format_money($data_report['total'][$key], $currency->name); ?></td>
+          <td class="total_amount"><?php echo app_format_number($data_report['total'][$key]); ?></td>
           <?php } ?>
           <?php if ($secondary !== null) { ?>
           <?php foreach ($amount_keys as $key) { ?>
-          <td class="total_amount"><?php echo app_format_money($data_report['total']['s_'.$key], $secondary['name']); ?></td>
+          <td class="total_amount"><?php echo app_format_number($data_report['total']['s_'.$key]); ?></td>
           <?php } ?>
           <?php } ?>
         </tr>
       </tbody>
     </table>
+    </div>
   </div>
 </div>

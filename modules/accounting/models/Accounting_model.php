@@ -17029,6 +17029,8 @@ class Accounting_model extends App_Model
         }
 
         if (!$CI->input->post('order')) {
+            // accounts without a code go last, as in the tree view
+            $this->db->order_by("(COALESCE(a.number, '') = '')", 'ASC', false);
             $this->db->order_by('number', 'ASC');
         }
 
@@ -17048,6 +17050,9 @@ class Accounting_model extends App_Model
                 }
             }
 
+            if ($columnName === 'number') {
+                $this->db->order_by("(COALESCE(a.number, '') = '')", 'ASC', false);
+            }
             $this->db->order_by($columnName, $dir);
         }
 

@@ -4545,10 +4545,11 @@ class Accounting extends AdminController
                 $widths[] = 16;
             }
             $amount_keys = array_merge($amount_keys, ['s_open_dr', 's_open_cr', 's_mov_dr', 's_mov_cr', 's_close_dr', 's_close_cr']);
-            $header1 = array_merge($header1, [$report['secondary']['name'], '', '', '', '', '']);
             foreach (['acc_tb_opening', 'acc_tb_movement', 'acc_tb_closing'] as $label) {
-                $header2[] = _l($label).' '._l('debit');
-                $header2[] = _l($label).' '._l('credit');
+                $header1[] = _l($label).' ('.$report['secondary']['name'].')';
+                $header1[] = '';
+                $header2[] = _l('debit');
+                $header2[] = _l('credit');
             }
         }
 

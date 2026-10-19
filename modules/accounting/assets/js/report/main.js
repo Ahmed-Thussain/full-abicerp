@@ -81,7 +81,8 @@ function printDiv() {
 
   $('input[name="html"]').val(pages.innerHTML);
   $('input[name="pdf_name"]').val($('input[name="type"]').val());
-  $('input[name="orientation"]').val('portrait');
+  // the trial balance has 8 (or 14) amount columns, too wide for portrait
+  $('input[name="orientation"]').val($('#accordion .acc-tb-tree').length ? 'landscape' : 'portrait');
 
   $('#render_pdf-form').submit();
 
