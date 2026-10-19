@@ -62,6 +62,12 @@ class XLSXReader_fin {
 		}
 	}
 
+	// a relationship target is relative to the workbook folder, or absolute from the
+	// package root ("/xl/worksheets/sheet1.xml", written by openpyxl and others)
+	protected function resolveTarget($workbookDir, $target) {
+		return $target !== '' && $target[0] === '/' ? ltrim($target, '/') : $workbookDir . $target;
+	}
+
 	// extract the shared string and the list of sheets
 	protected function parse() {
 		$sheets = array();
@@ -69,10 +75,10 @@ class XLSXReader_fin {
 		//var_dump($relationshipsXML);
 		foreach($relationshipsXML->Relationship as $rel) {
 			if($rel['Type'] == self::SCHEMA_OFFICEDOCUMENT) {
-				$workbookDir = dirname($rel['Target']) . '/';
+				$workbookDir = dirname(ltrim((string)$rel['Target'], '/')) . '/';
 				//var_dump($rel['Target']);
 				//var_export($this->getEntryData($rel['Target']));
-				$xml_target = $this->getEntryData($rel['Target']);
+				$xml_target = $this->getEntryData(ltrim((string)$rel['Target'], '/'));
 				$xml_target = new_str_replace('</x:', '</',new_str_replace('<x:', '<', $xml_target));				
 				//$workbookXML = simplexml_load_string($this->getEntryData($rel['Target']));
 				$workbookXML = simplexml_load_string($xml_target);
@@ -90,10 +96,10 @@ class XLSXReader_fin {
 				foreach($workbookRelationsXML->Relationship as $wrel) {
 					switch($wrel['Type']) {
 						case self::SCHEMA_WORKSHEETRELATION:
-							$sheets[(string)$wrel['Id']]['path'] = $workbookDir . (string)$wrel['Target'];
+							$sheets[(string)$wrel['Id']]['path'] = $this->resolveTarget($workbookDir, (string)$wrel['Target']);
 							break;
 						case self::SCHEMA_SHAREDSTRINGS:
-							$xml_target_ss = $this->getEntryData($workbookDir . (string)$wrel['Target']);
+							$xml_target_ss = $this->getEntryData($this->resolveTarget($workbookDir, (string)$wrel['Target']));
 							$xml_target_ss = new_str_replace('</x:', '</',new_str_replace('<x:', '<', $xml_target_ss));
 							$sharedStringsXML = simplexml_load_string($xml_target_ss);
 							foreach($sharedStringsXML->si as $val) {

@@ -2421,9 +2421,11 @@ class Hr_profile extends AdminController {
 
 						//direct manager
 						$staff_data = [];
+						$existing_staff_ids = [];
 						$list_staffs = $this->hr_profile_model->get_staff();
 						foreach ($list_staffs as $key => $list_staff) {
 							$staff_data[$list_staff['staff_identifi']] = $list_staff;
+							$existing_staff_ids[$list_staff['staffid']] = true;
 						}
 
 						//get role data
@@ -2569,6 +2571,12 @@ class Hr_profile extends AdminController {
 									}
 								}
 
+							}
+
+							//a filled ID means "update this employee", so it must belong to an existing one
+							if (is_null($value_staffid) != true && $value_staffid != '' && !isset($existing_staff_ids[$value_staffid])) {
+								$string_error .= _l('id') . ' ' . _l('does_not_exist') . '; ';
+								$flag2 = 1;
 							}
 
 							//check start_time
@@ -2747,9 +2755,7 @@ class Hr_profile extends AdminController {
 								}
 							}
 
-							if (($flag == 1) || $flag2 == 1) {
-								//write error file
-								$writer->writeSheetRow('Sheet1', [
+							$row_values = [
 									$value_staffid,
 									$value_staff_identifi,
 									$value_firstname,
@@ -2794,8 +2800,11 @@ class Hr_profile extends AdminController {
 									$value_other_contact_person,
 									$value_other_contact_No,
 									$value_visa_validity,
-									$string_error,
-								]);
+							];
+
+							if (($flag == 1) || $flag2 == 1) {
+								//write error file
+								$writer->writeSheetRow('Sheet1', array_merge($row_values, [$string_error]));
 
 								$total_row_false++;
 							}
@@ -2859,31 +2868,44 @@ class Hr_profile extends AdminController {
 								$rows[] = $rd;
 								array_push($arr_insert, $rd);
 
-								$staff_next_number++;
-
 							}
 
 							if ($flag == 0 && $flag2 == 0) {
 
+								$rd['email_signature'] = '';
 
 								if ($rd['staffid'] == '' || $rd['staffid'] == 0) {
-
-									$rd['email_signature'] = '';
 									//insert staff
+									unset($rd['staffid']);
 									$response = $this->hr_profile_model->add_staff($rd);
 									if ($response) {
-										$total_row_success++;
+										//add_staff saves the next staff code number, keep the local counter in step
+										$staff_next_number++;
 									}
 								} else {
-									//update staff
-									unset($data['staff_identifi']);
-									unset($data['password']);
-
-									$rd['email_signature'] = '';
-									$response = $this->hr_profile_model->update_staff($rd, $rd['staffid']);
-									if ($response) {
-										$total_row_success++;
+									//update staff: keep the existing staff code, and the password unless a new one is given
+									unset($rd['staff_identifi']);
+									if (new_strlen($value_password) == 0) {
+										unset($rd['password']);
 									}
+
+									$response = $this->hr_profile_model->update_staff($rd, $rd['staffid']);
+								}
+
+								if ($response && !is_array($response)) {
+									$total_row_success++;
+								} else {
+									//not saved: report the row as failed instead of dropping it silently
+									if (isset($response['cant_remove_main_admin'])) {
+										$save_error = _l('staff_cant_remove_main_admin');
+									} elseif (isset($response['cant_remove_yourself_from_admin'])) {
+										$save_error = _l('staff_cant_remove_yourself_from_admin');
+									} else {
+										$save_error = _l('something_went_wrong');
+									}
+
+									$writer->writeSheetRow('Sheet1', array_merge($row_values, [$save_error]));
+									$total_row_false++;
 								}
 
 							}
