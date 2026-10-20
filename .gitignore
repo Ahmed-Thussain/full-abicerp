@@ -18,3 +18,5 @@ uploads/
 node_modules/
 specs/
 ABICERP.zip
+# Claude Code agent worktrees
+.claude/worktrees/
