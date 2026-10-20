@@ -1584,6 +1584,16 @@ if (!function_exists('acc_pdf_arabic')) {
         if (!preg_match('/\p{Arabic}/u', $text)) {
             return $text;
         }
+
+        // TCPDF (bundled with the app) has the full Unicode bidi algorithm with
+        // Arabic shaping, bracket mirroring and ligatures; the code below is the fallback.
+        if (class_exists('TCPDF_FONTS')) {
+            $font = ['cw' => [], 'subsetchars' => []];
+            $chars = TCPDF_FONTS::UTF8StringToArray($text, true, $font);
+            $visual = TCPDF_FONTS::utf8Bidi($chars, $text, false, true, $font);
+            return TCPDF_FONTS::UTF8ArrSubString($visual, '', '', true);
+        }
+
         // base => [isolated, final, initial, medial] (initial/medial null = does not join to the next letter)
         $f = [
             0x621 => [0xFE80], 0x622 => [0xFE81, 0xFE82], 0x623 => [0xFE83, 0xFE84], 0x624 => [0xFE85, 0xFE86],
@@ -1655,5 +1665,31 @@ if (!function_exists('acc_pdf_arabic')) {
         }
         if ($run !== '') { $out[] = $run; }
         return implode('', $out);
+    }
+}
+
+if (!function_exists('acc_pdf_arabic_html')) {
+    /**
+     * Prepare report HTML with Arabic text for dompdf: every text segment that
+     * contains Arabic goes through acc_pdf_arabic(), and the document switches to
+     * DejaVu Sans (bundled with dompdf), which has the Arabic presentation forms.
+     * HTML without Arabic is returned untouched.
+     * @param  string $html
+     * @return string
+     */
+    function acc_pdf_arabic_html($html)
+    {
+        $html = (string) $html;
+        if (!preg_match('/\p{Arabic}/u', $html)) {
+            return $html;
+        }
+
+        $html = preg_replace_callback('/>([^<]*\p{Arabic}[^<]*)</u', function ($m) {
+            $text = html_entity_decode($m[1], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            return '>' . htmlspecialchars(acc_pdf_arabic($text), ENT_NOQUOTES, 'UTF-8') . '<';
+        }, $html);
+
+        // DejaVu Sans is wider than the default font: keep amounts on one line
+        return $html . '<style>* { font-family: "DejaVu Sans", sans-serif; } .total_amount { white-space: nowrap; }</style>';
     }
 }

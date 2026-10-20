@@ -18111,7 +18111,10 @@ class Accounting extends AdminController
        
             $html .= $this->load->view('report/convert_style', [], true);
 
-            $dompdf->loadHtml($html); 
+            // dompdf has no Arabic shaping: pre-shape Arabic text and use an Arabic-capable font
+            $html = acc_pdf_arabic_html($html);
+
+            $dompdf->loadHtml($html);
  
             // (Optional) Setup the paper size and orientation 
             if($this->input->post('pdf_name') == 'profit_and_loss_12_months' || $this->input->post('pdf_name') == 'custom_summary_report' || $this->input->post('pdf_name') == 'budget_overview'){
